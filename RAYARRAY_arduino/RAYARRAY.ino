@@ -33,7 +33,7 @@ void setup() {
   Serial.begin(9600);
 
   //Wifi
-  WiFi.softAP(ssid, password);
+  //WiFi.softAP(ssid, password);
 }
 
 void loop() {
@@ -46,7 +46,7 @@ void loop() {
   // move the stepper motor (one step at a time)
   stepper.run();
 
-  if (millis() % 1000 == 0) {
+  if (millis() % 250 == 0) {
     //hall sensor: read analog voltage
     float voltage;
     voltage = analogRead(Hall_Sensor_Pin);
