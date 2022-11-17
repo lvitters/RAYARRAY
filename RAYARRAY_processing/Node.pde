@@ -1,15 +1,14 @@
 class Node {
 	PVector position;
 	int index;
-	String ipadress;
+	int mirrorWidth;
+	int mirrorHeight;
 
-	int currentStep;
-	int nextStep;
-	boolean rotatingRight;
-
-	Node(PVector p, Float i) {
-		position = p;
-		index = i;
+	Node(float x, float y) {
+		position = new PVector(x, y);
+		//index = i;
+		mirrorWidth = 24;
+		mirrorHeight = 4;
 	}
 
 	void update() {
@@ -17,6 +16,7 @@ class Node {
 	}
 
 	void draw() {
-
+		noStroke();
+		rect(position.x, position.y, mirrorWidth, mirrorHeight);
 	}
 }
