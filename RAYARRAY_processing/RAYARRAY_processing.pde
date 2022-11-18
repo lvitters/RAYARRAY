@@ -25,6 +25,16 @@ void draw() {
 //depending on the configuration, construct a grid of nodes in the given pattern
 void constructGrid() {
 
+	float cellWidth = gridWidth / gridX;
+
+	for (int r = 1; r < gridX; r++) {
+		for (int c = 1; c < gridY; c++) {
+			Node n = new Node(r * cellWidth, c * cellWidth);
+			nodes.add(n);
+		}
+	}
+
+	/*
 	//thanks DPP for this new way of constructing a grid
 	for (int i = 0; i < gridX * gridY; i++) {
 		int x = i % gridX;
@@ -34,6 +44,7 @@ void constructGrid() {
 		Node n = new Node(x * cellWidth + cellWidth, y * cellWidth + cellWidth);
 		nodes.add(n);
 	}
+	*/
 }
 
 //draw each node

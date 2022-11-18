@@ -44,6 +44,16 @@ int gridHeight = 1000;
 //depending on the configuration, construct a grid of nodes in the given pattern
  public void constructGrid() {
 
+	float cellWidth = gridWidth / gridX;
+
+	for (int r = 1; r < gridX; r++) {
+		for (int c = 1; c < gridY; c++) {
+			Node n = new Node(r * cellWidth, c * cellWidth);
+			nodes.add(n);
+		}
+	}
+
+	/*
 	//thanks DPP for this new way of constructing a grid
 	for (int i = 0; i < gridX * gridY; i++) {
 		int x = i % gridX;
@@ -53,6 +63,7 @@ int gridHeight = 1000;
 		Node n = new Node(x * cellWidth + cellWidth, y * cellWidth + cellWidth);
 		nodes.add(n);
 	}
+	*/
 }
 
 //draw each node
@@ -64,12 +75,14 @@ class Node {
 	int index;
 	int mirrorWidth;
 	int mirrorHeight;
+	float rotation;
 
 	Node(float x, float y) {
 		position = new PVector(x, y);
 		//index = i;
 		mirrorWidth = 24;
 		mirrorHeight = 4;
+		rotation = radians(random(361));
 	}
 
 	 public void update() {
@@ -78,7 +91,9 @@ class Node {
 
 	 public void draw() {
 		noStroke();
-		rect(position.x, position.y, mirrorWidth, mirrorHeight);
+		pushMatrix();
+			rect(position.x, position.y, mirrorWidth, mirrorHeight);
+		popMatrix();
 	}
 }
 interface Renderable {
