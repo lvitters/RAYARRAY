@@ -1,15 +1,15 @@
 class Node {
 	PVector position;
 	int index;
-	int mirrorWidth;
-	int mirrorHeight;
 	float rotation;
+	float mirrorWidth;
+	float mirrorHeight;
 	float rT;
 
 	Node(float x, float y) {
 		position = new PVector(x, y);
 		//index = i;
-		mirrorWidth = 24;
+		mirrorWidth = absoluteMirrorWidth * scaleCentimetersToPixels;
 		mirrorHeight = 2;
 		rotation = 0;
 		rT = random(1000);
@@ -37,8 +37,12 @@ class Node {
 		stroke(50);
 		pushMatrix();
 			translate(position.x, position.y);
-			line(-20, -20, 20, 20);
-			line(20, -20, -20, 20);
+			float lineEndpoint = scaleCentimetersToPixels * absoluteConnectionLength * (sqrt(2)/2);
+			lineEndpoint = lineEndpoint / 2;
+			line(lineEndpoint, lineEndpoint, 0, 0);
+			line(lineEndpoint, -lineEndpoint, 0, 0);
+			line(-lineEndpoint, lineEndpoint, 0, 0);
+			line(-lineEndpoint, -lineEndpoint, 0, 0);
 		popMatrix();
 	}
 }
