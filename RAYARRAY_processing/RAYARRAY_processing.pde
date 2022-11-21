@@ -7,10 +7,10 @@ int gridY = 6;
 
 float absoluteConnectionLength = 45.0;
 float absoluteMirrorWidth = 12.0;
-float scaleCentimetersToPixels = 2.0;
+float scaleCentimetersToPixels = 3.0;
 
 void setup() {
-	size(1200, 700);
+	size(1700, 900);
 	frameRate(60);
 	rectMode(CENTER);
 	surface.setResizable(true);

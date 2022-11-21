@@ -10,7 +10,7 @@ class Node {
 		position = new PVector(x, y);
 		//index = i;
 		mirrorWidth = absoluteMirrorWidth * scaleCentimetersToPixels;
-		mirrorHeight = 2;
+		mirrorHeight = 1;
 		rotation = 0;
 		rT = random(1000);
 	}
