@@ -17,10 +17,22 @@ class Node {
 
 	}
 
-	void draw() {
+	void drawMirror() {
 		noStroke();
 		pushMatrix();
-			rect(position.x, position.y, mirrorWidth, mirrorHeight);
+			//translate(-width/2, -height/2);
+			//rotate(rotation);
+			rect(position.x, position.y, mirrorHeight, mirrorHeight);
+		popMatrix();
+	}
+
+	void drawConnections() {
+		strokeWeight(3);
+		stroke(50);
+		pushMatrix();
+		translate(position.x, position.y);
+			line(-20, -20, 20, 20);
+			line(20, -20, -20, 20);
 		popMatrix();
 	}
 }

@@ -25,29 +25,31 @@ void draw() {
 //depending on the configuration, construct a grid of nodes in the given pattern
 void constructGrid() {
 
-	float cellWidth = gridWidth / gridX;
+	float offsetX = gridWidth / gridX;
+	float offsetY = offsetX/2;
 
-	for (int r = 1; r < gridX; r++) {
-		for (int c = 1; c < gridY; c++) {
-			Node n = new Node(r * cellWidth, c * cellWidth);
-			nodes.add(n);
+	for (int x = 2; x < gridX; x++) {
+		for (int y = 2; y < gridY; y++) {
+			Node n;
+			if (y % 2 == 0) {
+				if (x != gridX-1) {
+					n = new Node((x * offsetX) + offsetX/2, y * offsetY);
+					nodes.add(n);
+				}
+			} else {
+				if (y != gridY-1) {
+					n = new Node(x * offsetX, y * offsetY);
+					nodes.add(n);
+				}
+			}
 		}
 	}
-
-	/*
-	//thanks DPP for this new way of constructing a grid
-	for (int i = 0; i < gridX * gridY; i++) {
-		int x = i % gridX;
-		int y = i / gridX;
-		float cellWidth = gridWidth / (float) (gridX + 1);
-
-		Node n = new Node(x * cellWidth + cellWidth, y * cellWidth + cellWidth);
-		nodes.add(n);
-	}
-	*/
 }
 
 //draw each node
 void drawNodes() {
-	for (Node n : nodes) n.draw();
+	for (Node n : nodes) {
+		n.drawConnections();
+		n.drawMirror();
+	} 
 }
