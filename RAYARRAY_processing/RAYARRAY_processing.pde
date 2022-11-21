@@ -13,6 +13,7 @@ void setup() {
 	size(1200, 700);
 	frameRate(60);
 	rectMode(CENTER);
+	surface.setResizable(true);
 
 	nodes = new ArrayList<Node>();
 	constructGrid();
