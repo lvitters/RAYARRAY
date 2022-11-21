@@ -8,7 +8,7 @@ int gridWidth = 1000;
 int gridHeight = 1000;
 
 void setup() {
-	size(1200, 1200);
+	size(1200, 700);
 	frameRate(60);
 	rectMode(CENTER);
 
@@ -29,6 +29,10 @@ void constructGrid() {
 	float offsetX = gridWidth / gridX;
 	float offsetY = offsetX/2;
 
+	//find position where center of grid will be center of window
+	float xPos = (width - gridWidth)/2 + offsetX/2;
+	float yPos = (height - gridHeight/2)/2 + offsetY/2;
+
 	//add nodes depending on grid size
 	for (int x = 0; x < gridX; x++) {
 		for (int y = 0; y < gridY; y++) {
@@ -37,13 +41,13 @@ void constructGrid() {
 			if (y % 2 == 0) {
 				//omit last column
 				if (x != gridX-1) {
-					n = new Node((x * offsetX) + offsetX/2, y * offsetY);
+					n = new Node(xPos + (x * offsetX) + offsetX/2, yPos + (y * offsetY));
 					nodes.add(n);
 				}
 			} else {
 				//omit last row
 				if (y != gridY-1) {
-					n = new Node(x * offsetX, y * offsetY);
+					n = new Node(xPos + (x * offsetX), yPos + (y * offsetY));
 					nodes.add(n);
 				}
 			}
