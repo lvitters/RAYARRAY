@@ -2,15 +2,11 @@ class Node {
 	PVector position;
 	int index;
 	float rotation;
-	float mirrorWidth;
-	float mirrorHeight;
 	float rT;
 
 	Node(float x, float y) {
 		position = new PVector(x, y);
 		//index = i;
-		mirrorWidth = absoluteMirrorWidth * scaleCentimetersToPixels;
-		mirrorHeight = 1;
 		rotation = 0;
 		rT = random(1000);
 	}
@@ -23,11 +19,12 @@ class Node {
 
 	//draw rect to show the mirrors
 	void drawMirror() {
-		noStroke();
+		stroke(255);
 		pushMatrix();
 			translate(position.x, position.y);
 			rotate(rotation);
-			rect(0, 0, mirrorWidth, mirrorHeight);
+			float lineEndpoint = scaleCentimetersToPixels * absoluteMirrorWidth/2 * (sqrt(2)/2);
+			line(-lineEndpoint, -lineEndpoint, lineEndpoint, lineEndpoint);
 		popMatrix();
 	}
 

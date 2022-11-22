@@ -1,13 +1,14 @@
 import netP5.*;
 
 ArrayList<Node> nodes;
+ArrayList<Laser> lasers;
 
 int gridX = 8;
 int gridY = 6;
 
 float absoluteConnectionLength = 45.0;
 float absoluteMirrorWidth = 12.0;
-float scaleCentimetersToPixels = 3.0;
+float scaleCentimetersToPixels = 2.5;
 
 void setup() {
 	size(1700, 900);
@@ -17,12 +18,33 @@ void setup() {
 
 	nodes = new ArrayList<Node>();
 	constructGrid();
+
+	lasers = new ArrayList<Laser>();
+	createLasers();
 }
 
 void draw() {
 	background(0);
 
 	drawNodes();
+	drawLasers();
+}
+
+//draw each node
+void drawNodes() {
+	for (Node n : nodes) {
+		n.update();
+		n.drawConnections();
+		n.drawMirror();
+	} 
+}
+
+//draw the rays and their origins
+void drawLasers() {
+	for (Laser l : lasers) {
+		l.drawOrigin();
+		l.drawRays();
+	}
 }
 
 //depending on the configuration, construct a grid of nodes in the given pattern
@@ -65,11 +87,6 @@ void constructGrid() {
 	}
 }
 
-//draw each node
-void drawNodes() {
-	for (Node n : nodes) {
-		n.update();
-		n.drawConnections();
-		n.drawMirror();
-	} 
+void createLasers() {
+	lasers.add(new Laser(50, height/2));
 }
