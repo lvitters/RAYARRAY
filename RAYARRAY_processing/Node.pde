@@ -1,6 +1,7 @@
 class Node {
 	PVector position;
-	int index;
+	float mirrorEndpoint = scaleCentimetersToPixels * absoluteMirrorWidth/2 * (sqrt(2)/2);
+	float connectionEndpoint = (scaleCentimetersToPixels * absoluteConnectionLength * (sqrt(2)/2)) / 2;
 	float rotation;
 	float rT;
 
@@ -19,12 +20,12 @@ class Node {
 
 	//draw rect to show the mirrors
 	void drawMirror() {
+		strokeWeight(3);
 		stroke(255);
 		pushMatrix();
 			translate(position.x, position.y);
 			rotate(rotation);
-			float lineEndpoint = scaleCentimetersToPixels * absoluteMirrorWidth/2 * (sqrt(2)/2);
-			line(-lineEndpoint, -lineEndpoint, lineEndpoint, lineEndpoint);
+			line(-mirrorEndpoint, -mirrorEndpoint, mirrorEndpoint, mirrorEndpoint);
 		popMatrix();
 	}
 
@@ -34,12 +35,10 @@ class Node {
 		stroke(50);
 		pushMatrix();
 			translate(position.x, position.y);
-			float lineEndpoint = scaleCentimetersToPixels * absoluteConnectionLength * (sqrt(2)/2);
-			lineEndpoint = lineEndpoint / 2;
-			line(lineEndpoint, lineEndpoint, 0, 0);
-			line(lineEndpoint, -lineEndpoint, 0, 0);
-			line(-lineEndpoint, lineEndpoint, 0, 0);
-			line(-lineEndpoint, -lineEndpoint, 0, 0);
+			line(connectionEndpoint, connectionEndpoint, 0, 0);
+			line(connectionEndpoint, -connectionEndpoint, 0, 0);
+			line(-connectionEndpoint, connectionEndpoint, 0, 0);
+			line(-connectionEndpoint, -connectionEndpoint, 0, 0);
 		popMatrix();
 	}
 }

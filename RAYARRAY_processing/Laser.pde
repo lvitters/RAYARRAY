@@ -34,11 +34,19 @@ class Ray {
 		strokeWeight(3);
 		pushMatrix();
 			translate(origin.x, origin.y);
-			line(0, 0, direction.x * 100, direction.y * 100);
+			line(0, 0, direction.x * 1000, direction.y * 1000);
 		popMatrix();
 	}
 
 	void cast(Node node) {
-		
+		float x1 = node.position.x;
+		float y1 = node.position.y;
+		//float x2 = node.direction.x;
+		//float y2 = node.direction.y;
+
+		float x3 = origin.x;
+		float y3 = origin.y;
+		float x4 = origin.x + direction.x;
+		float y4 = origin.y + direction.y;
 	}
 }
