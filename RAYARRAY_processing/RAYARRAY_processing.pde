@@ -63,7 +63,7 @@ void constructGrid() {
 
 	//find position where center of grid will be center of window
 	float xPos = (width - gridWidth)/2 + offsetX/2;
-	float yPos = (height - gridWidth/2)/2 + offsetY;
+	float yPos = (height - gridWidth/2)/2 + offsetY; //TODO: not the middle for some reason?
 
 	//add nodes depending on grid size
 	for (int x = 0; x < gridX; x++) {
@@ -87,6 +87,7 @@ void constructGrid() {
 	}
 }
 
+//for now, add one laser
 void createLasers() {
 	lasers.add(new Laser(50, height/2));
 }

@@ -3,13 +3,12 @@ class Node {
 	PVector beginning;
 	PVector end;
 	float mirrorRadius = scaleCentimetersToPixels * absoluteMirrorWidth/2 * (sqrt(2)/2);
-	float jointRadius = (scaleCentimetersToPixels * absoluteConnectionLength * (sqrt(2)/2)) / 2; //TODO: figure out why it is sqrt(2)/2
+	float jointRadius = (scaleCentimetersToPixels * absoluteConnectionLength * (sqrt(2)/2)); //TODO: figure out why it is sqrt(2)/2
 	float rotation;
 	float rT;
 
 	Node(float x, float y) {
 		position = new PVector(x, y);
-		rotation = 0;
 		rT = random(1000);
 	}
 
@@ -29,23 +28,24 @@ class Node {
 		end.add(position);
 	}
 
-	//draw rect to show the mirrors
+	//draw line to show the mirrors
 	void drawMirror() {
 		strokeWeight(3);
 		stroke(255);
 		line(beginning.x, beginning.y, end.x, end.y);
 	}
 
-	//draw lines to show the connections between nodes
+	//draw lines to show the joints between the nodes
 	void drawJoints() {
 		strokeWeight(3);
 		stroke(50);
 		pushMatrix();
 			translate(position.x, position.y);
-			line(jointRadius, jointRadius, 0, 0);
-			line(jointRadius, -jointRadius, 0, 0);
-			line(-jointRadius, jointRadius, 0, 0);
-			line(-jointRadius, -jointRadius, 0, 0);
+			//TODO: figure out to omit the "outer" joints of the "outer" nodes
+			line(jointRadius/2, jointRadius/2, 0, 0);
+			line(jointRadius/2, -jointRadius/2, 0, 0);
+			line(-jointRadius/2, jointRadius/2, 0, 0);
+			line(-jointRadius/2, -jointRadius/2, 0, 0);
 		popMatrix();
 	}
 }
