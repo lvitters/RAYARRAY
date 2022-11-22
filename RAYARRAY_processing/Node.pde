@@ -20,19 +20,20 @@ class Node {
 		rT += random(.001);
 		rotation = radians(map(noise(rT), 0, 1, 0, 360 * 20));
 
-		//apply rotation to beginning and end point of mirror like this instead of using rotate() so that the cast() method knows all the points
+		//apply rotation to beginning and end point of mirror here instead of using rotate() so that the cast() method knows all the absolute points
 		beginning = new PVector(mirrorRadius * sin(rotation), mirrorRadius * cos(rotation));
 		end = new PVector(-mirrorRadius * sin(rotation), -mirrorRadius * cos(rotation));
+
+		//add position here instead of using translate() so that the cast() function knows all the absolute points
+		beginning.add(position);
+		end.add(position);
 	}
 
 	//draw rect to show the mirrors
 	void drawMirror() {
 		strokeWeight(3);
 		stroke(255);
-		pushMatrix();
-			translate(position.x, position.y);
-			line(beginning.x, beginning.y, end.x, end.y);
-		popMatrix();
+		line(beginning.x, beginning.y, end.x, end.y);
 	}
 
 	//draw lines to show the connections between nodes
