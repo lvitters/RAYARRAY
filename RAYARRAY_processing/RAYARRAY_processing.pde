@@ -34,7 +34,7 @@ void draw() {
 void drawNodes() {
 	for (Node n : nodes) {
 		n.update();
-		n.drawConnections();
+		n.drawJoints();
 		n.drawMirror();
 	} 
 }

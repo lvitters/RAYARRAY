@@ -3,7 +3,7 @@ class Node {
 	PVector beginning;
 	PVector end;
 	float mirrorRadius = scaleCentimetersToPixels * absoluteMirrorWidth/2 * (sqrt(2)/2);
-	float connectionRadius = (scaleCentimetersToPixels * absoluteConnectionLength * (sqrt(2)/2)) / 2; //TODO: figure out why it is sqrt(2)/2
+	float jointRadius = (scaleCentimetersToPixels * absoluteConnectionLength * (sqrt(2)/2)) / 2; //TODO: figure out why it is sqrt(2)/2
 	float rotation;
 	float rT;
 
@@ -37,15 +37,15 @@ class Node {
 	}
 
 	//draw lines to show the connections between nodes
-	void drawConnections() {
+	void drawJoints() {
 		strokeWeight(3);
 		stroke(50);
 		pushMatrix();
 			translate(position.x, position.y);
-			line(connectionRadius, connectionRadius, 0, 0);
-			line(connectionRadius, -connectionRadius, 0, 0);
-			line(-connectionRadius, connectionRadius, 0, 0);
-			line(-connectionRadius, -connectionRadius, 0, 0);
+			line(jointRadius, jointRadius, 0, 0);
+			line(jointRadius, -jointRadius, 0, 0);
+			line(-jointRadius, jointRadius, 0, 0);
+			line(-jointRadius, -jointRadius, 0, 0);
 		popMatrix();
 	}
 }
