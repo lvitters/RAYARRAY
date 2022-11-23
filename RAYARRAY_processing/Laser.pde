@@ -10,7 +10,7 @@ class Laser {
 	//draw the origin of the laser diode
 	void drawOrigin() {
 		noStroke();
-		fill(0, 255, 0);
+		fill(0, 0, 255);
 		ellipse(position.x, position.y, 10, 10);
 	}
 
@@ -18,20 +18,30 @@ class Laser {
 	void drawRays() {
 		for (Ray r : rays) {
 			r.draw();
+			r.update(new PVector(mouseX, mouseY));
+			for (Node n : nodes) {
+				println(r.cast(n));
+			}
 		}
 	}
 }
 
 class Ray {
 	PVector origin;
-	PVector direction;
+	PVector direction = new PVector();
 
 	Ray(float x, float y) {
 		origin = new PVector(x, y);
-		direction = new PVector(2000, 0);
 	}
 
-	//draw the actual ray
+	//update the ray
+	void update(PVector d) {
+		direction.x = d.x - origin.x;
+		direction.y = d.y - origin.y;
+		//direction.normalize();
+	}
+
+	//draw the ray
 	void draw() {
 		stroke(255, 0, 0);
 		strokeWeight(3);
@@ -42,9 +52,10 @@ class Ray {
 	}
 
 	//determine if it intersects with a mirror
-	void cast(Node node) {
-		float x1 = node.beginning.x;
-		float y1 = node.beginning.y;
+	//https://www.youtube.com/watch?v=TOEi6T2mtHo&t=490s&ab_channel=TheCodingTrain
+	PVector cast(Node node) {
+		float x1 = node.start.x;
+		float y1 = node.start.y;
 		float x2 = node.end.x;
 		float y2 = node.end.y;
 
@@ -52,5 +63,25 @@ class Ray {
 		float y3 = origin.y;
 		float x4 = origin.x + direction.x;
 		float y4 = origin.y + direction.y;
+
+		float den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+		if (den == 0) return null;
+
+		float t =   ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
+		float u = - ((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
+
+		if (t > 0 && t < 1 && u > 0) {
+			PVector pt = new PVector();
+			pt.x = x1 + t * (x2 - x1);
+			pt.y = y1 + t * (y2 - y1);
+
+			noStroke();
+			fill(0, 0, 255);
+			ellipse(pt.x, pt.y, 20, 20);
+
+			return pt;
+		} else {
+			return null;
+		}
 	}
 }

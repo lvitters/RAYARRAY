@@ -1,9 +1,9 @@
 class Node {
 	PVector position;
-	PVector beginning;
+	PVector start;
 	PVector end;
-	float mirrorRadius = scaleCentimetersToPixels * absoluteMirrorWidth/2 * (sqrt(2)/2);
-	float jointRadius = (scaleCentimetersToPixels * absoluteConnectionLength * (sqrt(2)/2)); //TODO: figure out why it is sqrt(2)/2
+	final float mirrorRadius = scaleCentimetersToPixels * absoluteMirrorWidth/2 * (sqrt(2)/2);
+	final float jointRadius = (scaleCentimetersToPixels * absoluteConnectionLength * (sqrt(2)/2)); //TODO: figure out why it is sqrt(2)/2
 	float rotation;
 	float rT;
 
@@ -20,11 +20,11 @@ class Node {
 		rotation = radians(map(noise(rT), 0, 1, 0, 360 * 20));
 
 		//apply rotation to beginning and end point of mirror here instead of using rotate() so that the cast() method knows all the absolute points
-		beginning = new PVector(mirrorRadius * sin(rotation), mirrorRadius * cos(rotation));
+		start = new PVector(mirrorRadius * sin(rotation), mirrorRadius * cos(rotation));
 		end = new PVector(-mirrorRadius * sin(rotation), -mirrorRadius * cos(rotation));
 
 		//add position here instead of using translate() so that the cast() function knows all the absolute points
-		beginning.add(position);
+		start.add(position);
 		end.add(position);
 	}
 
@@ -32,7 +32,7 @@ class Node {
 	void drawMirror() {
 		strokeWeight(3);
 		stroke(255);
-		line(beginning.x, beginning.y, end.x, end.y);
+		line(start.x, start.y, end.x, end.y);
 	}
 
 	//draw lines to show the joints between the nodes
