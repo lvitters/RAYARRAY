@@ -4,7 +4,7 @@ class Laser {
 
 	Laser(float x, float y) {
 		position = new PVector(x, y);
-		rays.add(new Ray(position.x, position.y));
+		rays.add(new Ray(position));
 	}
 
 	//draw the origin of the laser diode
@@ -14,14 +14,27 @@ class Laser {
 		ellipse(position.x, position.y, 10, 10);
 	}
 
-	//draw all the rays emitting from that diode (every new reflection creates a new ray)
-	void drawRays() {
+	//draw all the rays emitting from that diode
+	//https://www.youtube.com/watch?v=TOEi6T2mtHo&t=490s&ab_channel=TheCodingTrain
+	void checkHitsAndDrawRays() {
 		for (Ray r : rays) {
-			r.draw();
 			r.update(new PVector(mouseX, mouseY));
+			PVector closestHit = null;
+			float record = width*2;
 			for (Node n : nodes) {
-				println(r.cast(n));
+				PVector hit = r.cast(n);
+				if (hit != null) {
+					float distance = PVector.dist(r.origin, hit);
+					if (distance < record) {
+						record = distance;
+						closestHit = hit;
+					}
+				}
 			}
+			if (closestHit != null) {
+				r.update(new PVector(closestHit.x, closestHit.y));
+			}
+			r.draw();
 		}
 	}
 }
@@ -29,9 +42,10 @@ class Laser {
 class Ray {
 	PVector origin;
 	PVector direction = new PVector();
+	PVector hit;
 
-	Ray(float x, float y) {
-		origin = new PVector(x, y);
+	Ray(PVector o) {
+		origin = o;
 	}
 
 	//update the ray
@@ -74,11 +88,6 @@ class Ray {
 			PVector pt = new PVector();
 			pt.x = x1 + t * (x2 - x1);
 			pt.y = y1 + t * (y2 - y1);
-
-			noStroke();
-			fill(0, 0, 255);
-			ellipse(pt.x, pt.y, 20, 20);
-
 			return pt;
 		} else {
 			return null;

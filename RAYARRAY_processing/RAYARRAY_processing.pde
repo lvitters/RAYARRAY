@@ -43,7 +43,7 @@ void drawNodes() {
 void drawLasers() {
 	for (Laser l : lasers) {
 		l.drawOrigin();
-		l.drawRays();
+		l.checkHitsAndDrawRays();
 	}
 }
 
