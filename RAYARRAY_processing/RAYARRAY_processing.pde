@@ -42,8 +42,9 @@ void drawNodes() {
 //draw the rays and their origins
 void drawLasers() {
 	for (Laser l : lasers) {
+		l.setPosition(new PVector(50, mouseY));
 		l.drawOrigin();
-		l.checkHitsAndDrawRays();
+		l.checkHitsAndDrawRays(l);
 	}
 }
 

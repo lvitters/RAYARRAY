@@ -1,10 +1,21 @@
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Iterator;
+
 class Laser {
 	PVector position;
-	ArrayList<Ray> rays = new ArrayList<Ray>();
+	CopyOnWriteArrayList<Ray> rays = new CopyOnWriteArrayList<Ray>();;
 
 	Laser(float x, float y) {
 		position = new PVector(x, y);
-		rays.add(new Ray(position));
+
+		//add initial ray
+		//use Iterator and CopyOnWriteArrayList because list of rays will change size during iteration
+		//https://stackoverflow.com/questions/49866844/concurrentmodificationexception-in-processing
+		rays.add(new Ray(position, true));
+		Ray r = rays.get((rays.size() - 1));
+		r.create();
+		r.setRotation(new PVector(width, height - position.y));
 	}
 
 	//draw the origin of the laser diode
@@ -14,10 +25,43 @@ class Laser {
 		ellipse(position.x, position.y, 10, 10);
 	}
 
+	//set position of laser
+	void setPosition(PVector p) {
+		position = p;
+	}
+
 	//draw all the rays emitting from that diode
 	//https://www.youtube.com/watch?v=TOEi6T2mtHo&t=490s&ab_channel=TheCodingTrain
-	void checkHitsAndDrawRays() {
-		for (Ray r : rays) {
+	void checkHitsAndDrawRays(Laser l) {
+
+		Iterator it = rays.iterator();
+		while(it.hasNext()) {
+			Ray r = (Ray)it.next();
+			if (r.isFirst) r.setPosition(l.position);
+			PVector closestHit = null;
+			float record = width*2;
+			for (Node n : nodes) {
+				PVector hit = r.cast(n);
+				if (hit != null) {
+					float distance = PVector.dist(r.origin, hit);
+					if (distance < record) {
+						record = distance;
+						closestHit = hit;
+					}
+				}
+			}
+			if (closestHit != null) {
+				r.setRotation(new PVector(closestHit.x, closestHit.y));
+				rays.add(new Ray(closestHit, false));
+			} else {
+				if(it.hasNext()) rays.remove(it.next());
+			}
+			r.draw();
+		}
+
+		/*
+		for (int i = 0; i < rays.size(); i++) {
+			Ray r = rays.get(i);
 			r.update(new PVector(mouseX, mouseY));
 			PVector closestHit = null;
 			float record = width*2;
@@ -33,26 +77,35 @@ class Laser {
 			}
 			if (closestHit != null) {
 				r.update(new PVector(closestHit.x, closestHit.y));
+				rays.add(new Ray(closestHit));
+			} else {
+				if (rays.size() > 1) rays.remove(rays.size() - 1);
 			}
 			r.draw();
 		}
+		*/
 	}
 }
 
 class Ray {
 	PVector origin;
 	PVector direction = new PVector();
-	PVector hit;
+	boolean isFirst;
 
-	Ray(PVector o) {
+	Ray(PVector o, boolean f) {
 		origin = o;
+		isFirst = f;
 	}
 
-	//update the ray
-	void update(PVector d) {
+	//move ray around
+	void setPosition(PVector p) {
+		origin = p;
+	}
+
+	//update the ray's rotation
+	void setRotation(PVector d) {
 		direction.x = d.x - origin.x;
 		direction.y = d.y - origin.y;
-		//direction.normalize();
 	}
 
 	//draw the ray
@@ -93,4 +146,8 @@ class Ray {
 			return null;
 		}
 	}
+
+	//for Iterator and CopyOnWriteArrayList
+	//https://stackoverflow.com/questions/49866844/concurrentmodificationexception-in-processing
+	public void create() {}
 }
