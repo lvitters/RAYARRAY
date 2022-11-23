@@ -1,14 +1,15 @@
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.Iterator;
-
 class Laser {
 	PVector position;
-	CopyOnWriteArrayList<Ray> rays = new CopyOnWriteArrayList<Ray>();;
+	ArrayList<Ray> rays = new ArrayList<Ray>();
 
 	Laser(float x, float y) {
 		position = new PVector(x, y);
 		rays.add(new Ray(position, true));
+	}
+
+	//set laser diode's position
+	void setPosition(PVector p) {
+		position = p;
 	}
 
 	//draw the origin of the laser diode
@@ -16,11 +17,6 @@ class Laser {
 		noStroke();
 		fill(0, 0, 255);
 		ellipse(position.x, position.y, 10, 10);
-	}
-
-	//set position of laser
-	void setPosition(PVector p) {
-		position = p;
 	}
 
 	//draw all the rays emitting from that diode
@@ -68,6 +64,7 @@ class Ray {
 	void setDirection(PVector d) {
 		direction.x = d.x - origin.x;
 		direction.y = d.y - origin.y;
+		//direction.normalize();
 	}
 
 	//draw the ray
@@ -108,8 +105,4 @@ class Ray {
 			return null;
 		}
 	}
-
-	//for Iterator and CopyOnWriteArrayList
-	//https://stackoverflow.com/questions/49866844/concurrentmodificationexception-in-processing
-	public void create() {}
 }
