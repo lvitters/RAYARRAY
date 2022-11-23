@@ -11,11 +11,6 @@ class Laser {
 		rays.add(new Ray(position, true));
 	}
 
-	//set laser diode's position
-	void setPosition(PVector p) {
-		position = p;
-	}
-
 	//draw the origin of the laser diode
 	void drawOrigin() {
 		noStroke();
@@ -50,7 +45,6 @@ class Laser {
 			}
 			r.draw();
 		}
-		*/
 	}
 }
 
