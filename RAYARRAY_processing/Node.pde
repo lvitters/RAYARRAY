@@ -13,7 +13,7 @@ class Node {
 	}
 
 	//update the mirrors values
-	void update() {
+	void updateRotation() {
 
 		//for now rotate with noise
 		rT += random(.001);

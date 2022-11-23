@@ -4,7 +4,12 @@ class Laser {
 
 	Laser(float x, float y) {
 		position = new PVector(x, y);
-		rays.add(new Ray(position));
+		rays.add(new Ray(position, true));
+	}
+
+	//set laser diode's position
+	void setPosition(PVector p) {
+		position = p;
 	}
 
 	//draw the origin of the laser diode
@@ -16,9 +21,9 @@ class Laser {
 
 	//draw all the rays emitting from that diode
 	//https://www.youtube.com/watch?v=TOEi6T2mtHo&t=490s&ab_channel=TheCodingTrain
-	void checkHitsAndDrawRays() {
+	void checkHitsAndDrawRays(Laser l) {
 		for (Ray r : rays) {
-			r.update(new PVector(mouseX, mouseY));
+			r.setPosition(l.position);
 			PVector closestHit = null;
 			float record = width*2;
 			for (Node n : nodes) {
@@ -32,7 +37,7 @@ class Laser {
 				}
 			}
 			if (closestHit != null) {
-				r.update(new PVector(closestHit.x, closestHit.y));
+				r.setDirection(closestHit);
 			}
 			r.draw();
 		}
@@ -42,14 +47,21 @@ class Laser {
 class Ray {
 	PVector origin;
 	PVector direction = new PVector();
-	PVector hit;
+	boolean isFirst;
 
-	Ray(PVector o) {
+	Ray(PVector o, boolean f) {
 		origin = o;
+		isFirst = f;
+		setDirection(new PVector(width, height - origin.y));
 	}
 
 	//update the ray
-	void update(PVector d) {
+	void setPosition(PVector p) {
+		origin = p;
+	}
+
+	//update the ray
+	void setDirection(PVector d) {
 		direction.x = d.x - origin.x;
 		direction.y = d.y - origin.y;
 		//direction.normalize();

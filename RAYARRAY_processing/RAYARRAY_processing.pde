@@ -33,7 +33,7 @@ void draw() {
 //draw each node
 void drawNodes() {
 	for (Node n : nodes) {
-		n.update();
+		n.updateRotation();
 		n.drawJoints();
 		n.drawMirror();
 	} 
@@ -42,8 +42,9 @@ void drawNodes() {
 //draw the rays and their origins
 void drawLasers() {
 	for (Laser l : lasers) {
+		l.setPosition(new PVector(50, mouseY));
 		l.drawOrigin();
-		l.checkHitsAndDrawRays();
+		l.checkHitsAndDrawRays(l);
 	}
 }
 
