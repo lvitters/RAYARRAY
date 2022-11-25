@@ -4,7 +4,7 @@ class Laser {
 
 	Laser(float x, float y) {
 		position = new PVector(x, y);
-		rays.add(new Ray(position, true));
+		rays.add(new Ray(position, new PVector(width, height - position.y), true));
 	}
 
 	//set laser diode's position
@@ -20,51 +20,46 @@ class Laser {
 	}
 
 	//draw all the rays emitting from that diode
-	//https://www.youtube.com/watch?v=TOEi6T2mtHo&t=490s&ab_channel=TheCodingTrain
-	void checkHitsAndDrawRays(Laser l) {
+	void drawRays(Laser l) {
 		for (Ray r : rays) {
-			r.setPosition(l.position);
-			PVector closestHit = null;
-			float record = width*2;
-			for (Node n : nodes) {
-				PVector hit = r.cast(n);
-				if (hit != null) {
-					float distance = PVector.dist(r.origin, hit);
-					if (distance < record) {
-						record = distance;
-						closestHit = hit;
-					}
-				}
-			}
-			if (closestHit != null) {
-				r.setDirection(closestHit);
-			}
-			r.draw();
+			r.checkHitsAndDrawToClosestHit(l);
 		}
 	}
+
+	/*
+	//draw reflected rays at closest hit
+	void addOrRemoveReflectedRays(Ray ray) {
+		if (ray != null) {
+			rays.add(ray);
+		} else {
+			println(rays.size());
+		}
+	}
+	*/
 }
 
 class Ray {
 	PVector origin;
 	PVector direction = new PVector();
+	PVector nextRayOrigin, nextRayDirection;
+	float angleOfAttack;
 	boolean isFirst;
 
-	Ray(PVector o, boolean f) {
+	Ray(PVector o, PVector d, boolean i) {
 		origin = o;
-		isFirst = f;
-		setDirection(new PVector(width, height - origin.y));
+		setDirection(d);
+		isFirst = i;
 	}
 
-	//update the ray
+	//update the ray's position
 	void setPosition(PVector p) {
 		origin = p;
 	}
 
-	//update the ray
+	//update the ray's direction
 	void setDirection(PVector d) {
 		direction.x = d.x - origin.x;
 		direction.y = d.y - origin.y;
-		//direction.normalize();
 	}
 
 	//draw the ray
@@ -75,6 +70,36 @@ class Ray {
 			translate(origin.x, origin.y);
 			line(0, 0, direction.x, direction.y);
 		popMatrix();
+	}
+
+	//draw ray, check for hit with nearest mirror, if there is a hit draw ray to there
+	//https://www.youtube.com/watch?v=TOEi6T2mtHo&t=490s&ab_channel=TheCodingTrain
+	void checkHitsAndDrawToClosestHit(Laser l) {
+		//set to position of laser if it is the first ray
+		if (isFirst) setPosition(l.position);
+			PVector closestHit = null;
+			float record = width*2;
+			float angleOfAttack = 0;
+			for (Node n : nodes) {
+				PVector hit = cast(n);
+				angleOfAttack = PVector.angleBetween(PVector.add(n.start, n.end), PVector.add(origin, direction));
+				if (hit != null) {
+					float distance = PVector.dist(origin, hit);
+					if (distance < record) {
+						record = distance;
+						closestHit = hit;
+					}
+				}
+			}
+			if (closestHit != null) {
+				setDirection(closestHit);
+				nextRayOrigin = closestHit;
+				nextRayDirection = PVector.fromAngle(degrees(-angleOfAttack));
+				Ray nextRay = new Ray(nextRayOrigin, nextRayDirection, false);
+				nextRay.checkHitsAndDrawToClosestHit(l);
+				nextRay = null;
+			}
+			draw();
 	}
 
 	//determine if it intersects with a mirror

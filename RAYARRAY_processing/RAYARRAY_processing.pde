@@ -44,7 +44,7 @@ void drawLasers() {
 	for (Laser l : lasers) {
 		l.setPosition(new PVector(50, mouseY));
 		l.drawOrigin();
-		l.checkHitsAndDrawRays(l);
+		l.drawRays(l);
 	}
 }
 
