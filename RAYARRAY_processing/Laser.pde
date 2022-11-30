@@ -1,10 +1,14 @@
 class Laser {
-	PVector position;
+	PVector position, direction;
 	ArrayList<Ray> rays = new ArrayList<Ray>();
 
 	Laser(float x, float y) {
 		position = new PVector(x, y);
-		rays.add(new Ray(position, new PVector(width, height - position.y), true));
+		direction = new PVector(width, height - position.y);
+		Ray firstRay = new Ray(true);
+		firstRay.setOrigin(position);
+		firstRay.setDirection(direction);
+		rays.add(firstRay);
 	}
 
 	//set laser diode's position
@@ -25,34 +29,22 @@ class Laser {
 			r.checkHitsAndDrawToClosestHit(l);
 		}
 	}
-
-	/*
-	//draw reflected rays at closest hit
-	void addOrRemoveReflectedRays(Ray ray) {
-		if (ray != null) {
-			rays.add(ray);
-		} else {
-			println(rays.size());
-		}
-	}
-	*/
 }
 
 class Ray {
-	PVector origin;
+	PVector origin = new PVector();
 	PVector direction = new PVector();
-	PVector nextRayOrigin, nextRayDirection;
+	Ray nextRay;
+	boolean hasNextRay = false;
 	float angleOfAttack;
 	boolean isFirst;
 
-	Ray(PVector o, PVector d, boolean i) {
-		origin = o;
-		setDirection(d);
+	Ray(boolean i) {
 		isFirst = i;
 	}
 
 	//update the ray's position
-	void setPosition(PVector p) {
+	void setOrigin(PVector p) {
 		origin = p;
 	}
 
@@ -76,13 +68,11 @@ class Ray {
 	//https://www.youtube.com/watch?v=TOEi6T2mtHo&t=490s&ab_channel=TheCodingTrain
 	void checkHitsAndDrawToClosestHit(Laser l) {
 		//set to position of laser if it is the first ray
-		if (isFirst) setPosition(l.position);
+		if (isFirst) setOrigin(l.position);
 			PVector closestHit = null;
 			float record = width*2;
-			float angleOfAttack = 0;
 			for (Node n : nodes) {
 				PVector hit = cast(n);
-				angleOfAttack = PVector.angleBetween(PVector.add(n.start, n.end), PVector.add(origin, direction));
 				if (hit != null) {
 					float distance = PVector.dist(origin, hit);
 					if (distance < record) {
@@ -93,12 +83,13 @@ class Ray {
 			}
 			if (closestHit != null) {
 				setDirection(closestHit);
-				nextRayOrigin = closestHit;
-				nextRayDirection = PVector.fromAngle(degrees(-angleOfAttack));
-				Ray nextRay = new Ray(nextRayOrigin, nextRayDirection, false);
-				nextRay.checkHitsAndDrawToClosestHit(l);
+				//PVector nextRayOrigin = closestHit;
+				//PVector nextRayDirection = ????;
+				//nextRay = new Ray(nextRayOrigin, nextRayDirection, false);
+			} else {
+				setDirection(new PVector(width, l.position.y));
 				nextRay = null;
-			}
+			} 
 			draw();
 	}
 
@@ -130,4 +121,50 @@ class Ray {
 			return null;
 		}
 	}
+
+	/*
+	
+	boolean reflect() {
+		ArrayList<Ray> intersections = new ArrayList();
+		for (Node n : nodes) {
+			Ray ray = new Ray();
+			ray.setOrigin(origin);
+			ray.setDirection(direction);
+			hit = ray.cast(n);
+			if(hit != null) {
+				ray.setPosition(hit);
+				//ray.setDirection(n.reflectedRay());
+				intersections.add(ray);
+			}
+		}
+		if (intersections.isEmpty()) {
+			return false;
+		} else {
+			//find nearest
+			int closestID = -1;
+			float closestHit = Float.MAX_VALUE;
+			float minimumDistance = 1.0f;
+			for (int i = 0; i < intersections.size(); i++) {
+				Ray intersection = intersections.get(i);
+				float distance = PVector.dist(intersection.direction, origin);
+				if (distance < closestHit && distance > minimumDistance) {
+					closestHit = distance;
+					closestID = i;
+				}
+			}
+			if (closestID == -1) {
+				return false;
+			}
+			origin.set(intersections.get(closestID).position);
+			direction.set(intersections.get(closestID).direction);
+			return true;
+		}
+	}
+
+	//get angle
+	PVector getDirection(PVector incidentAngle, PVector reflectionVector) {
+		PVector temp
+	}
+
+	*/
 }
