@@ -12,7 +12,7 @@ class Node {
 		rT = random(1000);
 
 		//random initial rotation
-		setRotation(PI/4);
+		setRotation(random(PI));
 	}
 
 	//update the mirrors values

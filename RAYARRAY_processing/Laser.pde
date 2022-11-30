@@ -50,11 +50,10 @@ class Ray {
 	//draw the ray
 	void draw() {
 		strokeWeight(3);
+		stroke(255, 0, 0);
 			if (hitPoint != null) {
-				stroke(0, 255, 0);
 				line(origin.x, origin.y, hitPoint.x, hitPoint.y);
 			} else {
-				stroke(255, 0, 0);
 				line(	origin.x, 
 						origin.y, 
 						origin.x + direction.x * width, 
@@ -81,8 +80,7 @@ class Ray {
 			}
 			if (closestHit != null) {
 				hitPoint = closestHit;
-				float nextRayAngle = (hitNode.rotation - direction.heading() - PI/2) * 2; //TODO: NOT REFLECTING RIGHT
-				println(direction.heading());
+				float nextRayAngle = direction.heading() - 2 * (hitNode.rotation + PI/2) * (direction.heading() * (hitNode.rotation + PI/2)); //TODO: NOT REFLECTING RIGHT
 				nextRay = new Ray();
 				nextRay.setOrigin(closestHit);
 				nextRay.setDirection(new PVector(sin(nextRayAngle), cos(nextRayAngle)));
