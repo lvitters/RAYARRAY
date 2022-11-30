@@ -1,19 +1,19 @@
 class Laser {
 	PVector position, direction;
-	ArrayList<Ray> rays = new ArrayList<Ray>();
+	Ray firstRay;
 
 	Laser(float x, float y) {
 		position = new PVector(x, y);
-		direction = new PVector(width, height - position.y);
-		Ray firstRay = new Ray(true);
+		direction = new PVector(1, 0);
+		firstRay = new Ray();
 		firstRay.setOrigin(position);
 		firstRay.setDirection(direction);
-		rays.add(firstRay);
 	}
 
 	//set laser diode's position
 	void setPosition(PVector p) {
 		position = p;
+		firstRay.setOrigin(position);
 	}
 
 	//draw the origin of the laser diode
@@ -24,10 +24,8 @@ class Laser {
 	}
 
 	//draw all the rays emitting from that diode
-	void drawRays(Laser l) {
-		for (Ray r : rays) {
-			r.checkHitsAndDrawToClosestHit(l);
-		}
+	void drawRays() {
+		firstRay.update();
 	}
 }
 
@@ -35,42 +33,41 @@ class Ray {
 	PVector origin = new PVector();
 	PVector direction = new PVector();
 	Ray nextRay;
-	boolean hasNextRay = false;
-	float angleOfAttack;
-	boolean isFirst;
-
-	Ray(boolean i) {
-		isFirst = i;
-	}
+	int recursionGuard = 10;
+	PVector hitPoint = null;
+	PVector nextRayDirection;
 
 	//update the ray's position
 	void setOrigin(PVector p) {
-		origin = p;
+		origin.set(p);
 	}
 
 	//update the ray's direction
 	void setDirection(PVector d) {
-		direction.x = d.x - origin.x;
-		direction.y = d.y - origin.y;
+		direction.set(d);
 	}
 
 	//draw the ray
 	void draw() {
-		stroke(255, 0, 0);
 		strokeWeight(3);
-		pushMatrix();
-			translate(origin.x, origin.y);
-			line(0, 0, direction.x, direction.y);
-		popMatrix();
+			if (hitPoint != null) {
+				stroke(0, 255, 0);
+				line(origin.x, origin.y, hitPoint.x, hitPoint.y);
+			} else {
+				stroke(255, 0, 0);
+				line(	origin.x, 
+						origin.y, 
+						origin.x + direction.x * width, 
+						origin.y + direction.y * height);
+			}
 	}
 
 	//draw ray, check for hit with nearest mirror, if there is a hit draw ray to there
 	//https://www.youtube.com/watch?v=TOEi6T2mtHo&t=490s&ab_channel=TheCodingTrain
-	void checkHitsAndDrawToClosestHit(Laser l) {
-		//set to position of laser if it is the first ray
-		if (isFirst) setOrigin(l.position);
+	void update() {
 			PVector closestHit = null;
-			float record = width*2;
+			float record = width * 2;
+			Node hitNode = null;
 			for (Node n : nodes) {
 				PVector hit = cast(n);
 				if (hit != null) {
@@ -78,17 +75,21 @@ class Ray {
 					if (distance < record) {
 						record = distance;
 						closestHit = hit;
+						hitNode = n;
 					}
 				}
 			}
 			if (closestHit != null) {
-				setDirection(closestHit);
-				//PVector nextRayOrigin = closestHit;
-				//PVector nextRayDirection = ????;
-				//nextRay = new Ray(nextRayOrigin, nextRayDirection, false);
+				hitPoint = closestHit;
+				float nextRayAngle = (hitNode.rotation - direction.heading() - PI/2) * 2; //TODO: NOT REFLECTING RIGHT
+				println(direction.heading());
+				nextRay = new Ray();
+				nextRay.setOrigin(closestHit);
+				nextRay.setDirection(new PVector(sin(nextRayAngle), cos(nextRayAngle)));
+				nextRay.update();
 			} else {
-				setDirection(new PVector(width, l.position.y));
 				nextRay = null;
+				hitPoint = null;
 			} 
 			draw();
 	}
@@ -121,50 +122,4 @@ class Ray {
 			return null;
 		}
 	}
-
-	/*
-	
-	boolean reflect() {
-		ArrayList<Ray> intersections = new ArrayList();
-		for (Node n : nodes) {
-			Ray ray = new Ray();
-			ray.setOrigin(origin);
-			ray.setDirection(direction);
-			hit = ray.cast(n);
-			if(hit != null) {
-				ray.setPosition(hit);
-				//ray.setDirection(n.reflectedRay());
-				intersections.add(ray);
-			}
-		}
-		if (intersections.isEmpty()) {
-			return false;
-		} else {
-			//find nearest
-			int closestID = -1;
-			float closestHit = Float.MAX_VALUE;
-			float minimumDistance = 1.0f;
-			for (int i = 0; i < intersections.size(); i++) {
-				Ray intersection = intersections.get(i);
-				float distance = PVector.dist(intersection.direction, origin);
-				if (distance < closestHit && distance > minimumDistance) {
-					closestHit = distance;
-					closestID = i;
-				}
-			}
-			if (closestID == -1) {
-				return false;
-			}
-			origin.set(intersections.get(closestID).position);
-			direction.set(intersections.get(closestID).direction);
-			return true;
-		}
-	}
-
-	//get angle
-	PVector getDirection(PVector incidentAngle, PVector reflectionVector) {
-		PVector temp
-	}
-
-	*/
 }
