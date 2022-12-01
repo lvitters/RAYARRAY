@@ -49,7 +49,7 @@ class Ray {
 
 	//draw the ray
 	void draw() {
-		strokeWeight(3);
+		strokeWeight(2);
 		stroke(255, 0, 0);
 			if (hitPoint != null) {
 				line(origin.x, origin.y, hitPoint.x, hitPoint.y);
@@ -85,23 +85,18 @@ class Ray {
 			nextRay.setOrigin(closestHit);
 
 			// https://medium.com/@sleitnick/roblox-reflecting-rays-548ae88841d5
-			PVector nextRayDirection = new PVector();
-			PVector d = new PVector(sin(hitNode.rotation), cos(hitNode.rotation));
-			PVector n = direction.copy();
-			float mDot = PVector.dot(d, n);
-			nextRayDirection = PVector.sub(d, (PVector.mult(n, 2 * mDot)));
-			nextRay.setDirection(nextRayDirection);
-
-			//float nextRayAngle = direction.heading() - 2 * (hitNode.rotation + PI/2) * (direction.heading() * (hitNode.rotation + PI/2)); //TODO
-			//nextRay.setDirection(new PVector(sin(nextRayAngle), cos(nextRayAngle)));
+			//PVector nextRayDirection = new PVector();
+			// PVector d = new PVector(sin(hitNode.rotation), cos(hitNode.rotation));
+			// PVector n = direction.copy();
+			// float mDot = PVector.dot(d, n);
+			// nextRayDirection = PVector.sub(d, (PVector.mult(n, 2 * mDot)));
+			// nextRay.setDirection(nextRayDirection);
 
 			// DPP
-			// PVector normal = new PVector();
-			// PVector hitNodeEndCopy = new PVector();
-			// hitNodeEndCopy = hitNode.end.copy();
-			// normal.set(PVector.sub(new PVector().set(hitNode.start), new PVector().set(hitNodeEndCopy.normalize())));
-			// PVector nextRayDirection = reflect(direction, normal);
-			// nextRay.setDirection(nextRayDirection);
+			PVector normal = new PVector();
+			normal.set(PVector.sub(new PVector().set(hitNode.start), new PVector().set(hitNode.end)));
+			PVector nextRayDirection = reflect(direction, normal);
+			nextRay.setDirection(nextRayDirection);
 			
 			nextRay.update();
 			nextRay.draw();

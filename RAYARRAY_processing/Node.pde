@@ -37,7 +37,7 @@ class Node {
 
 	//draw line to show the mirrors
 	void drawMirror() {
-		strokeWeight(3);
+		strokeWeight(2);
 		stroke(255);
 		line(start.x, start.y, end.x, end.y);
 	}
