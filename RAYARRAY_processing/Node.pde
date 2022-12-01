@@ -48,7 +48,7 @@ class Node {
 		stroke(50);
 		pushMatrix();
 			translate(position.x, position.y);
-			//TODO: figure out to omit the "outer" joints of the "outer" nodes
+			//TODO: figure out how to omit the "outer" joints of the "outer" nodes
 			line(jointRadius/2, jointRadius/2, 0, 0);
 			line(jointRadius/2, -jointRadius/2, 0, 0);
 			line(-jointRadius/2, jointRadius/2, 0, 0);
