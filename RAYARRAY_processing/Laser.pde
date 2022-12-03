@@ -31,11 +31,12 @@ class Laser {
 }
 
 class Ray {
+	static final int recursionGuardMax = 100;  //TORESEARCH: what does static final actually do?
+
 	PVector origin = new PVector();
 	PVector direction = new PVector();
-	Ray nextRay;
 	PVector hitPoint = null;
-	float dot;
+	Ray nextRay;
 
 	//update the ray's position
 	void setOrigin(PVector p) {
@@ -52,12 +53,19 @@ class Ray {
 		strokeWeight(2);
 		stroke(255, 0, 0);
 			if (hitPoint != null) {
-				line(origin.x, origin.y, hitPoint.x, hitPoint.y);
+				line(
+					origin.x, 
+					origin.y, 
+					hitPoint.x, 
+					hitPoint.y
+					);
 			}  else {
-				line(	origin.x, 
-						origin.y, 
-						origin.x + direction.x * width, 
-						origin.y + direction.y * width);
+				line(
+					origin.x, 
+					origin.y, 
+					origin.x + direction.x * defaultRayLength, 
+					origin.y + direction.y * defaultRayLength
+					);
 			}
 	}
 
@@ -65,38 +73,32 @@ class Ray {
 	//https://www.youtube.com/watch?v=TOEi6T2mtHo&t=490s&ab_channel=TheCodingTrain
 	void update() {
 		PVector closestHit = null;
-		float record = width * 2;
+		float record = Float.MAX_VALUE;
 		Node hitNode = null;
 		for (Node n : nodes) {
 			PVector hit = cast(n);
 			if (hit != null) {
 				float distance = PVector.dist(origin, hit);
-				if (distance < record) {
+				if (distance < record && distance > n.mirrorRadius * 2) {
 					record = distance;
 					closestHit = hit;
 					hitNode = n;
 				}
 			}
 		}
-		if (closestHit != null && recursionGuard <= 10) {
-			recursionGuard += 1;
+		//DPP
+        if (recursionGuard >= recursionGuardMax ) {
+            println("recursion guard hit");
+        }
+		if (closestHit != null && hitNode != null && recursionGuard <= RECURSION_GUARD_MAX) {
+			recursionGuard++;
 			hitPoint = closestHit;
 			nextRay = new Ray();
 			nextRay.setOrigin(closestHit);
 
-			//https://medium.com/@sleitnick/roblox-reflecting-rays-548ae88841d5
-			// PVector nextRayDirection = new PVector();
-			// PVector d = new PVector(sin(hitNode.rotation), cos(hitNode.rotation));
-			// PVector n = direction.copy();
-			// float mDot = PVector.dot(d, n);
-			// nextRayDirection = PVector.sub(d, (PVector.mult(n, 2 * mDot)));
-			// nextRay.setDirection(nextRayDirection);
-
-			//calculate reflection (thanks DPP)
-			PVector normal = new PVector();
-			normal.set(PVector.sub(new PVector().set(hitNode.start), new PVector().set(hitNode.end)));
-			PVector nextRayDirection = reflect(direction, normal);
-			nextRay.setDirection(nextRayDirection);
+			//calculate reflection (DPP)
+            PVector nextRayDirection = reflect(direction, hitNode.normal);
+            nextRay.setDirection(nextRayDirection);
 			
 			nextRay.update();
 			nextRay.draw();
@@ -116,38 +118,39 @@ class Ray {
 		PVector n = new PVector().set(normal).normalize();
 		PVector e = new PVector().set(direction);
 		float d = PVector.dot(e, n);	// d > 0 = frontface, d < 0 = backface
-		dot = d;
 		n.mult(2 * d);
-		PVector r = PVector.sub(n, e);	// @todo why is this reversed?
+		PVector r = PVector.sub(e, n);	// it isn't reversed!!!
 		return r;
 	}
 
 	//determine if it intersects with a mirror
 	//https://www.youtube.com/watch?v=TOEi6T2mtHo&t=490s&ab_channel=TheCodingTrain
 	PVector cast(Node node) {
-		float x1 = node.start.x;
-		float y1 = node.start.y;
-		float x2 = node.end.x;
-		float y2 = node.end.y;
+        float x1 = node.start.x;
+        float y1 = node.start.y;
+        float x2 = node.end.x;
+        float y2 = node.end.y;
 
-		float x3 = origin.x;
-		float y3 = origin.y;
-		float x4 = origin.x + direction.x;
-		float y4 = origin.y + direction.y;
+        float x3 = origin.x;
+        float y3 = origin.y;
+        float x4 = origin.x + direction.x;
+        float y4 = origin.y + direction.y;
 
-		float den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-		if (den == 0) return null;
+        float den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        if (den == 0) {
+            return null;
+        }
 
-		float t =   ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
-		float u = - ((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
+        float t =   ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den;
+        float u = - ((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den;
 
-		if (t > 0 && t < 1 && u > 0) {
-			PVector pt = new PVector();
-			pt.x = x1 + t * (x2 - x1);
-			pt.y = y1 + t * (y2 - y1);
-			return pt;
-		} else {
-			return null;
-		}
-	}
+        if (t > 0 && t < 1 && u > 0) {
+            PVector pt = new PVector();
+            pt.x = x1 + t * (x2 - x1);
+            pt.y = y1 + t * (y2 - y1);
+            return pt;
+        } else {
+            return null;
+        }
+    }
 }

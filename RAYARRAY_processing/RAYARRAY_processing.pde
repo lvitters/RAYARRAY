@@ -10,6 +10,8 @@ float absoluteConnectionLength = 45.0;
 float absoluteMirrorWidth = 12.0;
 float scaleCentimetersToPixels = 2.5;
 
+float defaultRayLength = 2000;
+
 int recursionGuard = 0;
 
 void setup() {
@@ -35,7 +37,7 @@ void draw() {
 //draw each node
 void drawNodes() {
 	for (Node n : nodes) {
-		//n.updateRotation();
+		n.updateRotation();
 		n.drawJoints();
 		n.drawMirror();
 	} 
