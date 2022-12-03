@@ -20,7 +20,8 @@ class Node {
 	void updateRotation() {
 		//for now rotate with noise
 		rT += random(.0005);
-		rotation = radians(map(noise(rT), 0, 1, 0, 360 * 20));
+		//rotation = radians(map(noise(rT), 0, 1, 0, 360 * 20));
+		rotation = radians(map(sin(rT), 0, 1, 0, 360 * 20));
 
 		setRotation(rotation);
 	}

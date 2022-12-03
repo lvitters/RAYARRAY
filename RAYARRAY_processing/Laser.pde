@@ -90,7 +90,7 @@ class Ray {
         if (recursionGuard >= recursionGuardMax ) {
             println("recursion guard hit");
         }
-		if (closestHit != null && hitNode != null && recursionGuard <= RECURSION_GUARD_MAX) {
+		if (closestHit != null && hitNode != null && recursionGuard <= recursionGuardMax) {
 			recursionGuard++;
 			hitPoint = closestHit;
 			nextRay = new Ray();
