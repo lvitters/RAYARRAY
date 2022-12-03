@@ -23,7 +23,7 @@ class Laser {
 		ellipse(position.x, position.y, 10, 10);
 	}
 
-	//draw all the rays emitting from that diode
+	//draw all the rays emitting from that diode recursively
 	void drawRays() {
 		firstRay.update();
 		firstRay.draw();
@@ -57,7 +57,7 @@ class Ray {
 				line(	origin.x, 
 						origin.y, 
 						origin.x + direction.x * width, 
-						origin.y + direction.y * height);
+						origin.y + direction.y * width);
 			}
 	}
 
@@ -84,15 +84,15 @@ class Ray {
 			nextRay = new Ray();
 			nextRay.setOrigin(closestHit);
 
-			// https://medium.com/@sleitnick/roblox-reflecting-rays-548ae88841d5
-			//PVector nextRayDirection = new PVector();
+			//https://medium.com/@sleitnick/roblox-reflecting-rays-548ae88841d5
+			// PVector nextRayDirection = new PVector();
 			// PVector d = new PVector(sin(hitNode.rotation), cos(hitNode.rotation));
 			// PVector n = direction.copy();
 			// float mDot = PVector.dot(d, n);
 			// nextRayDirection = PVector.sub(d, (PVector.mult(n, 2 * mDot)));
 			// nextRay.setDirection(nextRayDirection);
 
-			// DPP
+			//calculate reflection (thanks DPP)
 			PVector normal = new PVector();
 			normal.set(PVector.sub(new PVector().set(hitNode.start), new PVector().set(hitNode.end)));
 			PVector nextRayDirection = reflect(direction, normal);
