@@ -33,6 +33,11 @@ void draw() {
 
 //draw each node
 void updateNodes() {
+	//draw joints and highlights for all nodes first so they are in the background
+	for (Node n : nodes) {
+		n.drawJoints();
+		n.drawHighlight();
+	}
 	for (Node n : nodes) {
 		n.update();
 	} 
@@ -95,9 +100,7 @@ void keyPressed() {
 
 //add new lasers
 void mousePressed() {
-		// lasers.add(new Laser(mouseX, mouseY));
-		// if (mouseX > width/2) lasers.get(lasers.size() - 1).setDirection(new PVector(-1, 0));
-
+		//switch mode for the node that was clicked on
 		for (Node n : nodes) {
 			if (n.mouseOver()) 
 			{	

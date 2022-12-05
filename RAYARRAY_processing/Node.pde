@@ -13,8 +13,6 @@ class Node {
 
 	//update and draw mirror or laser
 	void update() {
-		drawHighlight();
-		drawJoints();
 		if (mirror != null) {
 			mirror.update();
 			mirror.draw();
@@ -68,12 +66,13 @@ class Node {
 			if (mirror == null) mirror = new Mirror(position);
 		} else if (mode == 1) {
 			mirror = null;
-			if (laser == null) laser = new Laser(position);
-			if (mouseX > width/2) laser.setDirection(new PVector(-1, 0));
+			if (laser == null) {
+				laser = new Laser(position);
+				if (mouseX > width/2) laser.setDirection(new PVector(-1, 0));
+			}
 		} else if (mode == 2) {
 			mirror = null;
 			laser = null;
 		}
-		println(mode);
 	}
 }
