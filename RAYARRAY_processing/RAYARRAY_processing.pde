@@ -12,6 +12,8 @@ float scaleCentimetersToPixels = 2.5;
 
 float diodeRotation = PI/2;
 
+int activeLaser = 0;
+
 float defaultRayLength = 2000;
 
 int recursionGuard = 0;
@@ -25,8 +27,9 @@ void setup() {
 	nodes = new ArrayList<Node>();
 	constructGrid();
 
+	//init laser list and add first one
 	lasers = new ArrayList<Laser>();
-	createLasers();
+	lasers.add(new Laser(50, height/2));
 }
 
 void draw() {
@@ -47,11 +50,17 @@ void drawNodes() {
 
 //draw the rays and their origins
 void drawLasers() {
-	for (Laser l : lasers) {
-		l.setPosition(new PVector(50, mouseY));
-		l.setDirection(new PVector(sin(diodeRotation), cos(diodeRotation)));
+	for (int i = 0; i < lasers.size(); i++) {
+		Laser l = lasers.get(i);
 		l.drawOrigin();
 		l.drawRays();
+
+		//this can't be a good way to do this
+		if (i == activeLaser) {
+			l.active = true;
+		} else {
+			l.active = false;
+		}
 	}
 }
 
@@ -95,16 +104,41 @@ void constructGrid() {
 	}
 }
 
-//for now, add one laser
-void createLasers() {
-	lasers.add(new Laser(50, height/2));
+void keyPressed() {
+	Laser l = lasers.get(activeLaser);
+	
+	//set rotation
+	if (keyCode == RIGHT) {
+		l.setDirection(new PVector(l.direction.x += .01, l.direction.y += .01));
+	}
+	if (keyCode == LEFT) {
+		l.setDirection(new PVector(l.direction.x -= .01, l.direction.y -= .01));
+	}
+
+	//set position
+	if (keyCode == UP) {
+		l.setPosition(new PVector(l.position.x, l.position.y -= 5));
+	}
+	if (keyCode == DOWN) {
+		l.setPosition(new PVector(l.position.x, l.position.y += 5));
+	}
+
+	//set which laser is active
+	if (key == '2') {
+		if (activeLaser < lasers.size() - 1) activeLaser += 1;
+	}
+	if (key == '1') {
+		if (activeLaser > 0) activeLaser -= 1;
+	}
+
+	//delete last laser
+	if (keyCode == BACKSPACE) {
+		if (lasers.size() > 1) lasers.remove(lasers.size() - 1);
+	}
 }
 
-void keyPressed() {
-	if (key == '1') {
-		diodeRotation += .01;
-	}
-	else if (key == '2') {
-		diodeRotation -= .01;
-	}
+//add new lasers
+void mousePressed() {
+		lasers.add(new Laser(mouseX, mouseY));
+		if (mouseX > width/2) lasers.get(lasers.size() - 1).setDirection(new PVector(-1, 0));
 }

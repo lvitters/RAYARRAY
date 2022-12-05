@@ -1,5 +1,6 @@
 class Laser {
 	PVector position, direction;
+	boolean active;
 	Ray firstRay;
 
 	Laser(float x, float y) {
@@ -25,7 +26,8 @@ class Laser {
 	//draw the origin of the laser diode
 	void drawOrigin() {
 		noStroke();
-		fill(0, 0, 255);
+		if (!active) fill(0, 0, 255);
+		else fill(0, 255, 0);
 		ellipse(position.x, position.y, 10, 10);
 	}
 
