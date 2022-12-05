@@ -23,18 +23,18 @@ class Laser {
 		firstRay.setDirection(direction);
 	}
 
+	//draw all the rays emitting from that diode recursively
+	void update() {
+		firstRay.update();
+		firstRay.draw();
+	}
+
 	//draw the origin of the laser diode
 	void drawOrigin() {
 		noStroke();
 		if (!active) fill(0, 0, 255);
 		else fill(0, 255, 0);
 		ellipse(position.x, position.y, 10, 10);
-	}
-
-	//draw all the rays emitting from that diode recursively
-	void drawRays() {
-		firstRay.update();
-		firstRay.draw();
 	}
 }
 
@@ -82,15 +82,15 @@ class Ray {
 	void update() {
 		PVector closestHit = null;
 		float record = Float.MAX_VALUE;
-		Node hitNode = null;
+		Mirror hitMirror = null;
 		for (Node n : nodes) {
-			PVector hit = cast(n);
+			PVector hit = cast(n.mirror);
 			if (hit != null) {
 				float distance = PVector.dist(origin, hit);
-				if (distance < record && distance > n.mirrorRadius * 2) {
+				if (distance < record && distance > n.mirror.mirrorRadius * 2) {
 					record = distance;
 					closestHit = hit;
-					hitNode = n;
+					hitMirror = n.mirror;
 				}
 			}
 		}
@@ -98,14 +98,14 @@ class Ray {
         if (recursionGuard >= recursionGuardMax ) {
             println("recursion guard hit");
         }
-		if (closestHit != null && hitNode != null && recursionGuard <= recursionGuardMax) {
+		if (closestHit != null && hitMirror != null && recursionGuard <= recursionGuardMax) {
 			recursionGuard++;
 			hitPoint = closestHit;
 			nextRay = new Ray();
 			nextRay.setOrigin(closestHit);
 
 			//calculate reflection (DPP)
-            PVector nextRayDirection = reflect(direction, hitNode.normal);
+            PVector nextRayDirection = reflect(direction, hitMirror.normal);
             nextRay.setDirection(nextRayDirection);
 			
 			nextRay.update();
@@ -133,11 +133,11 @@ class Ray {
 
 	//determine if it intersects with a mirror
 	//https://www.youtube.com/watch?v=TOEi6T2mtHo&t=490s&ab_channel=TheCodingTrain
-	PVector cast(Node node) {
-        float x1 = node.start.x;
-        float y1 = node.start.y;
-        float x2 = node.end.x;
-        float y2 = node.end.y;
+	PVector cast(Mirror mirror) {
+        float x1 = mirror.start.x;
+        float y1 = mirror.start.y;
+        float x2 = mirror.end.x;
+        float y2 = mirror.end.y;
 
         float x3 = origin.x;
         float y3 = origin.y;

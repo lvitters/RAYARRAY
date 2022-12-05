@@ -35,25 +35,23 @@ void setup() {
 void draw() {
 	background(0);
 
-	drawNodes();
-	drawLasers();
+	updateNodes();
+	updateLasers();
 }
 
 //draw each node
-void drawNodes() {
+void updateNodes() {
 	for (Node n : nodes) {
-		n.updateRotation();
-		n.drawJoints();
-		n.drawMirror();
+		n.update();
 	} 
 }
 
 //draw the rays and their origins
-void drawLasers() {
+void updateLasers() {
 	for (int i = 0; i < lasers.size(); i++) {
 		Laser l = lasers.get(i);
 		l.drawOrigin();
-		l.drawRays();
+		l.update();
 
 		//this can't be a good way to do this
 		if (i == activeLaser) {
@@ -139,6 +137,6 @@ void keyPressed() {
 
 //add new lasers
 void mousePressed() {
-		lasers.add(new Laser(mouseX, mouseY));
-		if (mouseX > width/2) lasers.get(lasers.size() - 1).setDirection(new PVector(-1, 0));
+		// lasers.add(new Laser(mouseX, mouseY));
+		// if (mouseX > width/2) lasers.get(lasers.size() - 1).setDirection(new PVector(-1, 0));
 }
