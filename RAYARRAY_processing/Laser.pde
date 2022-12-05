@@ -16,6 +16,12 @@ class Laser {
 		firstRay.setOrigin(position);
 	}
 
+	//set the laser diode's rotation
+	void setDirection(PVector d) {
+		direction = d;
+		firstRay.setDirection(direction);
+	}
+
 	//draw the origin of the laser diode
 	void drawOrigin() {
 		noStroke();
@@ -109,7 +115,7 @@ class Ray {
 		}
 	}
 
-	//get the direction vector of the reflection (thanks DPP)
+	//get the direction vector of the reflection (DPP)
 	PVector reflect(PVector direction, PVector normal) {
 		// r = e - 2 (e.n) n :: ( | n | = 1 )
     	// with e :: direction

@@ -10,6 +10,8 @@ float absoluteConnectionLength = 45.0;
 float absoluteMirrorWidth = 12.0;
 float scaleCentimetersToPixels = 2.5;
 
+float diodeRotation = PI/2;
+
 float defaultRayLength = 2000;
 
 int recursionGuard = 0;
@@ -47,6 +49,7 @@ void drawNodes() {
 void drawLasers() {
 	for (Laser l : lasers) {
 		l.setPosition(new PVector(50, mouseY));
+		l.setDirection(new PVector(sin(diodeRotation), cos(diodeRotation)));
 		l.drawOrigin();
 		l.drawRays();
 	}
@@ -95,4 +98,13 @@ void constructGrid() {
 //for now, add one laser
 void createLasers() {
 	lasers.add(new Laser(50, height/2));
+}
+
+void keyPressed() {
+	if (key == '1') {
+		diodeRotation += .01;
+	}
+	else if (key == '2') {
+		diodeRotation -= .01;
+	}
 }
