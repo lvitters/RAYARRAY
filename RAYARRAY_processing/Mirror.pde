@@ -7,8 +7,8 @@ class Mirror {
 	float rotation;
 	float rT;
 
-	Mirror(float x, float y) {
-		position = new PVector(x, y);
+	Mirror(PVector p) {
+		position = p;
 		rT = random(1000);
 
 		//random initial rotation

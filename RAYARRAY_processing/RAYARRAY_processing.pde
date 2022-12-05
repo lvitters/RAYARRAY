@@ -1,7 +1,6 @@
 import netP5.*;
 
 ArrayList<Node> nodes;
-ArrayList<Laser> lasers;
 
 int gridX = 8;
 int gridY = 6;
@@ -10,9 +9,7 @@ float absoluteConnectionLength = 45.0;
 float absoluteMirrorWidth = 12.0;
 float scaleCentimetersToPixels = 2.5;
 
-float diodeRotation = PI/2;
-
-int activeLaser = 0;
+float cellSize = absoluteConnectionLength * 2;
 
 float defaultRayLength = 2000;
 
@@ -26,17 +23,12 @@ void setup() {
 
 	nodes = new ArrayList<Node>();
 	constructGrid();
-
-	//init laser list and add first one
-	lasers = new ArrayList<Laser>();
-	lasers.add(new Laser(50, height/2));
 }
 
 void draw() {
 	background(0);
 
 	updateNodes();
-	updateLasers();
 }
 
 //draw each node
@@ -44,22 +36,6 @@ void updateNodes() {
 	for (Node n : nodes) {
 		n.update();
 	} 
-}
-
-//draw the rays and their origins
-void updateLasers() {
-	for (int i = 0; i < lasers.size(); i++) {
-		Laser l = lasers.get(i);
-		l.drawOrigin();
-		l.update();
-
-		//this can't be a good way to do this
-		if (i == activeLaser) {
-			l.active = true;
-		} else {
-			l.active = false;
-		}
-	}
 }
 
 //depending on the configuration, construct a grid of nodes in the given pattern
@@ -88,13 +64,13 @@ void constructGrid() {
 			if (y % 2 == 0) {
 				//omit last column for symmetry
 				if (x != gridX-1) {
-					n = new Node(xPos + (x * offsetX) + offsetX/2, yPos + (y * offsetY));
+					n = new Node(new PVector(xPos + (x * offsetX) + offsetX/2, yPos + (y * offsetY)));
 					nodes.add(n);
 				}
 			} else {
 				//omit last row for symmetry
 				if (y != gridY-1) {
-					n = new Node(xPos + (x * offsetX), yPos + (y * offsetY));
+					n = new Node(new PVector(xPos + (x * offsetX), yPos + (y * offsetY)));
 					nodes.add(n);
 				}
 			}
@@ -103,35 +79,17 @@ void constructGrid() {
 }
 
 void keyPressed() {
-	Laser l = lasers.get(activeLaser);
-	
-	//set rotation
-	if (keyCode == RIGHT) {
-		l.setDirection(new PVector(l.direction.x += .01, l.direction.y += .01));
-	}
-	if (keyCode == LEFT) {
-		l.setDirection(new PVector(l.direction.x -= .01, l.direction.y -= .01));
-	}
-
-	//set position
-	if (keyCode == UP) {
-		l.setPosition(new PVector(l.position.x, l.position.y -= 5));
-	}
-	if (keyCode == DOWN) {
-		l.setPosition(new PVector(l.position.x, l.position.y += 5));
-	}
-
-	//set which laser is active
-	if (key == '2') {
-		if (activeLaser < lasers.size() - 1) activeLaser += 1;
-	}
-	if (key == '1') {
-		if (activeLaser > 0) activeLaser -= 1;
-	}
-
-	//delete last laser
-	if (keyCode == BACKSPACE) {
-		if (lasers.size() > 1) lasers.remove(lasers.size() - 1);
+	//rotate the laser where the mouse is over
+	for (Node n : nodes) {
+		if(n.mouseOver()) {
+			//set rotation
+			if (key == '1') {
+				if (n.laser != null) n.laser.setDirection(new PVector(n.laser.direction.x += .01, n.laser.direction.y += .01));
+			}
+			if (key == '2') {
+				if (n.laser != null) n.laser.setDirection(new PVector(n.laser.direction.x -= .01, n.laser.direction.y -= .01));
+			}
+		}
 	}
 }
 
@@ -139,4 +97,13 @@ void keyPressed() {
 void mousePressed() {
 		// lasers.add(new Laser(mouseX, mouseY));
 		// if (mouseX > width/2) lasers.get(lasers.size() - 1).setDirection(new PVector(-1, 0));
+
+		for (Node n : nodes) {
+			if (n.mouseOver()) 
+			{	
+				if (n.mode < 2) n.mode++;
+				else n.mode = 0;
+			}
+			n.updateMode();
+		}
 }

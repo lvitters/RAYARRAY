@@ -3,8 +3,8 @@ class Laser {
 	boolean active;
 	Ray firstRay;
 
-	Laser(float x, float y) {
-		position = new PVector(x, y);
+	Laser(PVector p) {
+		position = p;
 		direction = new PVector(1, 0);
 		firstRay = new Ray();
 		firstRay.setOrigin(position);
@@ -84,13 +84,15 @@ class Ray {
 		float record = Float.MAX_VALUE;
 		Mirror hitMirror = null;
 		for (Node n : nodes) {
-			PVector hit = cast(n.mirror);
-			if (hit != null) {
-				float distance = PVector.dist(origin, hit);
-				if (distance < record && distance > n.mirror.mirrorRadius * 2) {
-					record = distance;
-					closestHit = hit;
-					hitMirror = n.mirror;
+			if (n.mirror != null) {
+				PVector hit = cast(n.mirror);
+				if (hit != null) {
+					float distance = PVector.dist(origin, hit);
+					if (distance < record && distance > n.mirror.mirrorRadius * 2) {
+						record = distance;
+						closestHit = hit;
+						hitMirror = n.mirror;
+					}
 				}
 			}
 		}
