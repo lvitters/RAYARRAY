@@ -31,8 +31,8 @@ class Ray {
 				line(
 						origin.x, 
 						origin.y, 
-						origin.x + direction.x * defaultRayLength, 
-						origin.y + direction.y * defaultRayLength
+						origin.x + direction.x * width, 
+						origin.y + direction.y * width
 					);
 			}
 	}
