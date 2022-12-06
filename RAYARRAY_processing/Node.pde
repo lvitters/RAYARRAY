@@ -19,6 +19,7 @@ class Node {
 		}
 		if (laser != null) {
 			laser.drawOrigin();
+			if (mouseOver() && rotateLaser) laser.setDirection(new PVector(mouseX - laser.position.x, mouseY - laser.position.y).normalize());
 			laser.update();
 		}
 	}
@@ -42,21 +43,30 @@ class Node {
 		if (mouseOver()) {
 			fill(255, 100, 100, 50);
 			noStroke();
-			rect(position.x, position.y, cellSize, cellSize);
+			//rect(position.x, position.y, cellSize, cellSize);
+			ellipse(position.x, position.y, cellSize, cellSize);
 		}
 	}
 
 	//check if mouse is hovering over the node's area
 	boolean mouseOver() {
-		if (position.x - cellSize/2 < mouseX &&
-			position.x + cellSize/2 > mouseX &&
-			position.y - cellSize/2 < mouseY &&
-			position.y + cellSize/2 > mouseY ) 
-		{	
+		//circular hitbox
+		if(dist(mouseX, mouseY, position.x, position.y) < cellSize/2) {
 			return true;
 		} else {
 			return false;
 		}
+		
+		//rect hitbox
+		// if (position.x - cellSize/2 < mouseX &&
+		// 	position.x + cellSize/2 > mouseX &&
+		// 	position.y - cellSize/2 < mouseY &&
+		// 	position.y + cellSize/2 > mouseY ) 
+		// {	
+		// 	return true;
+		// } else {
+		// 	return false;
+		// }
 	}
 
 	//check if node has mirror or laser or nothing

@@ -12,11 +12,11 @@ class Mirror {
 		rT = random(1000);
 
 		//random initial rotation
-		setRotation(random(PI));
+		setPointsAlongRadius(random(PI));
 	}
 
 	//set start and end point according to rotation
-	void setRotation(float r) {
+	void setPointsAlongRadius(float r) {
 		//apply rotation to beginning and end point of mirror here instead of using rotate() so that the cast() method knows all the absolute points
 		start.set(mirrorRadius * sin(r), mirrorRadius * cos(r));
 		end.set(-mirrorRadius * sin(r), -mirrorRadius * cos(r));
@@ -31,12 +31,12 @@ class Mirror {
 
 	//update the mirrors values
 	void update() {
-		//for now rotate with noise
+		//for now rotate with random stuff
 		rT += random(.0001);
 		//rotation = radians(map(noise(rT), 0, 1, 0, 360 * 20));
 		rotation = radians(map(sin(rT), 0, 1, 0, 360 * 20));
 
-		setRotation(rotation);
+		setPointsAlongRadius(rotation);
 	}
 
 	//draw line to show the mirrors

@@ -9,16 +9,19 @@ float absoluteConnectionLength = 45.0;
 float absoluteMirrorWidth = 12.0;
 float scaleCentimetersToPixels = 2.5;
 
-float cellSize = absoluteConnectionLength * 2;
+float cellSize = absoluteConnectionLength * 2.5;
 
 float defaultRayLength = 2000;
 
 int recursionGuard = 0;
 
+boolean rotateLaser = false;
+
 void setup() {
 	size(1700, 900);
 	frameRate(60);
 	rectMode(CENTER);
+	ellipseMode(CENTER);
 	surface.setResizable(true);
 
 	nodes = new ArrayList<Node>();
@@ -83,30 +86,26 @@ void constructGrid() {
 	}
 }
 
-void keyPressed() {
-	//rotate the laser where the mouse is over
-	for (Node n : nodes) {
-		if(n.mouseOver()) {
-			//set rotation
-			if (key == '1') {
-				if (n.laser != null) n.laser.setDirection(new PVector(n.laser.direction.x += .01, n.laser.direction.y += .01));
-			}
-			if (key == '2') {
-				if (n.laser != null) n.laser.setDirection(new PVector(n.laser.direction.x -= .01, n.laser.direction.y -= .01));
+//control lasers
+void mousePressed() {
+		//switch mode for the node that was clicked on with LEFT mouse button
+		if (mouseButton == LEFT) {
+			for (Node n : nodes) {
+				if (n.mouseOver()) 
+				{	
+					if (n.mode < 2) n.mode++;
+					else n.mode = 0;
+				}
+				n.updateMode();
 			}
 		}
-	}
+		//rotate laser only if RIGHT mouse button is pressed
+		if (mouseButton == RIGHT) {
+			rotateLaser = true;
+		}
 }
 
-//add new lasers
-void mousePressed() {
-		//switch mode for the node that was clicked on
-		for (Node n : nodes) {
-			if (n.mouseOver()) 
-			{	
-				if (n.mode < 2) n.mode++;
-				else n.mode = 0;
-			}
-			n.updateMode();
-		}
+//reset when mouse buttons are released
+void mouseReleased() {
+	rotateLaser = false;
 }
