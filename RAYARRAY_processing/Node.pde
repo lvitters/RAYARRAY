@@ -41,7 +41,7 @@ class Node {
 	//draw highlight for selection
 	void drawHighlight() {
 		if (mouseOver()) {
-			fill(255, 100, 100, 50);
+			fill(100, 255, 100, 50);
 			noStroke();
 			//rect(position.x, position.y, cellSize, cellSize);
 			ellipse(position.x, position.y, cellSize, cellSize);
@@ -57,7 +57,7 @@ class Node {
 			return false;
 		}
 		
-		//rect hitbox
+		//rectangular hitbox
 		// if (position.x - cellSize/2 < mouseX &&
 		// 	position.x + cellSize/2 > mouseX &&
 		// 	position.y - cellSize/2 < mouseY &&
@@ -70,19 +70,27 @@ class Node {
 	}
 
 	//check if node has mirror or laser or nothing
-	void updateMode() {
-		if (mode == 0) {
-			laser = null;
-			if (mirror == null) mirror = new Mirror(position);
-		} else if (mode == 1) {
-			mirror = null;
-			if (laser == null) {
-				laser = new Laser(position);
-				if (mouseX > width/2) laser.setDirection(new PVector(-1, 0));
-			}
-		} else if (mode == 2) {
-			mirror = null;
-			laser = null;
+	void switchMode(int mode) {
+		//an excuse to use switch/case for no reason other than: look mom no if statements 
+		switch(mode) {
+			//node has a mirror
+			case 0: 
+				laser = null;
+				if (mirror == null) mirror = new Mirror(position);
+			break;
+			//node has a laser
+			case 1: 
+				mirror = null;
+				if (laser == null) {
+					laser = new Laser(position);
+					if (mouseX > width/2) laser.setDirection(new PVector(-1, 0));
+				}
+			break;
+			//node is empty
+			case 2:
+				mirror = null;
+				laser = null;
+			break;
 		}
 	}
 }

@@ -45,7 +45,7 @@ class Mirror {
         stroke(255);
         line(start.x, start.y, end.x, end.y);
 
-        // draw normal (DPP)
+        //draw normal (DPP)
         // strokeWeight(1);
         // final float mNormalScale = 10;
         // line(

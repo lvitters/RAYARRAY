@@ -96,7 +96,7 @@ void mousePressed() {
 					if (n.mode < 2) n.mode++;
 					else n.mode = 0;
 				}
-				n.updateMode();
+				n.switchMode(n.mode);
 			}
 		}
 		//rotate laser only if RIGHT mouse button is pressed
