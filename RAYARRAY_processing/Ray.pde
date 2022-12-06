@@ -6,12 +6,12 @@ class Ray {
 	PVector hitPoint = null;
 	Ray nextRay;
 
-	//update the ray's position
+	//set the ray's position
 	void setOrigin(PVector p) {
 		origin.set(p);
 	}
 
-	//update the ray's direction
+	//set the ray's direction
 	void setDirection(PVector d) {
 		direction.set(d);
 	}
