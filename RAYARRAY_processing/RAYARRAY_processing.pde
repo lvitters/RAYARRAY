@@ -15,12 +15,14 @@ int recursionGuard = 0;
 boolean rotateLaser = false;
 
 void setup() {
+	//settings
 	size(1700, 900);
 	frameRate(60);
 	rectMode(CENTER);
 	ellipseMode(CENTER);
 	surface.setResizable(true);
 
+	//init grid
 	nodes = new ArrayList<Node>();
 	constructGrid();
 }
@@ -38,6 +40,7 @@ void updateNodes() {
 		n.drawJoints();
 		n.drawHighlight();
 	}
+	//then draw the mirrors or lasers on top
 	for (Node n : nodes) {
 		n.update();
 	} 
