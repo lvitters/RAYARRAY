@@ -2,8 +2,8 @@ import netP5.*;
 
 ArrayList<Node> nodes;
 
-int gridX = 8;
-int gridY = 6;
+int gridX = 2;
+int gridY = 4;
 
 float absoluteConnectionLength = 45.0;
 float absoluteMirrorWidth = 12.0;
@@ -16,7 +16,7 @@ boolean rotateLaser = false;
 
 void setup() {
 	//settings
-	size(1700, 900);
+	size(600, 600);
 	frameRate(60);
 	rectMode(CENTER);
 	ellipseMode(CENTER);
@@ -59,10 +59,11 @@ void constructGrid() {
 
 	//calculate width of the entire grid
 	float gridWidth = gridX * offsetX;
+	float gridHeight = gridY * offsetY;
 
 	//find position where center of grid will be center of window
 	float xPos = (width - gridWidth)/2 + offsetX/2;
-	float yPos = (height - gridWidth/2)/2 + offsetY; //TODO: not the middle for some reason?
+	float yPos = (height - gridHeight)/2 + offsetY/2;
 
 	//add nodes depending on grid size
 	for (int x = 0; x < gridX; x++) {
