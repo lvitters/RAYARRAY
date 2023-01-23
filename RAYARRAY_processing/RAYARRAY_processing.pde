@@ -7,7 +7,7 @@ int gridY = 6;
 
 float absoluteConnectionLength = 45.0;
 float absoluteMirrorWidth = 12.0;
-float scaleCentimetersToPixels = 2.5;
+float scaleCentimetersToPixels = 3.0;
 float cellSize = absoluteConnectionLength * 2.5;
 
 int recursionGuard = 0;

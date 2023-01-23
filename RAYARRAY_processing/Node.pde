@@ -5,6 +5,8 @@ class Node {
 	int mode;
 	final float jointRadius = (scaleCentimetersToPixels * absoluteConnectionLength * (sqrt(2)/2)); //TODO: figure out why it is sqrt(2)/2
 
+	int id;
+
 	Node(PVector p) {
 		position = p;
 		mirror = new Mirror(position);
