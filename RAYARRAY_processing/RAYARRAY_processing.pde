@@ -1,9 +1,10 @@
 import netP5.*;
+import oscP.*;
 
 ArrayList<Node> nodes;
 
-int gridX = 2;
-int gridY = 4;
+int gridX = 4;
+int gridY = 8;
 
 float absoluteConnectionLength = 45.0;
 float absoluteMirrorWidth = 12.0;
@@ -16,7 +17,7 @@ boolean rotateLaser = false;
 
 void setup() {
 	//settings
-	size(600, 600);
+	size(900, 900);
 	frameRate(60);
 	rectMode(CENTER);
 	ellipseMode(CENTER);
