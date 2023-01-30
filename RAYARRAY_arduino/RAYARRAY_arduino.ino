@@ -1,21 +1,24 @@
-#include <ESP8266HTTPClient.h>
-#include <ESP8266httpUpdate.h>
-#include <Chrono.h>
-#include <OSCBundle.h>
+// take specific libraries for ESP8266
+// board file from here: https://arduino.esp8266.com/stable/package_esp8266com_index.json
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
-#include "ESPAsyncUDP.h"
-#include <EEPROM.h> // 
+#include <ESP8266HTTPClient.h>
+#include <ESP8266httpUpdate.h>
+#include <ESPAsyncUDP.h> // https://github.com/me-no-dev/ESPAsyncUDP
+
+#include <Chrono.h>
+#include <OSCBundle.h>
+#include <EEPROM.h>
 
 #define EEPROM_SIZE 12
 
 int MY_NODE_ID = -1; // the final MY_NODE_ID is not set here, it will be stored and read from EEPROM.
-                     // this will allow you to use the "same" code on
-                     // all nodes without setting the node in the code here.
-                     // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
-                     // upload this sketch afterwads. 
-                     
-float FW_VERSION = 0.001; // important for the firmware ota flashing process
+// this will allow you to use the "same" code on
+// all nodes without setting the node in the code here.
+// before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
+// upload this sketch afterwads.
+
+float FW_VERSION = 0.01; // important for the firmware ota flashing process / increment for next upload
 
 // server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 // change server IP if needed
@@ -27,18 +30,22 @@ const char  DEFAULT_URL_FW_BINARY[] = "http://192.168.178.61:8080/release/firmwa
 boolean LOCK_UDP_REICEIVER = true; // lock UDP/OSC receiver to avoid shit while flashing a new firmware
 char URL_FW_VERSION[512];
 char URL_FW_BINARY[512];
-boolean UPDATE_FIRMWARE = true; // hook in firmwareupdate
+boolean UPDATE_FIRMWARE = false; // hook in firmwareupdate
 
 long pingInterval = 2000; // every 2 seconds
 int networkLocalPort = 8888;
 int networkOutPort = 9999; // remote port to receive OSC
 
+#ifdef ESP8266
 ESP8266WiFiMulti wifiMulti;
+#else
+WiFiMulti wifiMulti;
+#endif
 Chrono pingTimer;
 AsyncUDP udp;
 AsyncUDP udpOut;
 
-// -------------- ^RALF^ -------------- //
+// -------------------------------------- ^ RALF ^ ---------------------------------------- //
 
 /*
 #include <ESP8266WiFi.h>            // Include the Wi-Fi library
@@ -62,14 +69,16 @@ const int stepsPerRevolution = 2048;  // change this to fit the number of steps 
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 
 void setup() {
+  // ---------------------------------------------------------------------------------------- //
   strncpy(URL_FW_VERSION, DEFAULT_URL_FW_VERSION, strlen(DEFAULT_URL_FW_VERSION));
   strncpy(URL_FW_BINARY, DEFAULT_URL_FW_BINARY, strlen(DEFAULT_URL_FW_BINARY));
   MY_NODE_ID = readNodeIDfromEEPROM();
-  Serial.begin(9600);
+  Serial.begin(115200);
   Serial.print("--> NODE  v:");
   Serial.println(FW_VERSION);
   initWIFI();
   initUDP();
+  // ---------------------------------------------------------------------------------------- //
 
   initStepperMotor();
 
@@ -90,7 +99,7 @@ void initStepperMotor() {
   stepper.setMaxSpeed(1000);          //max 1950
   stepper.setAcceleration(20000);     //max 50000
   //set target position
-  stepper.moveTo(stepsPerRevolution*3);
+  stepper.moveTo(stepsPerRevolution * 3);
 }
 
 void runStepperMotor() {
@@ -112,27 +121,6 @@ void readHallSensor() {
     //Serial.println(voltage);
   }
 }
-
-/*
-//connect to Wifi (old)
-void connectToWifi() {
-  Serial.print("Connecting to ");
-  Serial.print(ssid); Serial.println(" ...");
-
-  WiFi.begin(ssid, password);
-
-  int i = 0;
-  while (WiFi.status() != WL_CONNECTED) { //wait for the Wi-Fi to connect
-    delay(1000);
-    Serial.print(++i); Serial.print(' ');
-  }
-
-  Serial.println('\n');
-  Serial.println("Connection established!");  
-  Serial.print("IP address:\t");
-  Serial.println(WiFi.localIP());         //send the IP address of the ESP8266 to the computer
-}
-*/
 
 void updateFirmware() {
   if (UPDATE_FIRMWARE) {

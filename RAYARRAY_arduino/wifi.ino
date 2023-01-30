@@ -1,8 +1,10 @@
-
+/*
+   init functions for WIFI and UDP
+*/
 void initWIFI() {
-
   WiFi.mode(WIFI_STA);
-  wifiMulti.addAP("OpenWrt", "12345678");
+  wifiMulti.addAP("virus.exe", "wurst.com");
+  wifiMulti.addAP("ssid1", "your password");
   int n = WiFi.scanNetworks();
   if (WiFi.scanNetworks() == 0) {
     Serial.println(" no networks found");
@@ -17,7 +19,11 @@ void initWIFI() {
       Serial.print(" (");
       Serial.print(WiFi.RSSI(i));
       Serial.print(")");
+#ifdef ESP8266
       Serial.println((WiFi.encryptionType(i) == AUTH_OPEN) ? " " : "*");
+#else
+      Serial.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
+#endif
       delay(10);
     }
   }
@@ -28,11 +34,7 @@ void initWIFI() {
     Serial.println("WiFi connected");
     Serial.print(" SSID      : ");  Serial.println(WiFi.SSID());
     Serial.print(" IP address: ");  Serial.println(WiFi.localIP());
-
-    //    sprintf(ipAsString, "%s", WiFi.localIP().toString().c_str());
-
   }
-
 }
 
 void initUDP() {
