@@ -1,5 +1,5 @@
 import netP5.*;
-import oscP.*;
+import oscP5.*;
 
 ArrayList<Node> nodes;
 

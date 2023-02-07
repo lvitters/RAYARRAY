@@ -19,14 +19,14 @@ int NODE_ID = -1; // the final MY_NODE_ID is not set here, it will be stored and
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.01; // important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.02; // important for the firmware ota flashing process / increment for next upload
 
 // server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 // change server IP if needed
 // can be set via osc as well
 
-const char DEFAULT_URL_FW_VERSION[] = "http://192.168.178.61:8080/release/version.txt";
-const char  DEFAULT_URL_FW_BINARY[] = "http://192.168.178.61:8080/release/firmware.bin";
+const char DEFAULT_URL_FW_VERSION[] = "http://192.168.1.164:8080/release/version.txt";
+const char  DEFAULT_URL_FW_BINARY[] = "http://192.168.1.164:8080/release/firmware.bin";
 
 boolean LOCK_UDP_REICEIVER = true; // lock UDP/OSC receiver to avoid shit while flashing a new firmware
 char URL_FW_VERSION[512];
@@ -92,7 +92,7 @@ void setup() {
 void loop() {
   updateFirmware();
 
-  //runStepperMotor();
+  runStepperMotor();
 
   //readHallSensor();
 }
