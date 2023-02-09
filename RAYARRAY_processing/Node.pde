@@ -3,18 +3,22 @@ class Node {
 	Mirror mirror;
 	Laser laser;
 	int mode;
-
-	float jointLength = (absoluteConnectionLength * scaleCentimetersToPixels) / 2;
+	float jointLength = offset / 2;
 	int column, row;
+	int ID;
+	String inputValue = "";
+	String inputName;
+	boolean drawInput = false;
 
-	int id;
-
-	Node(PVector p, int x, int y) {
+	Node(PVector p, int x, int y, int i) {
 		position = p;
 		mirror = new Mirror(position);
 		mode = 0;
 		column = x;
 		row = y;
+
+		inputName = str(i) + " ID: ";
+		setInputID();
 	}
 
 	//update and draw mirror or laser
@@ -28,6 +32,7 @@ class Node {
 			if (mouseOver() && rotateLaser) laser.setDirection(new PVector(mouseX - laser.position.x, mouseY - laser.position.y).normalize());
 			laser.update();
 		}
+		drawInputID();
 	}
 
 	//draw lines to show the joints between the nodes
@@ -48,15 +53,14 @@ class Node {
 		if (mouseOver()) {
 			fill(100, 255, 100, 50);
 			noStroke();
-			//rect(position.x, position.y, cellSize, cellSize);
-			ellipse(position.x, position.y, cellSize, cellSize);
+			ellipse(position.x, position.y, offset, offset);
 		}
 	}
 
 	//check if mouse is hovering over the node's area
 	boolean mouseOver() {
 		//circular hitbox
-		if(dist(mouseX, mouseY, position.x, position.y) < cellSize/2) {
+		if(dist(mouseX, mouseY, position.x, position.y) < offset/2) {
 			return true;
 		} else {
 			return false;
@@ -96,6 +100,31 @@ class Node {
 				mirror = null;
 				laser = null;
 			break;
+		}
+	}
+
+	// ------------------------ ControlP5 input field for ID ------------------------ //
+	void setInputID() {
+		cp5.addTextfield(inputName)
+		.setPosition(position.x, position.y)
+		.setSize(100, 20)
+		.setFocus(true)
+		.setColor(color(255, 0, 0))
+		;
+	}
+
+	void drawInputID() {
+		cp5.get(Textfield.class, inputName).setVisible(drawInput);
+		text(cp5.get(Textfield.class, inputName).getText(), 360, 130);
+  		text(inputValue, 360, 180);
+	}
+
+	void controlEvent(ControlEvent theEvent) {
+		if(theEvent.isAssignableFrom(Textfield.class)) {
+			println("controlEvent: accessing a string from controller '"
+					+theEvent.getName()+"': "
+					+theEvent.getStringValue()
+					);
 		}
 	}
 }
