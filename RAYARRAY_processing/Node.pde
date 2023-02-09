@@ -3,14 +3,18 @@ class Node {
 	Mirror mirror;
 	Laser laser;
 	int mode;
-	final float jointRadius = (scaleCentimetersToPixels * absoluteConnectionLength * (sqrt(2)/2)); //TODO: figure out why it is sqrt(2)/2
+
+	float jointLength = (absoluteConnectionLength * scaleCentimetersToPixels) / 2;
+	int column, row;
 
 	int id;
 
-	Node(PVector p) {
+	Node(PVector p, int x, int y) {
 		position = p;
 		mirror = new Mirror(position);
 		mode = 0;
+		column = x;
+		row = y;
 	}
 
 	//update and draw mirror or laser
@@ -32,11 +36,10 @@ class Node {
 		stroke(50);
 		pushMatrix();
 			translate(position.x, position.y);
-			//TODO: figure out how to omit the "outer" joints of the "outer" nodes
-			line(jointRadius/2, jointRadius/2, 0, 0);
-			line(jointRadius/2, -jointRadius/2, 0, 0);
-			line(-jointRadius/2, jointRadius/2, 0, 0);
-			line(-jointRadius/2, -jointRadius/2, 0, 0);
+			if (column != 0)		line(-jointLength, 0, 0, 0);
+			if (row != 0)			line(0, -jointLength, 0, 0);
+			if (column != gridX-1)	line(0, 0, jointLength, 0);
+			if (row != gridY-1)		line(0, 0, 0, jointLength);
 		popMatrix();
 	}
 

@@ -3,8 +3,9 @@ import oscP5.*;
 
 ArrayList<Node> nodes;
 
-int gridX = 4;
-int gridY = 8;
+
+int gridX = 10;
+int gridY = 5;
 
 float absoluteConnectionLength = 45.0;
 float absoluteMirrorWidth = 12.0;
@@ -17,7 +18,7 @@ boolean rotateLaser = false;
 
 void setup() {
 	//settings
-	size(900, 900);
+	size(1400, 700);
 	frameRate(60);
 	rectMode(CENTER);
 	ellipseMode(CENTER);
@@ -50,13 +51,9 @@ void updateNodes() {
 //depending on the configuration, construct a grid of nodes in the given pattern
 void constructGrid() {
 
-	//add one to grid because one will be removed later so the grid looks symmetrical
-	gridX += 1;
-	gridY += 1;
-
 	//calculate offset between nodes
-	float offsetX = (sqrt(2) * absoluteConnectionLength) * scaleCentimetersToPixels;
-	float offsetY = offsetX/2;
+	float offsetX = absoluteConnectionLength * scaleCentimetersToPixels;
+	float offsetY = offsetX;
 
 	//calculate width of the entire grid
 	float gridWidth = gridX * offsetX;
@@ -70,20 +67,8 @@ void constructGrid() {
 	for (int x = 0; x < gridX; x++) {
 		for (int y = 0; y < gridY; y++) {
 			Node n;
-			//offset every second row
-			if (y % 2 == 0) {
-				//omit last column for symmetry
-				if (x != gridX-1) {
-					n = new Node(new PVector(xPos + (x * offsetX) + offsetX/2, yPos + (y * offsetY)));
-					nodes.add(n);
-				}
-			} else {
-				//omit last row for symmetry
-				if (y != gridY-1) {
-					n = new Node(new PVector(xPos + (x * offsetX), yPos + (y * offsetY)));
-					nodes.add(n);
-				}
-			}
+			n = new Node(new PVector(xPos + (x * offsetX), yPos + (y * offsetY)), x, y);
+			nodes.add(n);
 		}
 	}
 }
