@@ -3,7 +3,6 @@ import oscP5.*;
 
 ArrayList<Node> nodes;
 
-
 int gridX = 10;
 int gridY = 5;
 
@@ -12,13 +11,21 @@ float absoluteMirrorWidth = 12.0;
 float scaleCentimetersToPixels = 3.0;
 float cellSize = absoluteConnectionLength * 2.5;
 
+float windowX, windowY;
+
 int recursionGuard = 0;
 
 boolean rotateLaser = false;
 
+//set window size in settings() to determine it according to the grid size
+void settings() {
+	windowX = gridX * 140;
+	windowY = gridY * 140;
+
+	size(int(windowX), int(windowY));
+}
+
 void setup() {
-	//settings
-	size(1400, 700);
 	frameRate(60);
 	rectMode(CENTER);
 	ellipseMode(CENTER);
