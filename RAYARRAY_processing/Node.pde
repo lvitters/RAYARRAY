@@ -5,9 +5,11 @@ class Node {
 	int mode;
 	float jointLength = offset / 2;
 	int column, row;
+
 	int ID;
 	String inputValue = "";
 	String inputName;
+	Textfield inputField;
 	boolean drawInput = false;
 
 	Node(PVector p, int x, int y, int i) {
@@ -108,27 +110,22 @@ class Node {
 
 	// ------------------------ ControlP5 input field for ID ------------------------ //
 	void setInputID() {
-		cp5.addTextfield(inputName)
+		inputField = cp5.addTextfield(inputName)
 		.setPosition(position.x - 25, position.y - 25)
 		.setSize(50, 50)
 		.setColor(color(255, 0, 0))
 		.setFont(font)
+		.setInputFilter(ControlP5.INTEGER);
 		;
 	}
 
 	void drawInputID() {
-		cp5.get(Textfield.class, inputName).setVisible(drawInput);
-		cp5.get(Textfield.class, inputName).setFocus(drawInput);
-		text(cp5.get(Textfield.class, inputName).getText() + " " + inputValue, 360, 130);
-  		//text(inputValue, 360, 180);
+		inputField.setVisible(drawInput);
+		inputField.setFocus(drawInput);
 	}
 
-	void controlEvent(ControlEvent theEvent) {
-		if(theEvent.isAssignableFrom(Textfield.class)) {
-			println("controlEvent: accessing a string from controller '"
-					+theEvent.getName()+"': "
-					+theEvent.getStringValue()
-					);
-		}
+	void submit() {
+		ID = int(inputField.getText());
+		println("ID: " + ID);
 	}
 }

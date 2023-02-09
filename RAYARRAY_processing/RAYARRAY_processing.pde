@@ -118,4 +118,12 @@ void keyPressed() {
 			}
 		}
 	}
+	if (keyCode == ENTER) {
+		for (Node n : nodes) {
+			if (n.drawInput) {
+				n.submit();
+				n.drawInput = false;
+			}
+		}
+	}
 }
