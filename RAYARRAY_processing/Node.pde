@@ -32,7 +32,10 @@ class Node {
 			if (mouseOver() && rotateLaser) laser.setDirection(new PVector(mouseX - laser.position.x, mouseY - laser.position.y).normalize());
 			laser.update();
 		}
+
+		//input field
 		drawInputID();
+		if (!mouseOver()) drawInput = false;
 	}
 
 	//draw lines to show the joints between the nodes
@@ -106,17 +109,18 @@ class Node {
 	// ------------------------ ControlP5 input field for ID ------------------------ //
 	void setInputID() {
 		cp5.addTextfield(inputName)
-		.setPosition(position.x, position.y)
-		.setSize(100, 20)
-		.setFocus(true)
+		.setPosition(position.x - 25, position.y - 25)
+		.setSize(50, 50)
 		.setColor(color(255, 0, 0))
+		.setFont(font)
 		;
 	}
 
 	void drawInputID() {
 		cp5.get(Textfield.class, inputName).setVisible(drawInput);
-		text(cp5.get(Textfield.class, inputName).getText(), 360, 130);
-  		text(inputValue, 360, 180);
+		cp5.get(Textfield.class, inputName).setFocus(drawInput);
+		text(cp5.get(Textfield.class, inputName).getText() + " " + inputValue, 360, 130);
+  		//text(inputValue, 360, 180);
 	}
 
 	void controlEvent(ControlEvent theEvent) {
