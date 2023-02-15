@@ -11,8 +11,7 @@ class Node {
 	String inputName;
 	Textfield inputField;
 
-	String nodeIP = "127.0.0.1";	//placeholder
-	int remotePort = 8888;
+	String nodeIP = "";
 	long lastSend = 0;
 	float sendFrequency = 500;		//in milliseconds
 
@@ -119,13 +118,14 @@ class Node {
 
 	//send rotation to node every x milliseconds
 	void sendRotationToNode() {
-		if (millis() - lastSend > sendFrequency && nodeIP != "127.0.0.1") {
+		if (millis() - lastSend > sendFrequency && nodeIP != "") {
 			lastSend = millis();
-			OscMessage myMessage = new OscMessage("/click");
+			OscMessage myMessage = new OscMessage("/rotate");
+			println(mirror.rotation);
 			myMessage.add(mirror.rotation);
 			NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 			oscP5.send(myMessage, remoteLocation);
-			println("sent to: " + nodeIP);
+			println("sent to: " + nodeIP + " " + remotePort);
 		}
 	}
 
@@ -149,6 +149,6 @@ class Node {
 
 	void submit() {
 		inputID = int(inputField.getText());
-		println("ID: " + inputID);
+		println("inputID: " + inputID);
 	}
 }

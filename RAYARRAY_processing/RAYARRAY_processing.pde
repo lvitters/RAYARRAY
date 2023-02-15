@@ -152,17 +152,18 @@ void oscEvent(OscMessage theOscMessage) {
 		String ip = theOscMessage.get(2).stringValue();
 		String mac = theOscMessage.get(3).stringValue();
 		float fw_version = theOscMessage.get(4).floatValue();
+		
 		println("got a ping from:");
-		println(" id         : "+id);
-		println(" ip         : "+ip);
-		//println(" mac        : "+mac);
-		println(" fw_version : "+fw_version);
+		println("ID: " + id + " with IP: " + ip);
+		// println("id         : " + id);
+		// println("fw_version : " + fw_version);
+		// println("mac        : " + mac);
 	
 		//match ping ID to node ID if there is a match
 		for (Node n : nodes) {
 			if (id == n.inputID) {
 				n.nodeIP = ip;
-				println("nodeID: " + n.inputID + " has IP: " + n.nodeIP);
+				println("inputID: " + n.inputID + " has IP: " + n.nodeIP);
 			}
 		}
 

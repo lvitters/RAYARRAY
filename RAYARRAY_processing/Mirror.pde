@@ -5,6 +5,7 @@ class Mirror {
     PVector normal = new PVector();
 	final float mirrorRadius = scaleCentimetersToPixels * absoluteMirrorWidth/2 * (sqrt(2)/2);
 	float rotation;
+	float normalizedRotation;
 	float rT;
 
 	Mirror(PVector p) {

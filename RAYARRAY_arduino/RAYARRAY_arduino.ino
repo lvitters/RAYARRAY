@@ -28,7 +28,7 @@ float FW_VERSION = 0.02; // important for the firmware ota flashing process / in
 const char DEFAULT_URL_FW_VERSION[] = "http://192.168.1.164:8080/release/version.txt";
 const char  DEFAULT_URL_FW_BINARY[] = "http://192.168.1.164:8080/release/firmware.bin";
 
-boolean LOCK_UDP_REICEIVER = true; // lock UDP/OSC receiver to avoid shit while flashing a new firmware
+boolean LOCK_UDP_RECEIVER = false; // lock UDP/OSC receiver to avoid shit while flashing a new firmware
 char URL_FW_VERSION[512];
 char URL_FW_BINARY[512];
 boolean UPDATE_FIRMWARE = false; // hook in firmwareupdate
@@ -45,7 +45,7 @@ AsyncUDP udpOut;
 // -------------------------------------- ^ RALF ^ ---------------------------------------- //
 
 #include <AccelStepper.h>
-const int stepsPerRevolution = 2048;  // change this to fit the number of steps per revolution
+const int stepsPerRevolution = 360;  // change this to fit the number of steps per revolution
 
 // ULN2003 Motor Driver Pins
 #define IN1 16
@@ -92,7 +92,7 @@ void setup() {
 void loop() {
   updateFirmware();
 
-  runStepperMotor();
+  //runStepperMotor();
 
   //readHallSensor();
 }
@@ -102,18 +102,21 @@ void initStepperMotor() {
   stepper.setMaxSpeed(1000);          //max 1950
   stepper.setAcceleration(20000);     //max 50000
   //set target position
-  stepper.moveTo(stepsPerRevolution * 3);
+  stepper.moveTo(0);
 }
 
-void runStepperMotor() {
-  // check current stepper motor position to invert direction
-  if (stepper.distanceToGo() == 0){
-    stepper.moveTo(-stepper.currentPosition());
-    //Serial.println("Changing direction");
-  }
+void runStepperMotor(int rotation) {
+  //set destination
+  stepper.moveTo(rotation);
 
   // move the stepper motor (one step at a time)
   stepper.run();
+}
+
+void OSCrotate(OSCMessage &msg, int addrOffset) {
+    Serial.print("/rotate ");
+    Serial.print(msg.getFloat(0));
+    Serial.print("\n");
 }
 
 void readHallSensor() {

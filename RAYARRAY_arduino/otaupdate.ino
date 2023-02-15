@@ -8,7 +8,7 @@ int getFirmwareVersionFromServer() {
   fwurl += String(rand());
   Serial.println(fwurl);
   WiFiClient * client = new WiFiClient;
-  LOCK_UDP_REICEIVER = true; // lock the udp/osc process to avoid accidents ;)
+  LOCK_UDP_RECEIVER = true; // lock the udp/osc process to avoid accidents ;)
   delay(200);
   if (client) {
     HTTPClient http;
@@ -26,7 +26,7 @@ int getFirmwareVersionFromServer() {
       http.end();
     }
     delete client;
-    LOCK_UDP_REICEIVER = false;
+    LOCK_UDP_RECEIVER = false;
   }
 
 
@@ -37,19 +37,19 @@ int getFirmwareVersionFromServer() {
     Serial.println(remote_version);
     Serial.print("FW UPDATE> FW_VEERSON (local) = ");
     Serial.println(FW_VERSION);
-    LOCK_UDP_REICEIVER = false;
+    LOCK_UDP_RECEIVER = false;
     if (remote_version > FW_VERSION) {
       Serial.println("FW UPDATE> New firmware detected");
 
-      LOCK_UDP_REICEIVER = false;
+      LOCK_UDP_RECEIVER = false;
       return 1;
     } else {
       Serial.println("FW UPDATE> Device already on latest firmware version.");
-      LOCK_UDP_REICEIVER = false;
+      LOCK_UDP_RECEIVER = false;
       return 0;
     }
   }
-  LOCK_UDP_REICEIVER = false;
+  LOCK_UDP_RECEIVER = false;
   return 0;
 }
 
@@ -58,7 +58,7 @@ void updateFirmwareFromServer() {
   Serial.println("FW UPDATE> starting update...");
   Serial.print("FW UPDATE> BIN_URL = ");
   Serial.println(URL_FW_BINARY);
-  LOCK_UDP_REICEIVER = true;
+  LOCK_UDP_RECEIVER = true;
 #ifdef ESP8266
   t_httpUpdate_return ret = ESPhttpUpdate.update(client, URL_FW_BINARY);
 #else
@@ -85,7 +85,7 @@ void updateFirmwareFromServer() {
       Serial.println("HTTP_UPDATE_OK");
       break;
   }
-  LOCK_UDP_REICEIVER = false;
+  LOCK_UDP_RECEIVER = false;
 }
 
 void update_started() {

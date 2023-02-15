@@ -1,5 +1,5 @@
 void onPacketOSC(AsyncUDPPacket packet) {
-  if (LOCK_UDP_REICEIVER) { // lock from firmware flash process
+  if (LOCK_UDP_RECEIVER) { // lock from firmware flash process
     packet.flush();
     return; // do no shit!
   }
@@ -8,6 +8,10 @@ void onPacketOSC(AsyncUDPPacket packet) {
     msgIn.fill(packet.data(), packet.length());
     packet.flush();
     if (!msgIn.hasError()) {
+
+      //OSC message for rotation
+      msgIn.route("/rotate", OSCrotate);
+
       msgIn.route("/command", OSCcommand);
       msgIn.route("/click", OSCclick);
       msgIn.route("/updatefirmware", OSCupdateFirmware);
@@ -34,11 +38,13 @@ void OSCcommand(OSCMessage &msg, int addrOffset) {
 }
 
 void OSCclick(OSCMessage &msg, int addrOffset) {
-    Serial.print("/click");
-    Serial.print(msg.getFloat(0));
+  if (msg.size() == 2) {
+    Serial.print("/click ");
+    Serial.print(msg.getInt(0));
     Serial.print(" ");
+    Serial.println(msg.getInt(1));
+  }
 }
-
 
 void OSCupdateFirmware(OSCMessage &msg, int addrOffset) {
   Serial.print("/updatefirmware");
@@ -76,7 +82,6 @@ void OSCupdateFirmwareSetBinaryURL(OSCMessage &msg, int addrOffset) {
     Serial.println(URL_FW_BINARY);
   }
 }
-
 
 void sendPingOSC() {
   AsyncUDPMessage udpMsg;
