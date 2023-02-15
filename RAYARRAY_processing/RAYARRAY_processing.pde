@@ -93,8 +93,6 @@ void mousePressed() {
 				if (n.mouseOver()) {	
 					if (n.mode < 2) n.mode++;
 					else n.mode = 0;
-				} else {
-					n.drawInput = false;
 				}
 			}
 		}
@@ -114,11 +112,9 @@ void keyPressed() {
 	if (keyCode == 'I') {
 		for (Node n : nodes) {
 			if (n.mouseOver() && n.mirror != null && n.inputField.isVisible() == false) {
-				n.inputField.setVisible(true);
-				n.inputField.setFocus(true);
+				n.setInputfieldActive(true);
 			} else {
-				n.inputField.setVisible(false);
-				n.inputField.setFocus(false);
+				n.setInputfieldActive(false);
 			}
 		}
 	}
@@ -126,8 +122,7 @@ void keyPressed() {
 		for (Node n : nodes) {
 			if (n.inputField.isVisible()) {
 				n.submit();
-				n.inputField.setVisible(false);
-				n.inputField.setFocus(false);
+				n.setInputfieldActive(false);
 			}
 		}
 	}

@@ -10,7 +10,6 @@ class Node {
 	String inputValue = "";
 	String inputName;
 	Textfield inputField;
-	boolean drawInput = false;
 
 	Node(PVector p, int x, int y, int i) {
 		position = p;
@@ -37,8 +36,7 @@ class Node {
 
 		//close input field when mouse is not over field
 		if (!mouseOver()) {
-			inputField.setVisible(false);
-			inputField.setFocus(false);
+			setInputfieldActive(false);
 		}
 	}
 
@@ -119,8 +117,12 @@ class Node {
 		.setFont(font)
 		.setInputFilter(ControlP5.INTEGER)
 		.setVisible(false)		//init as not visible
-		.setFocus(false)		//and not in focus
 		;
+	}
+
+	void setInputfieldActive(boolean active) {
+		inputField.setVisible(active);
+		inputField.setFocus(active);
 	}
 
 	void submit() {
