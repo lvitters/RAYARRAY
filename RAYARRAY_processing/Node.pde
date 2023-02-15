@@ -94,6 +94,7 @@ class Node {
 			break;
 			//node has a laser
 			case 1: 
+			println("bla");
 				mirror = null;
 				if (laser == null) {
 					laser = new Laser(position);

@@ -90,7 +90,7 @@ void mousePressed() {
 		//switch mode for the node that was clicked on with LEFT mouse button
 		if (mouseButton == LEFT) {
 			for (Node n : nodes) {
-				if (n.mouseOver()) {	
+				if (n.mouseOver()) {
 					if (n.mode < 2) n.mode++;
 					else n.mode = 0;
 				}
