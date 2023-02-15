@@ -113,16 +113,21 @@ void keyPressed() {
 	//input node's ID
 	if (keyCode == 'I') {
 		for (Node n : nodes) {
-			if (n.mouseOver() && n.mirror != null) {
-				n.drawInput = !n.drawInput;
+			if (n.mouseOver() && n.mirror != null && n.inputField.isVisible() == false) {
+				n.inputField.setVisible(true);
+				n.inputField.setFocus(true);
+			} else {
+				n.inputField.setVisible(false);
+				n.inputField.setFocus(false);
 			}
 		}
 	}
 	if (keyCode == ENTER) {
 		for (Node n : nodes) {
-			if (n.drawInput) {
+			if (n.inputField.isVisible()) {
 				n.submit();
-				n.drawInput = false;
+				n.inputField.setVisible(false);
+				n.inputField.setFocus(false);
 			}
 		}
 	}

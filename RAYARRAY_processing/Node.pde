@@ -35,9 +35,11 @@ class Node {
 			laser.update();
 		}
 
-		//input field
-		drawInputID();
-		if (!mouseOver()) drawInput = false;
+		//close input field when mouse is not over field
+		if (!mouseOver()) {
+			inputField.setVisible(false);
+			inputField.setFocus(false);
+		}
 	}
 
 	//draw lines to show the joints between the nodes
@@ -115,13 +117,10 @@ class Node {
 		.setSize(50, 50)
 		.setColor(color(255, 0, 0))
 		.setFont(font)
-		.setInputFilter(ControlP5.INTEGER);
+		.setInputFilter(ControlP5.INTEGER)
+		.setVisible(false)		//init as not visible
+		.setFocus(false)		//and not in focus
 		;
-	}
-
-	void drawInputID() {
-		inputField.setVisible(drawInput);
-		inputField.setFocus(drawInput);
 	}
 
 	void submit() {
