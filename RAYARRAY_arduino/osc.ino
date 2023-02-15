@@ -34,12 +34,9 @@ void OSCcommand(OSCMessage &msg, int addrOffset) {
 }
 
 void OSCclick(OSCMessage &msg, int addrOffset) {
-  if (msg.size() == 2) {
-    Serial.print("/click ");
-    Serial.print(msg.getInt(0));
+    Serial.print("/click");
+    Serial.print(msg.getFloat(0));
     Serial.print(" ");
-    Serial.println(msg.getInt(1));
-  }
 }
 
 

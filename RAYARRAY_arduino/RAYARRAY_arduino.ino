@@ -34,8 +34,8 @@ char URL_FW_BINARY[512];
 boolean UPDATE_FIRMWARE = false; // hook in firmwareupdate
 
 long pingInterval = 2000; // every 2 seconds
-int networkLocalPort = 8888;
-int networkOutPort = 9999; // remote port to receive OSC
+int networkLocalPort = 8888;  // remote port to receive OSC
+int networkOutPort = 9999; 
 
 ESP8266WiFiMulti wifiMulti;
 Chrono pingTimer;
@@ -109,7 +109,7 @@ void runStepperMotor() {
   // check current stepper motor position to invert direction
   if (stepper.distanceToGo() == 0){
     stepper.moveTo(-stepper.currentPosition());
-    Serial.println("Changing direction");
+    //Serial.println("Changing direction");
   }
 
   // move the stepper motor (one step at a time)

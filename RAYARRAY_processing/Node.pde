@@ -6,10 +6,15 @@ class Node {
 	float jointLength = offset / 2;
 	int column, row;
 
-	int ID;
+	int inputID;
 	String inputValue = "";
 	String inputName;
 	Textfield inputField;
+
+	String nodeIP = "127.0.0.1";	//placeholder
+	int remotePort = 8888;
+	long lastSend = 0;
+	float sendFrequency = 500;		//in milliseconds
 
 	Node(PVector p, int x, int y, int i) {
 		position = p;
@@ -27,6 +32,7 @@ class Node {
 		if (mirror != null) {
 			mirror.update();
 			mirror.draw();
+			sendRotationToNode();
 		}
 		if (laser != null) {
 			laser.drawOrigin();
@@ -109,6 +115,20 @@ class Node {
 		}
 	}
 
+	// ---------------------------- OSC messages to node ---------------------------- //
+
+	//send rotation to node every x milliseconds
+	void sendRotationToNode() {
+		if (millis() - lastSend > sendFrequency && nodeIP != "127.0.0.1") {
+			lastSend = millis();
+			OscMessage myMessage = new OscMessage("/click");
+			myMessage.add(mirror.rotation);
+			NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
+			oscP5.send(myMessage, remoteLocation);
+			println("sent to: " + nodeIP);
+		}
+	}
+
 	// ------------------------ ControlP5 input field for ID ------------------------ //
 	void setInputID() {
 		inputField = cp5.addTextfield(inputName)
@@ -121,13 +141,14 @@ class Node {
 		;
 	}
 
+	//change status of inputfield
 	void setInputfieldActive(boolean active) {
 		inputField.setVisible(active);
 		inputField.setFocus(active);
 	}
 
 	void submit() {
-		ID = int(inputField.getText());
-		println("ID: " + ID);
+		inputID = int(inputField.getText());
+		println("ID: " + inputID);
 	}
 }

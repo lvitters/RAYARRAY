@@ -1,6 +1,9 @@
 import netP5.*;
 import oscP5.*;
 
+OscP5 oscP5;
+int remotePort = 8888;
+
 import controlP5.*;
 ControlP5 cp5;
 
@@ -36,6 +39,9 @@ void setup() {
 	ellipseMode(CENTER);
 	surface.setResizable(true);
 	font = createFont("arial", 20);
+
+	//init oscP5
+  	oscP5 = new OscP5(this, 9999);
 
 	//init ControlP5
 	cp5 = new ControlP5(this);
@@ -126,5 +132,43 @@ void keyPressed() {
 				n.setInputfieldActive(false);
 			}
 		}
+	}
+
+	/*
+	//update firmware
+	if (key == 'U') {
+		NetAddress myRemoteLocation= new NetAddress(remoteIP, remotePort);
+		println("firmware update");
+		OscMessage myMessage = new OscMessage("/updatefirmware");
+		oscP5.send(myMessage, myRemoteLocation);
+	}
+	*/
+}
+
+//incoming pings from nodes (OSC messages)
+void oscEvent(OscMessage theOscMessage) {
+	if (theOscMessage.addrPattern().equals("/ping") == true) {
+		int id = theOscMessage.get(1).intValue();
+		String ip = theOscMessage.get(2).stringValue();
+		String mac = theOscMessage.get(3).stringValue();
+		float fw_version = theOscMessage.get(4).floatValue();
+		println("got a ping from:");
+		println(" id         : "+id);
+		println(" ip         : "+ip);
+		//println(" mac        : "+mac);
+		println(" fw_version : "+fw_version);
+	
+		//match ping ID to node ID if there is a match
+		for (Node n : nodes) {
+			if (id == n.inputID) {
+				n.nodeIP = ip;
+				println("nodeID: " + n.inputID + " has IP: " + n.nodeIP);
+			}
+		}
+
+	} else {
+		print("### received an osc message.");
+		print(" addrpattern: "+theOscMessage.addrPattern());
+		println(" typetag: "+theOscMessage.typetag());
 	}
 }
