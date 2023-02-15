@@ -93,6 +93,7 @@ void mousePressed() {
 				if (n.mouseOver()) {
 					if (n.mode < 2) n.mode++;
 					else n.mode = 0;
+					n.switchMode(n.mode);
 				}
 			}
 		}
