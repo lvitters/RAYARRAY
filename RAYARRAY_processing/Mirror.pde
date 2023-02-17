@@ -4,9 +4,10 @@ class Mirror {
 	PVector end = new PVector();
     PVector normal = new PVector();
 	final float mirrorRadius = scaleCentimetersToPixels * absoluteMirrorWidth/2 * (sqrt(2)/2);
-	float rotation;
-	float normalizedRotation;
 	float rT;
+	float rotationRadians;
+	float rotationDegrees;
+	float rotationSteps;
 
 	Mirror(PVector p) {
 		position = p;
@@ -33,11 +34,12 @@ class Mirror {
 	//update the mirrors values
 	void update() {
 		//for now rotate with random stuff
-		rT += random(.0001);
-		//rotation = radians(map(noise(rT), 0, 1, 0, 360 * 20));
-		rotation = radians(map(sin(rT), 0, 1, 0, 360 * 20));
+		rT += random(0.002, .01);
+		rotationDegrees = map(sin(rT), -1, 1, 0, 360);
+		rotationSteps = map(rotationDegrees, 0, 360, 0, 2038);
+		rotationRadians = radians(rotationDegrees);
 
-		setPointsAlongRadius(rotation);
+		setPointsAlongRadius(rotationRadians);
 	}
 
 	//draw line to show the mirrors

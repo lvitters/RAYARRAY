@@ -13,7 +13,7 @@ class Node {
 
 	String nodeIP = "";
 	long lastSend = 0;
-	float sendFrequency = 500;		//in milliseconds
+	float sendFrequency = 10;		//in milliseconds
 
 	Node(PVector p, int x, int y, int i) {
 		position = p;
@@ -118,11 +118,11 @@ class Node {
 
 	//send rotation to node every x milliseconds
 	void sendRotationToNode() {
-		if (millis() - lastSend > sendFrequency && nodeIP != "") {
+		if (nodeIP != "") {
 			lastSend = millis();
 			OscMessage myMessage = new OscMessage("/rotate");
-			println(mirror.rotation);
-			myMessage.add(mirror.rotation);
+			println(mirror.rotationSteps);
+			myMessage.add(mirror.rotationSteps);
 			NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 			oscP5.send(myMessage, remoteLocation);
 			println("sent to: " + nodeIP + " " + remotePort);

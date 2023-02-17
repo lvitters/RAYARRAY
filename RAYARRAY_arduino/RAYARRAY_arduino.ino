@@ -45,7 +45,7 @@ AsyncUDP udpOut;
 // -------------------------------------- ^ RALF ^ ---------------------------------------- //
 
 #include <AccelStepper.h>
-const int stepsPerRevolution = 360;  // change this to fit the number of steps per revolution
+const int stepsPerRevolution = 2038;  // change this to fit the number of steps per revolution
 
 // ULN2003 Motor Driver Pins
 #define IN1 16
@@ -92,31 +92,32 @@ void setup() {
 void loop() {
   updateFirmware();
 
-  //runStepperMotor();
-
-  //readHallSensor();
+  //move the stepper motor (one step at a time)
+    stepper.run();
 }
 
 void initStepperMotor() {
   //set the speed and acceleration
   stepper.setMaxSpeed(1000);          //max 1950
-  stepper.setAcceleration(20000);     //max 50000
+  stepper.setAcceleration(40000);     //max 50000
   //set target position
   stepper.moveTo(0);
 }
 
-void runStepperMotor(int rotation) {
-  //set destination
-  stepper.moveTo(rotation);
-
-  // move the stepper motor (one step at a time)
-  stepper.run();
-}
-
+//rotate from OSC messages
 void OSCrotate(OSCMessage &msg, int addrOffset) {
     Serial.print("/rotate ");
-    Serial.print(msg.getFloat(0));
+    float rotation = msg.getFloat(0);
     Serial.print("\n");
+
+    //rotation = rotation % stepsPerRevolution;
+
+    rotation = (long) rotation;
+    
+    Serial.print(rotation);
+
+    //set destination
+    stepper.moveTo(rotation);
 }
 
 void readHallSensor() {

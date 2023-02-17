@@ -14,8 +14,8 @@ int gridY = 5;
 
 float windowX, windowY;
 
-float absoluteConnectionLength = 45.0;
-float absoluteMirrorWidth = 12.0;
+float absoluteConnectionLength = 45.0;	//in cm
+float absoluteMirrorWidth = 12.0;		//in cm
 float scaleCentimetersToPixels = 3.0;
 float offset = absoluteConnectionLength * scaleCentimetersToPixels;	//offset between nodes
 
@@ -59,15 +59,15 @@ void draw() {
 
 //draw each node
 void updateNodes() {
-	//draw joints and highlights for all nodes first so they are in the background
 	for (Node n : nodes) {
+		
+		//draw joints and highlights for all nodes first so they are in the background
 		n.drawJoints();
 		n.drawHighlight();
-	}
-	//then draw the mirrors or lasers on top
-	for (Node n : nodes) {
+		
+		//then draw the mirrors or lasers on top
 		n.update();
-	} 
+	}
 }
 
 //depending on the configuration, construct a grid of nodes in the given pattern
@@ -159,7 +159,7 @@ void oscEvent(OscMessage theOscMessage) {
 		// println("fw_version : " + fw_version);
 		// println("mac        : " + mac);
 	
-		//match ping ID to node ID if there is a match
+		//set ping IP to node IP if there is a match in IDs
 		for (Node n : nodes) {
 			if (id == n.inputID) {
 				n.nodeIP = ip;
