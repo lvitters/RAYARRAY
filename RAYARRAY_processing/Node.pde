@@ -13,7 +13,6 @@ class Node {
 
 	String nodeIP = "";
 	long lastSend = 0;
-	float sendFrequency = 10;		//in milliseconds
 
 	Node(PVector p, int x, int y, int i) {
 		position = p;
@@ -67,6 +66,12 @@ class Node {
 		}
 	}
 
+	//draw the ID under the node if there is one
+	void drawID() {
+		fill(0, 255, 0, 100);
+		text(inputID, position.x + 20, position.y + 20);
+	}
+
 	//check if mouse is hovering over the node's area
 	boolean mouseOver() {
 		//circular hitbox
@@ -99,7 +104,6 @@ class Node {
 			break;
 			//node has a laser
 			case 1: 
-			println("bla");
 				mirror = null;
 				if (laser == null) {
 					laser = new Laser(position);
@@ -118,7 +122,7 @@ class Node {
 
 	//send rotation to node every x milliseconds
 	void sendRotationToNode() {
-		if (nodeIP != "") {
+		if (millis() - lastSend > send_freq && nodeIP != "" && send_OSC) {
 			lastSend = millis();
 			OscMessage myMessage = new OscMessage("/rotate");
 			println(mirror.rotationSteps);
@@ -132,10 +136,10 @@ class Node {
 	// ------------------------ ControlP5 input field for ID ------------------------ //
 	void setInputID() {
 		inputField = cp5.addTextfield(inputName)
+		.setFont(idFont)
 		.setPosition(position.x - 25, position.y - 25)
 		.setSize(50, 50)
 		.setColor(color(255, 0, 0))
-		.setFont(font)
 		.setInputFilter(ControlP5.INTEGER)
 		.setVisible(false)		//init as not visible
 		;
@@ -147,8 +151,9 @@ class Node {
 		inputField.setFocus(active);
 	}
 
-	void submit() {
+	//get text input on submit
+	void submitID() {
 		inputID = int(inputField.getText());
-		println("inputID: " + inputID);
+		//println("inputID: " + inputID);
 	}
 }

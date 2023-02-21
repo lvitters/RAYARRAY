@@ -46,18 +46,19 @@ AsyncUDP udpOut;
 
 #include <AccelStepper.h>
 const int stepsPerRevolution = 2038;  // change this to fit the number of steps per revolution
+long rotation = 0;
 
-// ULN2003 Motor Driver Pins
+//ULN2003 Motor Driver Pins
 #define IN1 16
 #define IN2 5
 #define IN3 4
 #define IN4 0
 
-// 95A Hall sensor analog input
-#define Hall_Sensor_Pin A0
-
-// initialize the stepper library
+//initialize the stepper library
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
+
+//95A Hall sensor analog input
+#define Hall_Sensor_Pin A0
 
 void setup() {
   // ---------------------------------------------------------------------------------------- //
@@ -92,27 +93,29 @@ void setup() {
 void loop() {
   updateFirmware();
 
+  // // Change direction once the motor reaches target position
+	// if (stepper.distanceToGo() == 0) 
+	// 	stepper.moveTo(-stepper.currentPosition());
+
   //move the stepper motor (one step at a time)
-    stepper.run();
+  stepper.run();
 }
 
 void initStepperMotor() {
-  //set the speed and acceleration
   stepper.setMaxSpeed(1000);          //max 1950
-  stepper.setAcceleration(40000);     //max 50000
-  //set target position
-  stepper.moveTo(0);
+  stepper.setAcceleration(20000);     //max 50000
+  stepper.moveTo(2038);
 }
 
 //rotate from OSC messages
 void OSCrotate(OSCMessage &msg, int addrOffset) {
     Serial.print("/rotate ");
-    float rotation = msg.getFloat(0);
+    float inputRotation = msg.getFloat(0);
     Serial.print("\n");
 
     //rotation = rotation % stepsPerRevolution;
 
-    rotation = (long) rotation;
+    rotation = (long) inputRotation;
     
     Serial.print(rotation);
 

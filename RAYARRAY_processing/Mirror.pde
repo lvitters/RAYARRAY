@@ -34,7 +34,7 @@ class Mirror {
 	//update the mirrors values
 	void update() {
 		//for now rotate with random stuff
-		rT += random(0.002, .01);
+		rT += random(0.002, .005);
 		rotationDegrees = map(sin(rT), -1, 1, 0, 360);
 		rotationSteps = map(rotationDegrees, 0, 360, 0, 2038);
 		rotationRadians = radians(rotationDegrees);

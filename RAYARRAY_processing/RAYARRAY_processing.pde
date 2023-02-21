@@ -6,6 +6,9 @@ int remotePort = 8888;
 
 import controlP5.*;
 ControlP5 cp5;
+boolean show_IDs;
+boolean send_OSC;
+int send_freq = 100;		//in milliseconds
 
 ArrayList<Node> nodes;
 
@@ -13,6 +16,7 @@ int gridX = 10;
 int gridY = 5;
 
 float windowX, windowY;
+float guiHeight = 200;
 
 float absoluteConnectionLength = 45.0;	//in cm
 float absoluteMirrorWidth = 12.0;		//in cm
@@ -23,14 +27,16 @@ int recursionGuard = 0;
 
 boolean rotateLaser = false;
 
-PFont font;
+PFont guiFont, idFont;
 
 //scale window size according to grid measurements
 void settings() {
 	windowX = gridX * absoluteConnectionLength * scaleCentimetersToPixels;
-	windowY = gridY * absoluteConnectionLength * scaleCentimetersToPixels;
+	windowY = (gridY * absoluteConnectionLength * scaleCentimetersToPixels) + guiHeight;
 
 	size(int(windowX), int(windowY));
+
+	smooth();
 }
 
 void setup() {
@@ -38,16 +44,15 @@ void setup() {
 	rectMode(CENTER);
 	ellipseMode(CENTER);
 	surface.setResizable(true);
-	font = createFont("arial", 20);
+	idFont = createFont("arial", 20);
+	guiFont = createFont("arial", 12);
 
 	//init oscP5
   	oscP5 = new OscP5(this, 9999);
 
-	//init ControlP5
-	cp5 = new ControlP5(this);
+	setupGUI();
 
 	//init grid
-	nodes = new ArrayList<Node>();
 	constructGrid();
 }
 
@@ -59,19 +64,27 @@ void draw() {
 
 //draw each node
 void updateNodes() {
+	
+	//draw all nodes first so they are in the background
 	for (Node n : nodes) {
-		
-		//draw joints and highlights for all nodes first so they are in the background
+		//joints and highlights
 		n.drawJoints();
 		n.drawHighlight();
-		
-		//then draw the mirrors or lasers on top
+
+		//draw IDs if toggle is set to true
+		if (show_IDs) n.drawID();
+	}
+
+	//then draw the mirrors or lasers on top of everything else
+	for (Node n : nodes) {
 		n.update();
 	}
 }
 
 //depending on the configuration, construct a grid of nodes in the given pattern
 void constructGrid() {
+	//init arrayList
+	nodes = new ArrayList<Node>();
 
 	//calculate width of the entire grid
 	float gridWidth = gridX * offset;
@@ -79,7 +92,7 @@ void constructGrid() {
 
 	//find position where center of grid will be center of window
 	float xPos = (width - gridWidth)/2 + offset/2;
-	float yPos = (height - gridHeight)/2 + offset/2;
+	float yPos = ((height - gridHeight)/2 + offset/2) - guiHeight/2;
 
 	//add nodes depending on grid size
 	for (int x = 0; x < gridX; x++) {
@@ -91,11 +104,44 @@ void constructGrid() {
 	}
 }
 
+//init objects for GUI
+//all values changed by GUI have their words separated by underscores to remain legible in the GUI
+void setupGUI() {
+	//init controlP5
+	cp5 = new ControlP5(this);
+	
+	//send_OSC toggle
+	cp5.addToggle("send_OSC")
+		.setFont(guiFont)
+		.setPosition(offset/2, height - guiHeight)
+		.setSize(100, 20)
+		.setValue(false)
+		;
+	
+	//send_frequency slider
+	cp5.addSlider("send_freq")
+		.setFont(guiFont)
+		.setPosition(offset/2, height - guiHeight + offset/2)
+		.setSize(200, 20)
+		.setRange(1, 200)
+		.setValue(50)
+		;
+
+	//toggle if IDs are shown
+	cp5.addToggle("show_IDs")
+		.setFont(guiFont)
+		.setPosition(offset/2 + offset, height - guiHeight)
+		.setSize(100, 20)
+		.setValue(true)
+		;
+}
+
 //control lasers
 void mousePressed() {
 		//switch mode for the node that was clicked on with LEFT mouse button
 		if (mouseButton == LEFT) {
 			for (Node n : nodes) {
+				n.setInputfieldActive(false);
 				if (n.mouseOver()) {
 					if (n.mode < 2) n.mode++;
 					else n.mode = 0;
@@ -128,7 +174,7 @@ void keyPressed() {
 	if (keyCode == ENTER) {
 		for (Node n : nodes) {
 			if (n.inputField.isVisible()) {
-				n.submit();
+				n.submitID();
 				n.setInputfieldActive(false);
 			}
 		}
@@ -164,6 +210,8 @@ void oscEvent(OscMessage theOscMessage) {
 			if (id == n.inputID) {
 				n.nodeIP = ip;
 				println("inputID: " + n.inputID + " has IP: " + n.nodeIP);
+			} else {
+				n.nodeIP = "";
 			}
 		}
 
