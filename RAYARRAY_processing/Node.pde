@@ -149,6 +149,7 @@ class Node {
 	void setInputfieldActive(boolean active) {
 		inputField.setVisible(active);
 		inputField.setFocus(active);
+		inputField.setLock(active);
 	}
 
 	//get text input on submit

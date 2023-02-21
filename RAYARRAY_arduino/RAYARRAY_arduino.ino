@@ -103,7 +103,7 @@ void loop() {
 
 void initStepperMotor() {
   stepper.setMaxSpeed(1000);          //max 1950
-  stepper.setAcceleration(20000);     //max 50000
+  stepper.setAcceleration(200);     //max 50000
   stepper.moveTo(2038);
 }
 

@@ -10,6 +10,8 @@ boolean show_IDs;
 boolean send_OSC;
 int send_freq = 100;		//in milliseconds
 
+Toggle send_OSC_toggle;
+
 ArrayList<Node> nodes;
 
 int gridX = 10;
@@ -111,7 +113,7 @@ void setupGUI() {
 	cp5 = new ControlP5(this);
 	
 	//send_OSC toggle
-	cp5.addToggle("send_OSC")
+	send_OSC_toggle = cp5.addToggle("send_OSC")
 		.setFont(guiFont)
 		.setPosition(offset/2, height - guiHeight)
 		.setSize(100, 20)
