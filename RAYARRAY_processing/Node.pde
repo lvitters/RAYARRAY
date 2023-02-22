@@ -69,7 +69,8 @@ class Node {
 	//draw the ID under the node if there is one
 	void drawID() {
 		fill(0, 255, 0, 100);
-		text(inputID, position.x + 20, position.y + 20);
+		textSize(20);
+		text(inputID, position.x + 15, position.y + 25);
 	}
 
 	//check if mouse is hovering over the node's area

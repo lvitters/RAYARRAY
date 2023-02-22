@@ -95,9 +95,9 @@ void constructGrid() {
 	float xPos = (width - gridWidth)/2 + offset/2;
 	float yPos = ((height - gridHeight)/2 + offset/2) - guiHeight/2;
 
-	//add nodes depending on grid size
-	for (int x = 0; x < gridX; x++) {
-		for (int y = 0; y < gridY; y++) {
+	//add nodes depending on grid size, go through rows first for ID numberingi3i
+	for (int y = 0; y < gridY; y++) {
+		for (int x = 0; x < gridX; x++) {
 			Node n;
 			n = new Node(new PVector(xPos + (x * offset), yPos + (y * offset)), x, y, nodes.size() + 1);
 			nodes.add(n);
@@ -141,8 +141,9 @@ void setupGUI() {
 		.setFont(guiFont)
 		.setPosition(offset/2, height - guiHeight + offset)
 		.setSize(100, 20)
-		.setRange(.1, 10)
+		.setRange(.1, 5)
 		.setValue(1)
+		//.setDecimalPrecision(1) 
 		;
 }
 
