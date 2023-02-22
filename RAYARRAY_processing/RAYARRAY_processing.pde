@@ -6,6 +6,7 @@ int remotePort = 8888;
 
 import controlP5.*;
 ControlP5 cp5;
+CColor guiColor;
 boolean show_IDs;
 boolean send_OSC;
 int send_freq = 100;		//in milliseconds
@@ -110,10 +111,17 @@ void constructGrid() {
 void setupGUI() {
 	//init controlP5
 	cp5 = new ControlP5(this);
+
+	guiColor = new CColor(	color( 40, 184,  79),	//foreground
+							color(  0, 100,   0), 	//background
+							color( 60, 204,  99), 	//active
+							color( 255         ), 	//caption label
+							color(   0         ));	//value label
 	
 	//send_OSC toggle
 	cp5.addToggle("send_OSC")
 		.setFont(guiFont)
+		.setColor(guiColor)
 		.setPosition(offset/2, height - guiHeight)
 		.setSize(100, 20)
 		.setValue(false)
@@ -122,15 +130,17 @@ void setupGUI() {
 	//send_frequency slider
 	cp5.addSlider("send_freq")
 		.setFont(guiFont)
+		.setColor(guiColor)
 		.setPosition(offset/2, height - guiHeight + offset/2)
 		.setSize(200, 20)
-		.setRange(1, 200)
+		.setRange(1, 100)
 		.setValue(50)
 		;
 
 	//toggle if IDs are shown
 	cp5.addToggle("show_IDs")
 		.setFont(guiFont)
+		.setColor(guiColor)
 		.setPosition(offset/2 + offset, height - guiHeight)
 		.setSize(100, 20)
 		.setValue(true)
@@ -139,8 +149,9 @@ void setupGUI() {
 	//rotation speed
 	cp5.addSlider("rotation_speed")
 		.setFont(guiFont)
+		.setColor(guiColor)
 		.setPosition(offset/2, height - guiHeight + offset)
-		.setSize(100, 20)
+		.setSize(200, 20)
 		.setRange(.1, 5)
 		.setValue(1)
 		//.setDecimalPrecision(1) 
