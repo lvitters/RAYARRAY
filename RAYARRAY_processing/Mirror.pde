@@ -39,6 +39,8 @@ class Mirror {
 		rotationSteps = map(rotationDegrees, 0, 360, 0, 2038);
 		rotationRadians = radians(rotationDegrees);
 
+		rotationRadians *= rotation_speed;
+
 		setPointsAlongRadius(rotationRadians);
 	}
 

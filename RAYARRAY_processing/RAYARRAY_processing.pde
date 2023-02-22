@@ -10,8 +10,6 @@ boolean show_IDs;
 boolean send_OSC;
 int send_freq = 100;		//in milliseconds
 
-Toggle send_OSC_toggle;
-
 ArrayList<Node> nodes;
 
 int gridX = 10;
@@ -28,6 +26,7 @@ float offset = absoluteConnectionLength * scaleCentimetersToPixels;	//offset bet
 int recursionGuard = 0;
 
 boolean rotateLaser = false;
+float rotation_speed = 1;
 
 PFont guiFont, idFont;
 
@@ -113,7 +112,7 @@ void setupGUI() {
 	cp5 = new ControlP5(this);
 	
 	//send_OSC toggle
-	send_OSC_toggle = cp5.addToggle("send_OSC")
+	cp5.addToggle("send_OSC")
 		.setFont(guiFont)
 		.setPosition(offset/2, height - guiHeight)
 		.setSize(100, 20)
@@ -135,6 +134,15 @@ void setupGUI() {
 		.setPosition(offset/2 + offset, height - guiHeight)
 		.setSize(100, 20)
 		.setValue(true)
+		;
+
+	//rotation speed
+	cp5.addSlider("rotation_speed")
+		.setFont(guiFont)
+		.setPosition(offset/2, height - guiHeight + offset)
+		.setSize(100, 20)
+		.setRange(.1, 10)
+		.setValue(1)
 		;
 }
 
