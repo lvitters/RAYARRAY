@@ -30,7 +30,6 @@ class Node {
 		if (mirror != null) {
 			mirror.update();
 			mirror.draw();
-			sendRotationToNode();
 		}
 		if (laser != null) {
 			laser.drawOrigin();
@@ -50,6 +49,7 @@ class Node {
 		stroke(50);
 		pushMatrix();
 			translate(position.x, position.y);
+			//omit joints for nodes along the edges
 			if (column != 0)		line(-jointLength, 0, 0, 0);
 			if (row != 0)			line(0, -jointLength, 0, 0);
 			if (column != gridX-1)	line(0, 0, jointLength, 0);
@@ -68,7 +68,7 @@ class Node {
 
 	//draw the ID under the node if there is one
 	void drawID() {
-		fill(0, 255, 0, 100);
+		fill(color( 60, 204,  99));
 		textSize(20);
 		text(inputID, position.x + 15, position.y + 25);
 	}

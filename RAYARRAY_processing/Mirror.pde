@@ -19,6 +19,9 @@ class Mirror {
 
 	//set start and end point according to rotation
 	void setPointsAlongRadius(float r) {
+		
+		r = -r/2; //TODO: understand why
+		
 		//apply rotation to beginning and end point of mirror here instead of using rotate() so that the cast() method knows all the absolute points
 		start.set(mirrorRadius * sin(r), mirrorRadius * cos(r));
 		end.set(-mirrorRadius * sin(r), -mirrorRadius * cos(r));
@@ -33,14 +36,30 @@ class Mirror {
 
 	//update the mirrors values
 	void update() {
-		//for now rotate with random stuff
-		rT += random(0.002, .005);
-		rotationDegrees = map(sin(rT), -1, 1, 0, 360);
+		//increment "time"
+		//rT += random(.002, .005);
+		rT += .003;
+
+		//rotate according to rotation_mode (set by DropdownList)
+		switch(rotation_mode) {
+			//sine rotation
+			case 0:
+				rotationDegrees = map(sin(rT), -1, 1, 0, 360);
+				break;
+			//noise rotation
+			case 1:
+				rotationDegrees = map(noise(rT), -1, 1, 0, 360);
+				break;
+		}
+
+		//apply rotation speed
+		rotationDegrees *= rotation_speed;
+
+		//translate to stepper motor steps
 		rotationSteps = map(rotationDegrees, 0, 360, 0, 2038);
+
+		//translate to radians for display
 		rotationRadians = radians(rotationDegrees);
-
-		rotationRadians *= rotation_speed;
-
 		setPointsAlongRadius(rotationRadians);
 	}
 

@@ -6,6 +6,7 @@ int remotePort = 8888;
 
 import controlP5.*;
 ControlP5 cp5;
+DropdownList modesList;
 CColor guiColor;
 boolean show_IDs;
 boolean send_OSC;
@@ -28,16 +29,18 @@ int recursionGuard = 0;
 
 boolean rotateLaser = false;
 float rotation_speed = 1;
+int rotation_mode = 0;
 
 PFont guiFont, idFont;
 
-//scale window size according to grid measurements
 void settings() {
+	//scale window size according to grid measurements
 	windowX = gridX * absoluteConnectionLength * scaleCentimetersToPixels;
 	windowY = (gridY * absoluteConnectionLength * scaleCentimetersToPixels) + guiHeight;
 
 	size(int(windowX), int(windowY));
 
+	//anti aliasing
 	smooth();
 }
 
@@ -107,7 +110,7 @@ void constructGrid() {
 }
 
 //init objects for GUI
-//all values changed by GUI have their words separated by underscores to remain legible in the GUI
+//GUI variables and labels have their words separated by underscores to remain legible in the GUI and to differentiate in the code between internal and GUI namings
 void setupGUI() {
 	//init controlP5
 	cp5 = new ControlP5(this);
@@ -131,7 +134,7 @@ void setupGUI() {
 	cp5.addSlider("send_freq")
 		.setFont(guiFont)
 		.setColor(guiColor)
-		.setPosition(offset/2, height - guiHeight + offset/2)
+		.setPosition(offset/2, height - guiHeight + offset * 2/3)
 		.setSize(200, 20)
 		.setRange(1, 100)
 		.setValue(50)
@@ -152,10 +155,23 @@ void setupGUI() {
 		.setColor(guiColor)
 		.setPosition(offset/2, height - guiHeight + offset)
 		.setSize(200, 20)
-		.setRange(.1, 5)
+		.setRange(.1, 10)
 		.setValue(1)
 		//.setDecimalPrecision(1) 
 		;
+
+	//rotation modes
+	modesList = cp5.addDropdownList("rotation_mode")
+		.setPosition(offset/2 + offset * 2, height - guiHeight)
+		.setFont(guiFont)
+		.setColor(guiColor)
+		.setBarHeight(20)
+		.setItemHeight(20)
+		.setWidth(150)
+		.addItem("sine_rotation", 0)
+		.addItem("noise_rotation", 1)
+		;
+
 }
 
 //control lasers
@@ -211,6 +227,18 @@ void keyPressed() {
 		oscP5.send(myMessage, myRemoteLocation);
 	}
 	*/
+}
+
+//controlP5 event handler
+void controlEvent(ControlEvent theEvent) {
+	//check if event comes from a controller - see setupGUI()	
+	if (theEvent.isController()) {
+    	//println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
+
+		//if it comes from the "rotation_mode" controller apply that to rotation_mode variable
+		if (theEvent.getController().toString() == "rotation_mode")  rotation_mode = int(theEvent.getController().getValue());
+		println(rotation_mode);
+  	}
 }
 
 //incoming pings from nodes (OSC messages)
