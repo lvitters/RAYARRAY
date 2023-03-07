@@ -99,7 +99,7 @@ void constructGrid() {
 	float xPos = (width - gridWidth)/2 + offset/2;
 	float yPos = ((height - gridHeight)/2 + offset/2) - guiHeight/2;
 
-	//add nodes depending on grid size, go through rows first for ID numberingi3i
+	//add nodes depending on grid size, go through rows first for ID numbering
 	for (int y = 0; y < gridY; y++) {
 		for (int x = 0; x < gridX; x++) {
 			Node n;
@@ -109,7 +109,7 @@ void constructGrid() {
 	}
 }
 
-//init objects for GUI
+//init controllers for GUI
 //GUI variables and labels have their words separated by underscores to remain legible in the GUI and to differentiate in the code between internal and GUI namings
 void setupGUI() {
 	//init controlP5
@@ -237,7 +237,7 @@ void controlEvent(ControlEvent theEvent) {
 
 		//if it comes from the "rotation_mode" controller apply that to rotation_mode variable
 		if (theEvent.getController().toString() == "rotation_mode")  rotation_mode = int(theEvent.getController().getValue());
-		println(rotation_mode);
+		//println("rotation_mode: " + rotation_mode);
   	}
 }
 
