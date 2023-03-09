@@ -60,6 +60,9 @@ AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 //95A Hall sensor analog input
 #define Hall_Sensor_Pin A0
 
+//LED pin
+#define LED_PIN 2
+
 void setup() {
   // ---------------------------------------------------------------------------------------- //
   strncpy(URL_FW_VERSION, DEFAULT_URL_FW_VERSION, strlen(DEFAULT_URL_FW_VERSION));
@@ -88,17 +91,20 @@ void setup() {
 
   //init hall sensor
   pinMode(Hall_Sensor_Pin, INPUT);
+
+  //init LED
+  //pinMode(LED_PIN, OUTPUT);
 }
 
 void loop() {
   updateFirmware();
 
-  // // Change direction once the motor reaches target position
-	// if (stepper.distanceToGo() == 0) 
-	// 	stepper.moveTo(-stepper.currentPosition());
-
   //move the stepper motor (one step at a time)
   stepper.run();
+
+  readHallSensor();
+
+  //testLED();
 }
 
 void initStepperMotor() {
@@ -130,6 +136,15 @@ void readHallSensor() {
     voltage = analogRead(Hall_Sensor_Pin);
     //Serial.println(voltage);
   }
+}
+
+void testLED() {
+  // LED einschalten
+  digitalWrite(LED_PIN, HIGH);
+  delay(1000);
+  // LED ausschalten
+  digitalWrite(LED_PIN, LOW);
+  delay(1000);
 }
 
 void updateFirmware() {

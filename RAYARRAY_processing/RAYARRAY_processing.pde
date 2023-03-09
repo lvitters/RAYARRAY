@@ -70,7 +70,7 @@ void draw() {
 //draw each node
 void updateNodes() {
 	
-	//draw all nodes first so they are in the background
+	//draw all graphical elements first so they are in the background
 	for (Node n : nodes) {
 		//joints and highlights
 		n.drawJoints();
@@ -80,9 +80,10 @@ void updateNodes() {
 		if (show_IDs) n.drawID();
 	}
 
-	//then draw the mirrors or lasers on top of everything else
+	//then draw the mirrors or lasers on top of everything else and update them
 	for (Node n : nodes) {
 		n.update();
+		n.sendRotationToNode();
 	}
 }
 
