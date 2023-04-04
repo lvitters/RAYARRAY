@@ -22,7 +22,7 @@ class Node {
 		row = y;
 
 		inputName = str(i) + " ID: ";
-		setInputID();
+		//setInputID();
 	}
 
 	//update and draw mirror or laser
@@ -39,7 +39,7 @@ class Node {
 
 		//close input field when mouse is not over field
 		if (!mouseOver()) {
-			setInputfieldActive(false);
+			//setInputfieldActive(false);
 		}
 	}
 
@@ -123,7 +123,7 @@ class Node {
 
 	//send rotation to node every x milliseconds
 	void sendRotationToNode() {
-		if (millis() - lastSend > send_freq && nodeIP != "" && send_OSC) {
+		if (millis() - lastSend > sendFreq && nodeIP != "" && sendOSC) {
 			lastSend = millis();
 			OscMessage myMessage = new OscMessage("/rotate");
 			println(mirror.rotationSteps);
@@ -136,7 +136,7 @@ class Node {
 
 	// ------------------------ ControlP5 input field for ID ------------------------ //
 	void setInputID() {
-		inputField = cp5.addTextfield(inputName)
+		inputField = cf.cp5.addTextfield(inputName)
 		.setFont(idFont)
 		.setPosition(position.x - 25, position.y - 25)
 		.setSize(50, 50)

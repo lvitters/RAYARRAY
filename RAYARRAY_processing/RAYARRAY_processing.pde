@@ -5,12 +5,16 @@ OscP5 oscP5;
 int remotePort = 8888;
 
 import controlP5.*;
-ControlP5 cp5;
-DropdownList modesList;
+ControlFrame cf;
+
+//GUI appearance
+PFont guiFont, idFont;
 CColor guiColor;
-boolean show_IDs;
-boolean send_OSC;
-int send_freq = 100;		//in milliseconds
+
+DropdownList modesList;
+boolean showIDs;
+boolean sendOSC;
+int sendFreq = 100;		//in milliseconds
 
 ArrayList<Node> nodes;
 
@@ -28,10 +32,8 @@ float offset = absoluteConnectionLength * scaleCentimetersToPixels;	//offset bet
 int recursionGuard = 0;
 
 boolean rotateLaser = false;
-float rotation_speed = 1;
-int rotation_mode = 0;
-
-PFont guiFont, idFont;
+float rotationSpeed = 1;
+int rotationMode = 0;
 
 void settings() {
 	//scale window size according to grid measurements
@@ -55,10 +57,10 @@ void setup() {
 	//init oscP5
   	oscP5 = new OscP5(this, 9999);
 
-	setupGUI();
-
 	//init grid
 	constructGrid();
+
+	setupGUI();
 }
 
 void draw() {
@@ -77,7 +79,7 @@ void updateNodes() {
 		n.drawHighlight();
 
 		//draw IDs if toggle is set to true
-		if (show_IDs) n.drawID();
+		if (showIDs) n.drawID();
 	}
 
 	//then draw the mirrors or lasers on top of everything else and update them
@@ -110,85 +112,11 @@ void constructGrid() {
 	}
 }
 
-//init controllers for GUI
-//GUI variables and labels have their words separated by underscores to remain legible in the GUI and to differentiate in the code between internal and GUI namings
-void setupGUI() {
-	//init controlP5
-	cp5 = new ControlP5(this);
-
-	guiColor = new CColor(	color( 40, 184,  79),	//foreground
-							color(  0, 100,   0), 	//background
-							color( 60, 204,  99), 	//active
-							color( 255         ), 	//caption label
-							color(   0         ));	//value label
-	
-	//send_OSC toggle
-	cp5.addToggle("send_OSC")
-		.setFont(guiFont)
-		.setColor(guiColor)
-		.setPosition(offset/2 + offset * 1.5, height - guiHeight)
-		.setSize(100, 20)
-		.setValue(false)
-		;
-	
-	//send_frequency slider
-	cp5.addSlider("send_freq")
-		.setFont(guiFont)
-		.setColor(guiColor)
-		.setPosition(offset/2, height - guiHeight + offset * 2/3)
-		.setSize(200, 20)
-		.setRange(1, 100)
-		.setValue(50)
-		;
-
-	//toggle if IDs are shown
-	cp5.addToggle("show_IDs")
-		.setFont(guiFont)
-		.setColor(guiColor)
-		.setPosition(offset/2 + offset * 2.5, height - guiHeight)
-		.setSize(100, 20)
-		.setValue(true)
-		;
-
-	//rotation speed
-	cp5.addSlider("rotation_speed")
-		.setFont(guiFont)
-		.setColor(guiColor)
-		.setPosition(offset/2, height - guiHeight + offset)
-		.setSize(200, 20)
-		.setRange(.1, 10)
-		.setValue(1)
-		//.setDecimalPrecision(1) 
-		;
-
-	//rotation modes
-	modesList = cp5.addDropdownList("rotation_mode")
-		.setPosition(offset/2, height - guiHeight)
-		.setFont(guiFont)
-		.setColor(guiColor)
-		.setBarHeight(20)
-		.setItemHeight(20)
-		.setWidth(150)
-		.addItem("sine_rotation", 0)
-		.addItem("noise_rotation", 1)
-		;
-
-	//save config
-	cp5.addButton("save_config")
-		.setPosition(width - offset - offset/2, height - guiHeight + offset/3)
-		.setSize(100, 20)
-		.setFont(guiFont)
-		.setColor(guiColor)
-		;
-
-	//load config
-	cp5.addButton("load_config")
-		.setPosition(width - offset - offset/2, height - guiHeight)
-		.setSize(100, 20)
-		.setFont(guiFont)
-		.setColor(guiColor)
-		;
-
+//init ControlFrame for GUI, set GUI elements in "ControlFrame.pde"
+void setupGUI() {	
+	//init controlFrame
+	cf = new ControlFrame(this, 400, 800, "Controls");
+	surface.setLocation(420, 10);
 }
 
 //control lasers
@@ -252,9 +180,9 @@ void controlEvent(ControlEvent theEvent) {
 	if (theEvent.isController()) {
     	//println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
 
-		//if it comes from the "rotation_mode" controller apply that to rotation_mode variable
-		if (theEvent.getController().toString() == "rotation_mode")  rotation_mode = int(theEvent.getController().getValue());
-		//println("rotation_mode: " + rotation_mode);
+		//if it comes from the "rotationMode" controller apply that to rotationMode variable
+		if (theEvent.getController().toString() == "rotationMode")  rotationMode = int(theEvent.getController().getValue());
+		//println("rotationMode: " + rotationMode);
   	}
 }
 

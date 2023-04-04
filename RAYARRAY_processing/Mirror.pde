@@ -41,7 +41,7 @@ class Mirror {
 		rT += .003;
 
 		//rotate according to rotation_mode (set by DropdownList)
-		switch(rotation_mode) {
+		switch(rotationMode) {
 			//sine rotation
 			case 0:
 				rotationDegrees = map(sin(rT), -1, 1, 0, 360);
@@ -53,7 +53,7 @@ class Mirror {
 		}
 
 		//apply rotation speed
-		rotationDegrees *= rotation_speed;
+		rotationDegrees *= rotationSpeed;
 
 		//translate to stepper motor steps
 		rotationSteps = map(rotationDegrees, 0, 360, 0, 2038);
