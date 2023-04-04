@@ -20,8 +20,8 @@ int sendFreq = 100;		//in milliseconds
 
 ArrayList<Node> nodes;
 
-int gridX = 2;
-int gridY = 2;
+int gridX = 3;
+int gridY = 3;
 
 float windowX, windowY;
 
@@ -170,6 +170,11 @@ void controlEvent(ControlEvent theEvent) {
 		if (theEvent.getController().toString() == "saveConfig") {
 			saveConfig();
 		}
+
+		//if it comes from the "loadConfig" controller then saveConfig()
+		if (theEvent.getController().toString() == "loadConfig") {
+			loadConfig();
+		}
   	}
 }
 
@@ -178,20 +183,44 @@ void saveConfig() {
 	JSONArray config = new JSONArray();
 
 	for (Node n : nodes) {
-		if (n.inputID != 0) {
-			//get location in grid and ID
-			JSONObject configNode = new JSONObject();
-			configNode.setInt("x", n.column);
-			configNode.setInt("y", n.row);
-			configNode.setInt("ID", n.inputID);
+		//get location in grid and ID
+		JSONObject configNode = new JSONObject();
+		configNode.setInt("x", n.column);
+		configNode.setInt("y", n.row);
+		configNode.setInt("ID", n.inputID);
 
-			//set to config JSONArray
-			config.setJSONObject(n.row * gridY + n.column, configNode);
-		}
+		//set to config JSONArray
+		config.setJSONObject(n.row * gridY + n.column, configNode);
 	}
 
 	//save to file with grid dimensions in name
-	saveJSONArray(config, "configs/" + gridX + "x" + gridY + ".json");
+	saveJSONArray(config, "configs/" + gridX + "x" + gridY + ".json");		//TODO: why are there nulls in between?
+}
+
+//load config from file with current grid size and write to grid
+void loadConfig() {
+	JSONArray config = new JSONArray();
+
+	//load from file with same grid dimensions as the sketch currently has
+	config = loadJSONArray("configs/" + gridX + "x" + gridY + ".json");
+
+	//only read from file if it exists
+	if (config != null) {
+		//set ID to corresponding nodes
+		for (int i = 0; i < config.size(); i++) {
+			
+			//get JSON object
+			JSONObject configNode = config.getJSONObject(i);
+
+			//get location in config and ID
+			int x = configNode.getInt("x");
+			int y = configNode.getInt("y");
+			int ID = configNode.getInt("ID");
+
+			//write to corresponding node
+			nodes.get(y * gridY + x).inputID = ID;
+		}
+	}
 }
 
 //control lasers
