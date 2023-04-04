@@ -38,7 +38,7 @@ class ControlFrame extends PApplet {
 			.plugTo(parent, "sendOSC")
 			.setFont(guiFont)
 			.setColor(guiColor)
-			.setPosition(offset/4, offset * 1/3)
+			.setPosition(guiOffset/4, guiOffset * 1/3)
 			.setSize(100, 20)
 			.setValue(false)
 			;
@@ -48,7 +48,7 @@ class ControlFrame extends PApplet {
 			.plugTo(parent, "showIDs")
 			.setFont(guiFont)
 			.setColor(guiColor)
-			.setPosition(offset/4, offset * 2/3)
+			.setPosition(guiOffset/4, guiOffset * 2/3)
 			.setSize(100, 20)
 			.setValue(true)
 			;
@@ -58,7 +58,7 @@ class ControlFrame extends PApplet {
 			.plugTo(parent, "sendFreq")
 			.setFont(guiFont)
 			.setColor(guiColor)
-			.setPosition(offset/4, offset)
+			.setPosition(guiOffset/4, guiOffset)
 			.setSize(200, 20)
 			.setRange(1, 100)
 			.setValue(50)
@@ -69,7 +69,7 @@ class ControlFrame extends PApplet {
 			.plugTo(parent, "rotationSpeed")
 			.setFont(guiFont)
 			.setColor(guiColor)
-			.setPosition(offset/4, offset * 4/3)
+			.setPosition(guiOffset/4, guiOffset * 4/3)
 			.setSize(200, 20)
 			.setRange(.1, 10)
 			.setValue(1)
@@ -79,7 +79,7 @@ class ControlFrame extends PApplet {
 		//rotation modes
 		modesList = cp5GUI.addDropdownList("rotation mode")
 			.plugTo(parent, "rotationMode")
-			.setPosition(offset * 1.5, offset * 1/3)
+			.setPosition(guiOffset * 1.5, guiOffset * 1/3)
 			.setFont(guiFont)
 			.setColor(guiColor)
 			.setBarHeight(20)
@@ -92,7 +92,7 @@ class ControlFrame extends PApplet {
 		//save config
 		cp5GUI.addButton("save config")
 			.plugTo(parent, "saveConfig")
-			.setPosition(offset/4, offset * 5/3)
+			.setPosition(guiOffset/4, guiOffset * 5/3)
 			.setSize(100, 20)
 			.setFont(guiFont)
 			.setColor(guiColor)
@@ -101,7 +101,7 @@ class ControlFrame extends PApplet {
 		//load config
 		cp5GUI.addButton("load config")
 			.plugTo(parent, "loadConfig")
-			.setPosition(offset/4, (offset * 5/3) +20)
+			.setPosition(guiOffset/4, (guiOffset * 5/3) +20)
 			.setSize(100, 20)
 			.setFont(guiFont)
 			.setColor(guiColor)

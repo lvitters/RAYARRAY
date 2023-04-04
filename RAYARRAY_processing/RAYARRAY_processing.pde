@@ -11,6 +11,7 @@ ControlFrame cf;
 //GUI appearance
 PFont guiFont, idFont;
 CColor guiColor;
+int guiOffset = 150;
 
 DropdownList modesList;
 boolean showIDs;
@@ -99,7 +100,7 @@ void constructGrid() {
 
 	//find position where center of grid will be center of window
 	float xPos = (width - gridWidth)/2 + offset/2;
-	float yPos = (height - gridHeight)/2 + offset/22;
+	float yPos = (height - gridHeight)/2 + offset/2;
 
 	//add nodes depending on grid size, go through rows first for ID numbering
 	for (int y = 0; y < gridY; y++) {
@@ -118,7 +119,7 @@ void setupGUI() {
 	cp5InputFields = new ControlP5(this);
 
 	//init controlFrame
-	cf = new ControlFrame(this, 400, 800, "GUI");
+	cf = new ControlFrame(this, 400, 400, "GUI");
 	surface.setLocation(420, 10);
 }
 
