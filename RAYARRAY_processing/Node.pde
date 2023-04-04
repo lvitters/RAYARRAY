@@ -130,7 +130,7 @@ class Node {
 			myMessage.add(mirror.rotationSteps);
 			NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 			oscP5.send(myMessage, remoteLocation);
-			println("sent to: " + nodeIP + " " + remotePort);
+			println("sent to: " + inputID + " @" + nodeIP);
 		}
 	}
 

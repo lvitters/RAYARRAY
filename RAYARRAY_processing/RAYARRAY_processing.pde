@@ -126,7 +126,7 @@ void setupGUI() {
 	cp5.addToggle("send_OSC")
 		.setFont(guiFont)
 		.setColor(guiColor)
-		.setPosition(offset/2, height - guiHeight)
+		.setPosition(offset/2 + offset * 1.5, height - guiHeight)
 		.setSize(100, 20)
 		.setValue(false)
 		;
@@ -145,7 +145,7 @@ void setupGUI() {
 	cp5.addToggle("show_IDs")
 		.setFont(guiFont)
 		.setColor(guiColor)
-		.setPosition(offset/2 + offset, height - guiHeight)
+		.setPosition(offset/2 + offset * 2.5, height - guiHeight)
 		.setSize(100, 20)
 		.setValue(true)
 		;
@@ -163,7 +163,7 @@ void setupGUI() {
 
 	//rotation modes
 	modesList = cp5.addDropdownList("rotation_mode")
-		.setPosition(offset/2 + offset * 2, height - guiHeight)
+		.setPosition(offset/2, height - guiHeight)
 		.setFont(guiFont)
 		.setColor(guiColor)
 		.setBarHeight(20)
@@ -173,10 +173,26 @@ void setupGUI() {
 		.addItem("noise_rotation", 1)
 		;
 
+	//save config
+	cp5.addButton("save_config")
+		.setPosition(width - offset - offset/2, height - guiHeight + offset/3)
+		.setSize(100, 20)
+		.setFont(guiFont)
+		.setColor(guiColor)
+		;
+
+	//load config
+	cp5.addButton("load_config")
+		.setPosition(width - offset - offset/2, height - guiHeight)
+		.setSize(100, 20)
+		.setFont(guiFont)
+		.setColor(guiColor)
+		;
+
 }
 
 //control lasers
-void mousePressed() {
+void mousePressed() {		
 		//switch mode for the node that was clicked on with LEFT mouse button
 		if (mouseButton == LEFT) {
 			for (Node n : nodes) {

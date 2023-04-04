@@ -19,7 +19,7 @@ int NODE_ID = -1; // the final MY_NODE_ID is not set here, it will be stored and
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.02; // important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.01; // important for the firmware ota flashing process / increment for next upload
 
 // server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 // change server IP if needed
