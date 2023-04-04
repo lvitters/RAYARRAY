@@ -20,8 +20,8 @@ int sendFreq = 100;		//in milliseconds
 
 ArrayList<Node> nodes;
 
-int gridX = 10;
-int gridY = 5;
+int gridX = 2;
+int gridY = 2;
 
 float windowX, windowY;
 
@@ -112,6 +112,37 @@ void constructGrid() {
 	}
 }
 
+//incoming pings from nodes (OSC messages)
+void oscEvent(OscMessage theOscMessage) {
+	if (theOscMessage.addrPattern().equals("/ping") == true) {
+		int id = theOscMessage.get(1).intValue();
+		String ip = theOscMessage.get(2).stringValue();
+		String mac = theOscMessage.get(3).stringValue();
+		float fw_version = theOscMessage.get(4).floatValue();
+		
+		println("got a ping from:");
+		println("ID: " + id + " with IP: " + ip);
+		// println("id         : " + id);
+		// println("fw_version : " + fw_version);
+		// println("mac        : " + mac);
+	
+		//set ping IP to node IP if there is a match in IDs
+		for (Node n : nodes) {
+			if (id == n.inputID) {
+				n.nodeIP = ip;
+				println("inputID: " + n.inputID + " has IP: " + n.nodeIP);
+			} else {
+				n.nodeIP = "";
+			}
+		}
+
+	} else {
+		print("### received an osc message.");
+		print(" addrpattern: "+theOscMessage.addrPattern());
+		println(" typetag: "+theOscMessage.typetag());
+	}
+}
+
 //init CP5 instance for ID inputfields and ControlFrame for GUI window, set GUI elements in "ControlFrame.pde"
 void setupGUI() {
 
@@ -121,6 +152,46 @@ void setupGUI() {
 	//init controlFrame
 	cf = new ControlFrame(this, 400, 400, "GUI");
 	surface.setLocation(420, 10);
+}
+
+//controlP5 event handler
+void controlEvent(ControlEvent theEvent) {
+	//check if event comes from a controller - see setupGUI()	
+	if (theEvent.isController()) {
+    	//println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
+
+		//if it comes from the "rotationMode" controller apply that to rotationMode variable
+		if (theEvent.getController().toString() == "rotationMode") {
+			rotationMode = int(theEvent.getController().getValue());
+			//println("rotationMode: " + rotationMode);
+		}
+
+		//if it comes from the "saveConfig" controller then saveConfig()
+		if (theEvent.getController().toString() == "saveConfig") {
+			saveConfig();
+		}
+  	}
+}
+
+//save current config to JSON file
+void saveConfig() {
+	JSONArray config = new JSONArray();
+
+	for (Node n : nodes) {
+		if (n.inputID != 0) {
+			//get location in grid and ID
+			JSONObject configNode = new JSONObject();
+			configNode.setInt("x", n.column);
+			configNode.setInt("y", n.row);
+			configNode.setInt("ID", n.inputID);
+
+			//set to config JSONArray
+			config.setJSONObject(n.row * gridY + n.column, configNode);
+		}
+	}
+
+	//save to file with grid dimensions in name
+	saveJSONArray(config, "configs/" + gridX + "x" + gridY + ".json");
 }
 
 //control lasers
@@ -176,47 +247,4 @@ void keyPressed() {
 		oscP5.send(myMessage, myRemoteLocation);
 	}
 	*/
-}
-
-//controlP5 event handler
-void controlEvent(ControlEvent theEvent) {
-	//check if event comes from a controller - see setupGUI()	
-	if (theEvent.isController()) {
-    	//println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
-
-		//if it comes from the "rotationMode" controller apply that to rotationMode variable
-		if (theEvent.getController().toString() == "rotationMode")  rotationMode = int(theEvent.getController().getValue());
-		//println("rotationMode: " + rotationMode);
-  	}
-}
-
-//incoming pings from nodes (OSC messages)
-void oscEvent(OscMessage theOscMessage) {
-	if (theOscMessage.addrPattern().equals("/ping") == true) {
-		int id = theOscMessage.get(1).intValue();
-		String ip = theOscMessage.get(2).stringValue();
-		String mac = theOscMessage.get(3).stringValue();
-		float fw_version = theOscMessage.get(4).floatValue();
-		
-		println("got a ping from:");
-		println("ID: " + id + " with IP: " + ip);
-		// println("id         : " + id);
-		// println("fw_version : " + fw_version);
-		// println("mac        : " + mac);
-	
-		//set ping IP to node IP if there is a match in IDs
-		for (Node n : nodes) {
-			if (id == n.inputID) {
-				n.nodeIP = ip;
-				println("inputID: " + n.inputID + " has IP: " + n.nodeIP);
-			} else {
-				n.nodeIP = "";
-			}
-		}
-
-	} else {
-		print("### received an osc message.");
-		print(" addrpattern: "+theOscMessage.addrPattern());
-		println(" typetag: "+theOscMessage.typetag());
-	}
 }
