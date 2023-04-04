@@ -5,6 +5,7 @@ OscP5 oscP5;
 int remotePort = 8888;
 
 import controlP5.*;
+ControlP5 cp2;
 ControlFrame cf;
 
 //GUI appearance
@@ -57,10 +58,9 @@ void setup() {
 	//init oscP5
   	oscP5 = new OscP5(this, 9999);
 
-	//init grid
-	constructGrid();
-
 	setupGUI();
+
+	constructGrid();
 }
 
 void draw() {
@@ -112,10 +112,14 @@ void constructGrid() {
 	}
 }
 
-//init ControlFrame for GUI, set GUI elements in "ControlFrame.pde"
-void setupGUI() {	
+//init CP5 instance for ID inputfields and ControlFrame for GUI window, set GUI elements in "ControlFrame.pde"
+void setupGUI() {
+
+	//init cp5
+	cp2 = new ControlP5(this);
+
 	//init controlFrame
-	cf = new ControlFrame(this, 400, 800, "Controls");
+	cf = new ControlFrame(this, 400, 800, "GUI");
 	surface.setLocation(420, 10);
 }
 

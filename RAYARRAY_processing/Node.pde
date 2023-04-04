@@ -22,7 +22,7 @@ class Node {
 		row = y;
 
 		inputName = str(i) + " ID: ";
-		//setInputID();
+		setInputID();
 	}
 
 	//update and draw mirror or laser
@@ -136,7 +136,7 @@ class Node {
 
 	// ------------------------ ControlP5 input field for ID ------------------------ //
 	void setInputID() {
-		inputField = cf.cp5.addTextfield(inputName)
+		inputField = cp2.addTextfield(inputName)
 		.setFont(idFont)
 		.setPosition(position.x - 25, position.y - 25)
 		.setSize(50, 50)
