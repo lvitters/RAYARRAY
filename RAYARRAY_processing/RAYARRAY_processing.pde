@@ -5,7 +5,7 @@ OscP5 oscP5;
 int remotePort = 8888;
 
 import controlP5.*;
-ControlP5 cp2;
+ControlP5 cp5InputFields;
 ControlFrame cf;
 
 //GUI appearance
@@ -23,7 +23,6 @@ int gridX = 10;
 int gridY = 5;
 
 float windowX, windowY;
-float guiHeight = 200;
 
 float absoluteConnectionLength = 45.0;	//in cm
 float absoluteMirrorWidth = 12.0;		//in cm
@@ -39,7 +38,7 @@ int rotationMode = 0;
 void settings() {
 	//scale window size according to grid measurements
 	windowX = gridX * absoluteConnectionLength * scaleCentimetersToPixels;
-	windowY = (gridY * absoluteConnectionLength * scaleCentimetersToPixels) + guiHeight;
+	windowY = gridY * absoluteConnectionLength * scaleCentimetersToPixels;
 
 	size(int(windowX), int(windowY));
 
@@ -100,7 +99,7 @@ void constructGrid() {
 
 	//find position where center of grid will be center of window
 	float xPos = (width - gridWidth)/2 + offset/2;
-	float yPos = ((height - gridHeight)/2 + offset/2) - guiHeight/2;
+	float yPos = (height - gridHeight)/2 + offset/22;
 
 	//add nodes depending on grid size, go through rows first for ID numbering
 	for (int y = 0; y < gridY; y++) {
@@ -116,7 +115,7 @@ void constructGrid() {
 void setupGUI() {
 
 	//init cp5
-	cp2 = new ControlP5(this);
+	cp5InputFields = new ControlP5(this);
 
 	//init controlFrame
 	cf = new ControlFrame(this, 400, 800, "GUI");

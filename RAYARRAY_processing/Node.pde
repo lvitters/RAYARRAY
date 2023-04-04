@@ -136,7 +136,7 @@ class Node {
 
 	// ------------------------ ControlP5 input field for ID ------------------------ //
 	void setInputID() {
-		inputField = cp2.addTextfield(inputName)
+		inputField = cp5InputFields.addTextfield(inputName)
 		.setFont(idFont)
 		.setPosition(position.x - 25, position.y - 25)
 		.setSize(50, 50)
