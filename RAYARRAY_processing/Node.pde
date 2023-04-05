@@ -5,12 +5,13 @@ class Node {
 	int mode;
 	float jointLength = offset / 2;
 	int column, row;
+	int index;
 
-	int inputID;
 	String inputValue = "";
 	String inputName;
 	Textfield inputField;
 
+	int nodeID;
 	String nodeIP = "";
 	long lastSend = 0;
 
@@ -20,9 +21,10 @@ class Node {
 		mode = 0;
 		column = x;
 		row = y;
+		index = i;
 
-		inputName = str(i) + " ID: ";
-		setInputID();
+		inputName = "inputField" + str(i);
+		setNodeID();
 	}
 
 	//update and draw mirror or laser
@@ -70,7 +72,7 @@ class Node {
 	void drawID() {
 		fill(color( 60, 204,  99));
 		textSize(20);
-		text(inputID, position.x + 15, position.y + 25);
+		text(nodeID, position.x + 15, position.y + 25);
 	}
 
 	//check if mouse is hovering over the node's area
@@ -130,14 +132,15 @@ class Node {
 			myMessage.add(mirror.rotationSteps);
 			NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 			oscP5.send(myMessage, remoteLocation);
-			println("sent to: " + inputID + " @" + nodeIP);
+			println("sent to: " + nodeID + " @" + nodeIP);
 		}
 	}
 
 	// ------------------------ ControlP5 input field for ID ------------------------ //
-	void setInputID() {
+	void setNodeID() {
 		inputField = cp5InputFields.addTextfield(inputName)
 		.setFont(idFont)
+		.setCaptionLabel("")
 		.setPosition(position.x - 25, position.y - 25)
 		.setSize(50, 50)
 		.setColor(color(255, 0, 0))
@@ -155,7 +158,7 @@ class Node {
 
 	//get text input on submit
 	void submitID() {
-		inputID = int(inputField.getText());
-		//println("inputID: " + inputID);
+		nodeID = int(inputField.getText());
+		//println("nodeID: " + nodeID);
 	}
 }

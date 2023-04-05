@@ -20,8 +20,8 @@ int sendFreq = 100;		//in milliseconds
 
 ArrayList<Node> nodes;
 
-int gridX = 3;
-int gridY = 3;
+int gridX = 2;
+int gridY = 2;
 
 float windowX, windowY;
 
@@ -106,7 +106,7 @@ void constructGrid() {
 	for (int y = 0; y < gridY; y++) {
 		for (int x = 0; x < gridX; x++) {
 			Node n;
-			n = new Node(new PVector(xPos + (x * offset), yPos + (y * offset)), x, y, nodes.size() + 1);
+			n = new Node(new PVector(xPos + (x * offset), yPos + (y * offset)), x, y, nodes.size());
 			nodes.add(n);
 		}
 	}
@@ -128,9 +128,9 @@ void oscEvent(OscMessage theOscMessage) {
 	
 		//set ping IP to node IP if there is a match in IDs
 		for (Node n : nodes) {
-			if (id == n.inputID) {
+			if (id == n.nodeID) {
 				n.nodeIP = ip;
-				println("inputID: " + n.inputID + " has IP: " + n.nodeIP);
+				println("nodeID: " + n.nodeID + " has IP: " + n.nodeIP);
 			} else {
 				n.nodeIP = "";
 			}
@@ -187,14 +187,14 @@ void saveConfig() {
 		JSONObject configNode = new JSONObject();
 		configNode.setInt("x", n.column);
 		configNode.setInt("y", n.row);
-		configNode.setInt("ID", n.inputID);
+		configNode.setInt("ID", n.nodeID);
 
 		//set to config JSONArray
-		config.setJSONObject(n.row * gridY + n.column, configNode);
+		config.setJSONObject(n.index, configNode);
 	}
 
 	//save to file with grid dimensions in name
-	saveJSONArray(config, "configs/" + gridX + "x" + gridY + ".json");		//TODO: why are there nulls in between?
+	saveJSONArray(config, "configs/" + gridX + "x" + gridY + ".json");
 }
 
 //load config from file with current grid size and write to grid
@@ -206,7 +206,6 @@ void loadConfig() {
 
 	//only read from file if it exists
 	if (config != null) {
-		//set ID to corresponding nodes
 		for (int i = 0; i < config.size(); i++) {
 			
 			//get JSON object
@@ -217,8 +216,8 @@ void loadConfig() {
 			int y = configNode.getInt("y");
 			int ID = configNode.getInt("ID");
 
-			//write to corresponding node
-			nodes.get(y * gridY + x).inputID = ID;
+			//write ID to corresponding node
+			nodes.get(i).nodeID = ID;
 		}
 	}
 }

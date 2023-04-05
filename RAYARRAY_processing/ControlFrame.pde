@@ -61,7 +61,7 @@ class ControlFrame extends PApplet {
 			.setPosition(guiOffset/4, guiOffset)
 			.setSize(200, 20)
 			.setRange(1, 100)
-			.setValue(50)
+			.setValue(10)
 			;
 
 		//rotation speed
@@ -72,7 +72,7 @@ class ControlFrame extends PApplet {
 			.setPosition(guiOffset/4, guiOffset * 4/3)
 			.setSize(200, 20)
 			.setRange(.1, 10)
-			.setValue(1)
+			.setValue(5)
 			//.setDecimalPrecision(1) 
 			;
 
