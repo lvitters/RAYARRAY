@@ -45,8 +45,6 @@ AsyncUDP udpOut;
 // -------------------------------------- ^ RALF ^ ---------------------------------------- //
 
 #include <AccelStepper.h>
-const int stepsPerRevolution = 2038;  // change this to fit the number of steps per revolution
-long rotation = 0;
 
 //ULN2003 Motor Driver Pins
 #define IN1 16
@@ -57,8 +55,18 @@ long rotation = 0;
 //initialize the stepper library
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 
+const int stepsPerRevolution = 2038;  // change this to fit the number of steps per revolution
+long rotation = 0;
+float jogValue = 999999999;
+int direction;
+
 //95A Hall sensor analog input
 #define Hall_Sensor_Pin A0
+
+float lowestVoltage = 600;      //start higher than it ever will be
+float lastVoltage = 600;        //store the voltage of the cycle before, init higher than it will ever be
+float millisSinceLastHome = 0;  //how many milliseconds ago where we last home
+boolean homing = false;         //are we homing right now?
 
 //LED pin
 #define LED_PIN 2
@@ -88,6 +96,7 @@ void setup() {
   // ---------------------------------------------------------------------------------------- //
 
   initStepperMotor();
+  direction = randomDirection();
 
   //init hall sensor
   pinMode(Hall_Sensor_Pin, INPUT);
@@ -99,18 +108,25 @@ void setup() {
 void loop() {
   updateFirmware();
 
-  //move the stepper motor (one step at a time)
-  stepper.run();
+  if (millisSinceLastHome < 8000) {
+    Serial.println("jogging");
+    jog();
+  } else {
+    homing = true; 
+  }
+  
+  if (homing) goHome();
 
-  readHallSensor();
+  millisSinceLastHome++;
+
+  stepper.run();
 
   //testLED();
 }
 
 void initStepperMotor() {
-  stepper.setMaxSpeed(1000);          //max 1950
-  stepper.setAcceleration(1000);     //max 50000
-  stepper.moveTo(2038);
+  stepper.setMaxSpeed(500);          //max 1500
+  stepper.setAcceleration(1000);
 }
 
 //rotate from OSC messages
@@ -129,20 +145,41 @@ void OSCrotate(OSCMessage &msg, int addrOffset) {
     stepper.moveTo(rotation);
 }
 
-void readHallSensor() {
-  if (millis() % 250 == 0) {
+//move continuously
+void jog() {
+    stepper.moveTo(jogValue * direction);
+}
+
+//pick either -1 or 1
+float randomDirection() {
+    int n = random(-1, 2);
+    while (n == 0) n = random (-1, 2);
+    return n;
+}
+
+//go to where hall sensor voltage is the highest
+void goHome() {
     //hall sensor: read analog voltage
     float voltage;
     voltage = analogRead(Hall_Sensor_Pin);
-    //Serial.println(voltage);
-  }
+    if (voltage > 533 && homing) {
+      stepper.moveTo(jogValue);
+    } else if (voltage <= 533 && homing) {
+      Serial.println("home");
+      homing = false;
+      millisSinceLastHome = 0;
+      direction = randomDirection();
+      stepper.stop();
+      delay(2000);
+    }
+    Serial.println(voltage);
 }
 
 void testLED() {
-  // LED einschalten
+  // turn on LED
   digitalWrite(LED_PIN, HIGH);
   delay(1000);
-  // LED ausschalten
+  // turn off LED
   digitalWrite(LED_PIN, LOW);
   delay(1000);
 }

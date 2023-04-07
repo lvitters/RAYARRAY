@@ -30,7 +30,7 @@ class Node {
 	//update and draw mirror or laser
 	void update() {
 		if (mirror != null) {
-			mirror.update();
+			mirror.rotate();
 			mirror.draw();
 		}
 		if (laser != null) {

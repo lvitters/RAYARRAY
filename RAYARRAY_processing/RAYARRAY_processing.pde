@@ -27,7 +27,7 @@ float windowX, windowY;
 
 float absoluteConnectionLength = 45.0;	//in cm
 float absoluteMirrorWidth = 12.0;		//in cm
-float scaleCentimetersToPixels = 3.0;
+float scaleCentimetersToPixels = 5.0;
 float offset = absoluteConnectionLength * scaleCentimetersToPixels;	//offset between nodes
 
 int recursionGuard = 0;
@@ -35,6 +35,7 @@ int recursionGuard = 0;
 boolean rotateLaser = false;
 float rotationSpeed = 1;
 int rotationMode = 0;
+boolean rotateMirrors;
 
 void settings() {
 	//scale window size according to grid measurements
@@ -61,6 +62,9 @@ void setup() {
 	setupGUI();
 
 	constructGrid();
+
+	//try to load config at startup, if there is one
+	loadConfig();
 }
 
 void draw() {
@@ -160,12 +164,6 @@ void controlEvent(ControlEvent theEvent) {
 	if (theEvent.isController()) {
     	//println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
 
-		//if it comes from the "rotationMode" controller apply that to rotationMode variable
-		if (theEvent.getController().toString() == "rotationMode") {
-			rotationMode = int(theEvent.getController().getValue());
-			//println("rotationMode: " + rotationMode);
-		}
-
 		//if it comes from the "saveConfig" controller then saveConfig()
 		if (theEvent.getController().toString() == "saveConfig") {
 			saveConfig();
@@ -175,7 +173,28 @@ void controlEvent(ControlEvent theEvent) {
 		if (theEvent.getController().toString() == "loadConfig") {
 			loadConfig();
 		}
+
+		//if it comes from the "rotationMode" controller apply that to rotationMode variable
+		if (theEvent.getController().toString() == "rotationMode") {
+			rotationMode = int(theEvent.getController().getValue());
+			//println("rotationMode: " + rotationMode);
+		}
+
+
+		//if it comes from the "goHome" controller then goHome()
+		if (theEvent.getController().toString() == "loadConfig") {
+			goHome();
+		}
   	}
+}
+
+//bring all mirrors to default position by going back to rT = 0;
+void goHome() {
+	for (Node n : nodes) {
+		if (n.mirror != null) {
+			n.mirror.rT = 0;
+		}
+	}
 }
 
 //save current config to JSON file

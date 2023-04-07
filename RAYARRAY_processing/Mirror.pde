@@ -35,10 +35,9 @@ class Mirror {
 	}
 
 	//update the mirrors values
-	void update() {
-		//increment "time"
-		//rT += random(.002, .005);
-		rT += .003;
+	void rotate() {
+		//increment "time" if rotateMirrors is true
+		if (rotateMirrors) rT += .003;
 
 		//rotate according to rotation_mode (set by DropdownList)
 		switch(rotationMode) {
@@ -78,5 +77,10 @@ class Mirror {
         //     position.x + normal.x * mNormalScale,
         //     position.y + normal.y * mNormalScale
         //     );
+	}
+
+	//go to default mirror position
+	void goHome() {
+		rotationDegrees = 0;
 	}
 }
