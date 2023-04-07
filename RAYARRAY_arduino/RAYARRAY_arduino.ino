@@ -125,8 +125,8 @@ void loop() {
 }
 
 void initStepperMotor() {
-  stepper.setMaxSpeed(500);          //max 1500
-  stepper.setAcceleration(1000);
+  stepper.setMaxSpeed(800);          //max 1500
+  stepper.setAcceleration(1500);
 }
 
 //rotate from OSC messages
@@ -154,6 +154,7 @@ void jog() {
 float randomDirection() {
     int n = random(-1, 2);
     while (n == 0) n = random (-1, 2);
+    Serial.println("direction changed");
     return n;
 }
 
@@ -162,9 +163,9 @@ void goHome() {
     //hall sensor: read analog voltage
     float voltage;
     voltage = analogRead(Hall_Sensor_Pin);
-    if (voltage > 533 && homing) {
-      stepper.moveTo(jogValue);
-    } else if (voltage <= 533 && homing) {
+    if (voltage > 533) {
+      jog();
+    } else if (voltage <= 533) {
       Serial.println("home");
       homing = false;
       millisSinceLastHome = 0;
