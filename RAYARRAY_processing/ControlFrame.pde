@@ -46,8 +46,8 @@ class ControlFrame extends PApplet {
 			;
 		
 		//send_OSC toggle
-		cp5GUI.addToggle("send OSC")
-			.plugTo(parent, "sendOSC")
+		cp5GUI.addToggle("send rotation")
+			.plugTo(parent, "sendRotation")
 			.setFont(guiFont)
 			.setColor(guiColor)
 			.setPosition(guiOffset/4, guiOffset * 2/3)

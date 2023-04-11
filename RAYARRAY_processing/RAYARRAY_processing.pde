@@ -3,6 +3,8 @@ import oscP5.*;
 
 OscP5 oscP5;
 int remotePort = 8888;
+String firmwareVersionURL = "http://192.168.1.162:8080/release/version.txt";	//change both when router gives new IP with DHCP
+String firmwareBinaryURL = "http://192.168.1.162:8080/release/firmware.bin";
 
 import controlP5.*;
 ControlP5 cp5InputFields;
@@ -15,19 +17,19 @@ int guiOffset = 150;
 
 DropdownList modesList;
 boolean showIDs;
-boolean sendOSC;
+boolean sendRotation;
 int sendFreq = 100;		//in milliseconds
 
 ArrayList<Node> nodes;
 
-int gridX = 2;
-int gridY = 2;
+int gridX = 1;
+int gridY = 1;
+
+float scaleCentimetersToPixels = 4.0;	//adjust for screen size
 
 float windowX, windowY;
-
 float absoluteConnectionLength = 45.0;	//in cm
 float absoluteMirrorWidth = 12.0;		//in cm
-float scaleCentimetersToPixels = 5.0;
 float offset = absoluteConnectionLength * scaleCentimetersToPixels;	//offset between nodes
 
 int recursionGuard = 0;
@@ -124,8 +126,8 @@ void oscEvent(OscMessage theOscMessage) {
 		String mac = theOscMessage.get(3).stringValue();
 		float fw_version = theOscMessage.get(4).floatValue();
 		
-		println("got a ping from:");
-		println("ID: " + id + " with IP: " + ip);
+		// println("got a ping from:");
+		// println("ID: " + id + " with IP: " + ip);
 		// println("id         : " + id);
 		// println("fw_version : " + fw_version);
 		// println("mac        : " + mac);
@@ -133,8 +135,8 @@ void oscEvent(OscMessage theOscMessage) {
 		//set ping IP to node IP if there is a match in IDs
 		for (Node n : nodes) {
 			if (id == n.nodeID) {
+				println("node with ID: " + n.nodeID + " has IP: " + ip);	//TODO: why does this print even when the string isn't empty
 				n.nodeIP = ip;
-				println("nodeID: " + n.nodeID + " has IP: " + n.nodeIP);
 			} else {
 				n.nodeIP = "";
 			}
@@ -164,6 +166,8 @@ void controlEvent(ControlEvent theEvent) {
 	if (theEvent.isController()) {
     	//println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
 
+		//TODO: for some reason println() doesn't work inside the if brackets below???
+
 		//if it comes from the "saveConfig" controller then saveConfig()
 		if (theEvent.getController().toString() == "saveConfig") {
 			saveConfig();
@@ -174,31 +178,23 @@ void controlEvent(ControlEvent theEvent) {
 			loadConfig();
 		}
 
-		//if it comes from the "rotationMode" controller apply that to rotationMode variable
+		//if it comes from the "rotationMode" controller apply that value to rotationMode variable
 		if (theEvent.getController().toString() == "rotationMode") {
 			rotationMode = int(theEvent.getController().getValue());
 			//println("rotationMode: " + rotationMode);
 		}
 
-
 		//if it comes from the "goHome" controller then goHome()
-		if (theEvent.getController().toString() == "loadConfig") {
+		if (theEvent.getController().toString() == "goHome") {
 			goHome();
-		}
-  	}
-}
-
-//bring all mirrors to default position by going back to rT = 0;
-void goHome() {
-	for (Node n : nodes) {
-		if (n.mirror != null) {
-			n.mirror.rT = 0;
 		}
 	}
 }
 
 //save current config to JSON file
 void saveConfig() {
+	println("saveConfig");
+
 	JSONArray config = new JSONArray();
 
 	for (Node n : nodes) {
@@ -218,6 +214,8 @@ void saveConfig() {
 
 //load config from file with current grid size and write to grid
 void loadConfig() {
+	println("loadConfig");
+
 	JSONArray config = new JSONArray();
 
 	//load from file with same grid dimensions as the sketch currently has
@@ -238,6 +236,14 @@ void loadConfig() {
 			//write ID to corresponding node
 			nodes.get(i).nodeID = ID;
 		}
+	}
+}
+
+//init homing sequence for all nodes
+void goHome() {
+	println("goHome");
+	for (Node n : nodes) {
+		n.goHome();
 	}
 }
 
@@ -285,13 +291,11 @@ void keyPressed() {
 		}
 	}
 
-	/*
 	//update firmware
-	if (key == 'U') {
-		NetAddress myRemoteLocation= new NetAddress(remoteIP, remotePort);
-		println("firmware update");
-		OscMessage myMessage = new OscMessage("/updatefirmware");
-		oscP5.send(myMessage, myRemoteLocation);
+	if (keyCode == 'U') {
+		println("updateFirmware");
+		for (Node n : nodes) {
+			n.updateFirmware();
+		}
 	}
-	*/
 }

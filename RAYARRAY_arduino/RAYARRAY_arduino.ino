@@ -13,7 +13,7 @@
 
 #define EEPROM_SIZE 12
 
-int NODE_ID = -1; // the final MY_NODE_ID is not set here, it will be stored and read from EEPROM.
+int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and read from EEPROM.
 // this will allow you to use the "same" code on
 // all nodes without setting the node in the code here.
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
@@ -107,15 +107,9 @@ void setup() {
 
 void loop() {
   updateFirmware();
-
-  if (millisSinceLastHome < 8000) {
-    Serial.println("jogging");
-    jog();
-  } else {
-    homing = true; 
-  }
   
   if (homing) goHome();
+  else jog();
 
   millisSinceLastHome++;
 
@@ -131,49 +125,54 @@ void initStepperMotor() {
 
 //rotate from OSC messages
 void OSCrotate(OSCMessage &msg, int addrOffset) {
-    Serial.print("/rotate ");
-    float inputRotation = msg.getFloat(0);
-    Serial.print("\n");
+  Serial.print("/rotate ");
+  float inputRotation = msg.getFloat(0);
+  Serial.print("\n");
 
-    //rotation = rotation % stepsPerRevolution;
+  //rotation = rotation % stepsPerRevolution;
 
-    rotation = (long) inputRotation;
-    
-    Serial.print(rotation);
+  rotation = (long) inputRotation;
+  
+  Serial.print(rotation);
 
-    //set destination
-    stepper.moveTo(rotation);
+  //set destination
+  stepper.moveTo(rotation);
 }
 
 //move continuously
 void jog() {
-    stepper.moveTo(jogValue * direction);
+  stepper.moveTo(jogValue * direction);
 }
 
 //pick either -1 or 1
 float randomDirection() {
-    int n = random(-1, 2);
-    while (n == 0) n = random (-1, 2);
-    Serial.println("direction changed");
-    return n;
+  int n = random(-1, 2);
+  while (n == 0) n = random (-1, 2);
+  Serial.println("direction changed");
+  return n;
+}
+
+//initialize homing sequence
+void OSCinitHoming(OSCMessage &msg, int addrOffset) {
+  homing = true;
 }
 
 //go to where hall sensor voltage is the highest
 void goHome() {
-    //hall sensor: read analog voltage
-    float voltage;
-    voltage = analogRead(Hall_Sensor_Pin);
-    if (voltage > 533) {
-      jog();
-    } else if (voltage <= 533) {
-      Serial.println("home");
-      homing = false;
-      millisSinceLastHome = 0;
-      direction = randomDirection();
-      stepper.stop();
-      delay(2000);
-    }
-    Serial.println(voltage);
+  //hall sensor: read analog voltage
+  float voltage;
+  voltage = analogRead(Hall_Sensor_Pin);
+  if (voltage > 533) {
+    jog();
+  } else if (voltage <= 533) {
+    Serial.println("home");
+    homing = false;
+    millisSinceLastHome = 0;
+    direction = randomDirection();
+    stepper.stop();
+    delay(2000);
+  }
+  Serial.println(voltage);
 }
 
 void testLED() {

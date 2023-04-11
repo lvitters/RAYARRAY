@@ -1,7 +1,7 @@
 void onPacketOSC(AsyncUDPPacket packet) {
   if (LOCK_UDP_RECEIVER) { // lock from firmware flash process
     packet.flush();
-    return; // do no shit!
+    return; // do nothing!
   }
   OSCMessage msgIn;
   if ((packet.length() > 0)) {
@@ -9,14 +9,16 @@ void onPacketOSC(AsyncUDPPacket packet) {
     packet.flush();
     if (!msgIn.hasError()) {
 
-      //OSC message for rotation
       msgIn.route("/rotate", OSCrotate);
+      
+      msgIn.route("/goHome", OSCinitHoming);
+
+      msgIn.route("/updateFirmware", OSCupdateFirmware);
+      msgIn.route("/ufversionurl", OSCupdateFirmwareSetVersionURL);
+      msgIn.route("/ufbinaryurl", OSCupdateFirmwareSetBinaryURL);
 
       msgIn.route("/command", OSCcommand);
       msgIn.route("/click", OSCclick);
-      msgIn.route("/updatefirmware", OSCupdateFirmware);
-      msgIn.route("/ufversionurl", OSCupdateFirmwareSetVersionURL);
-      msgIn.route("/ufbinaryurl", OSCupdateFirmwareSetBinaryURL);
 
       packet.flush();
     }
