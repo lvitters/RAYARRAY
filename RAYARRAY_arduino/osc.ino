@@ -9,11 +9,10 @@ void onPacketOSC(AsyncUDPPacket packet) {
     packet.flush();
     if (!msgIn.hasError()) {
 
-      //OSC messages
       msgIn.route("/rotate", OSCrotate);
+      
       msgIn.route("/goHome", OSCinitHoming);
 
-      //firmware updating
       msgIn.route("/updateFirmware", OSCupdateFirmware);
       msgIn.route("/ufversionurl", OSCupdateFirmwareSetVersionURL);
       msgIn.route("/ufbinaryurl", OSCupdateFirmwareSetBinaryURL);
@@ -69,7 +68,9 @@ void sendPingToProcessing() {
   oscMsg.add(WiFi.localIP().toString().c_str());
   oscMsg.add(WiFi.macAddress().c_str());
   oscMsg.add(FW_VERSION);
+  oscMsg.add(123); // send some other data
   oscMsg.send(udpMsg);
   oscMsg.empty();
   udpOut.broadcastTo(udpMsg, networkOutPort);
+
 }

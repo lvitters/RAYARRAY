@@ -19,7 +19,7 @@ int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and re
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.02; // important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.01; // important for the firmware ota flashing process / increment for next upload
 
 // server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 // change server IP if needed
@@ -63,10 +63,8 @@ int direction;
 //95A Hall sensor analog input
 #define Hall_Sensor_Pin A0
 
-
 float voltage;                  //voltage in this measuring cycle
 float lowestVoltage = 600;      //start higher than it ever will be
-float lastVoltage = 600;        //store the voltage of the cycle before, init higher than it will ever be
 float millisSinceLastHome = 0;  //how many milliseconds ago where we last home
 boolean homing = false;         //are we homing right now?
 
@@ -95,12 +93,9 @@ void setup() {
   
   initWIFI();
   initUDP();
-  delay(2000);
   // ---------------------------------------------------------------------------------------- //
 
-  //init stepper motor
-  stepper.setMaxSpeed(800);          //max 1500?
-  stepper.setAcceleration(1500);
+  initStepperMotor();
   direction = randomDirection();
 
   //init hall sensor
@@ -111,15 +106,9 @@ void setup() {
 }
 
 void loop() {
-  ping();
   updateFirmware();
+  ping();
 
-  //read hall sensor
-  voltage = analogRead(Hall_Sensor_Pin);
-  
-  //find lowest voltage
-  if (voltage < lowestVoltage) lowestVoltage = voltage + 1;
-  
   //goHome if homing or jog if not homing (for testing)
   if (homing) goHome();
   else jog();
@@ -133,47 +122,9 @@ void loop() {
   //flashLED();
 }
 
-//move continuously
-void jog() {
-  stepper.moveTo(jogValue * direction);
-}
-
-//go to where hall sensor voltage is the highest
-void goHome() {
-  if (voltage > lowestVoltage) {
-    jog();
-  } else if (voltage <= lowestVoltage) {
-    Serial.println("home");
-    homing = false;
-    millisSinceLastHome = 0;
-    direction = randomDirection();
-    stepper.stop();
-    delay(2000);
-  }
-  Serial.println(voltage);
-}
-
-//pick either -1 or 1
-float randomDirection() {
-  int n = random(-1, 2);
-  while (n == 0) n = random (-1, 2);
-  Serial.println("direction changed");
-  return n;
-}
-
-//flash the LED
-void flashLED() {
-  // turn on LED
-  digitalWrite(LED_PIN, HIGH);
-  delay(1000);
-  // turn off LED
-  digitalWrite(LED_PIN, LOW);
-  delay(1000);
-}
-
-//initialize homing sequence
-void OSCinitHoming(OSCMessage &msg, int addrOffset) {
-  homing = true;
+void initStepperMotor() {
+  stepper.setMaxSpeed(800);          //max 1500
+  stepper.setAcceleration(1500);
 }
 
 //rotate from OSC messages
@@ -192,16 +143,60 @@ void OSCrotate(OSCMessage &msg, int addrOffset) {
   stepper.moveTo(rotation);
 }
 
-void pingStatusToSerial() {
-  Serial.println(lowestVoltage);
-  Serial.println(homing);
+//move continuously
+void jog() {
+  stepper.moveTo(jogValue * direction);
 }
 
+//pick either -1 or 1
+float randomDirection() {
+  int n = random(-1, 2);
+  while (n == 0) n = random (-1, 2);
+  Serial.println("direction changed");
+  return n;
+}
+
+//initialize homing sequence
+void OSCinitHoming(OSCMessage &msg, int addrOffset) {
+  homing = true;
+}
+
+//go to where hall sensor voltage is the highest
+void goHome() {
+  //read hall sensor
+  float voltage = analogRead(Hall_Sensor_Pin);
+
+  //find lowest voltage
+  if (voltage < lowestVoltage) lowestVoltage = voltage + 1;
+
+  //determine if we're home or not
+  if (voltage > lowestVoltage) {
+    jog();
+  } else if (voltage <= lowestVoltage) {
+    Serial.println("home");
+    homing = false;
+    millisSinceLastHome = 0;
+    direction = randomDirection();
+    stepper.stop();
+    delay(2000);
+  }
+  Serial.println(voltage);
+}
+
+void flashLED() {
+  // turn on LED
+  digitalWrite(LED_PIN, HIGH);
+  delay(1000);
+  // turn off LED
+  digitalWrite(LED_PIN, LOW);
+  delay(1000);
+}
+
+//do something every couple seconds
 void ping() {
   if (pingTimer.hasPassed(pingInterval)) {
     pingTimer.restart();
     sendPingToProcessing();
-    pingStatusToSerial();
   }
 }
 
