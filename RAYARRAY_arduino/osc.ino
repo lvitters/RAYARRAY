@@ -72,5 +72,4 @@ void sendPingToProcessing() {
   oscMsg.send(udpMsg);
   oscMsg.empty();
   udpOut.broadcastTo(udpMsg, networkOutPort);
-
 }
