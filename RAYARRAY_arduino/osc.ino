@@ -9,43 +9,19 @@ void onPacketOSC(AsyncUDPPacket packet) {
     packet.flush();
     if (!msgIn.hasError()) {
 
+      //OSC messages
       msgIn.route("/rotate", OSCrotate);
-      
       msgIn.route("/goHome", OSCinitHoming);
 
+      //firmware updating
       msgIn.route("/updateFirmware", OSCupdateFirmware);
       msgIn.route("/ufversionurl", OSCupdateFirmwareSetVersionURL);
       msgIn.route("/ufbinaryurl", OSCupdateFirmwareSetBinaryURL);
-
-      msgIn.route("/command", OSCcommand);
-      msgIn.route("/click", OSCclick);
 
       packet.flush();
     }
   }
   packet.flush();
-}
-
-void OSCcommand(OSCMessage &msg, int addrOffset) {
-  Serial.print("received parapmeters: ");
-  Serial.println( msg.size());
-  if (msg.size() == 3) {
-    Serial.print("/command ");
-    Serial.print(msg.getFloat(0));
-    Serial.print(" ");
-    Serial.print(msg.getInt(1));
-    Serial.print(" ");
-    Serial.println(msg.getFloat(2));
-  }
-}
-
-void OSCclick(OSCMessage &msg, int addrOffset) {
-  if (msg.size() == 2) {
-    Serial.print("/click ");
-    Serial.print(msg.getInt(0));
-    Serial.print(" ");
-    Serial.println(msg.getInt(1));
-  }
 }
 
 void OSCupdateFirmware(OSCMessage &msg, int addrOffset) {
@@ -85,7 +61,7 @@ void OSCupdateFirmwareSetBinaryURL(OSCMessage &msg, int addrOffset) {
   }
 }
 
-void sendPingOSC() {
+void sendPingToProcessing() {
   AsyncUDPMessage udpMsg;
   OSCMessage oscMsg("/ping");
   oscMsg.add(int(millis()));
@@ -93,9 +69,7 @@ void sendPingOSC() {
   oscMsg.add(WiFi.localIP().toString().c_str());
   oscMsg.add(WiFi.macAddress().c_str());
   oscMsg.add(FW_VERSION);
-  oscMsg.add(123); // send some other data
   oscMsg.send(udpMsg);
   oscMsg.empty();
   udpOut.broadcastTo(udpMsg, networkOutPort);
-
 }

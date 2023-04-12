@@ -63,6 +63,8 @@ int direction;
 //95A Hall sensor analog input
 #define Hall_Sensor_Pin A0
 
+
+float voltage;                  //voltage in this measuring cycle
 float lowestVoltage = 600;      //start higher than it ever will be
 float lastVoltage = 600;        //store the voltage of the cycle before, init higher than it will ever be
 float millisSinceLastHome = 0;  //how many milliseconds ago where we last home
@@ -93,10 +95,11 @@ void setup() {
   
   initWIFI();
   initUDP();
+  delay(2000);
   // ---------------------------------------------------------------------------------------- //
 
   //init stepper motor
-  stepper.setMaxSpeed(800);          //max 1500
+  stepper.setMaxSpeed(800);          //max 1500?
   stepper.setAcceleration(1500);
   direction = randomDirection();
 
@@ -108,16 +111,26 @@ void setup() {
 }
 
 void loop() {
+  ping();
   updateFirmware();
+
+  //read hall sensor
+  voltage = analogRead(Hall_Sensor_Pin);
   
+  //find lowest voltage
+  if (voltage < lowestVoltage) lowestVoltage = voltage + 1;
+  
+  //goHome if homing or jog if not homing (for testing)
   if (homing) goHome();
   else jog();
 
+  //count since last time homing sequence was finished
   millisSinceLastHome++;
 
+  //do whatever the stepper was told to
   stepper.run();
 
-  //testLED();
+  //flashLED();
 }
 
 //move continuously
@@ -127,12 +140,9 @@ void jog() {
 
 //go to where hall sensor voltage is the highest
 void goHome() {
-  //hall sensor: read analog voltage
-  float voltage;
-  voltage = analogRead(Hall_Sensor_Pin);
-  if (voltage > 533) {
+  if (voltage > lowestVoltage) {
     jog();
-  } else if (voltage <= 533) {
+  } else if (voltage <= lowestVoltage) {
     Serial.println("home");
     homing = false;
     millisSinceLastHome = 0;
@@ -151,7 +161,8 @@ float randomDirection() {
   return n;
 }
 
-void testLED() {
+//flash the LED
+void flashLED() {
   // turn on LED
   digitalWrite(LED_PIN, HIGH);
   delay(1000);
@@ -181,15 +192,24 @@ void OSCrotate(OSCMessage &msg, int addrOffset) {
   stepper.moveTo(rotation);
 }
 
+void pingStatusToSerial() {
+  Serial.println(lowestVoltage);
+  Serial.println(homing);
+}
+
+void ping() {
+  if (pingTimer.hasPassed(pingInterval)) {
+    pingTimer.restart();
+    sendPingToProcessing();
+    pingStatusToSerial();
+  }
+}
+
 void updateFirmware() {
   if (UPDATE_FIRMWARE) {
     if (getFirmwareVersionFromServer()) { // check if a new version is avaiable on the server
       updateFirmwareFromServer(); // get binary and flash it.
     }
     UPDATE_FIRMWARE = false; // update done
-  }
-  if (pingTimer.hasPassed(pingInterval)) {
-    pingTimer.restart();
-    sendPingOSC();
   }
 }

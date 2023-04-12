@@ -1,4 +1,3 @@
-
 int getFirmwareVersionFromServer() {
   String payload;
   int httpCode;
