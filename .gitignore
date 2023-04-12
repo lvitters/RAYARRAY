@@ -7,6 +7,3 @@ firmware_server/package.json
 firmware_server/node_modules
 
 RAYARRAY_arduino/build
-RAYARRAY_arduino/build/esp8266.esp8266.d1_mini/RAYARRAY_arduino.ino.map
-RAYARRAY_arduino/build/esp8266.esp8266.d1_mini/RAYARRAY_arduino.ino.elf
-RAYARRAY_arduino/build/esp8266.esp8266.d1_mini/RAYARRAY_arduino.ino.bin
