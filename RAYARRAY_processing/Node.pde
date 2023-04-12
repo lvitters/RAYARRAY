@@ -12,7 +12,7 @@ class Node {
 	Textfield inputField;
 
 	int nodeID;
-	String nodeIP = "";
+	String nodeIP = null;
 	long lastSend = 0;
 
 	Node(PVector p, int x, int y, int i) {
@@ -125,13 +125,13 @@ class Node {
 
 	//send rotation to node every x milliseconds
 	void sendRotationToNode() {
-		if (millis() - lastSend > sendFreq && nodeIP != "" && sendRotation) {
+		if (millis() - lastSend > sendFreq && nodeIP != null && sendRotation) {
 			lastSend = millis();
-			OscMessage message = new OscMessage("/rotate");
+			OscMessage rotationMessage = new OscMessage("/rotate");
 			println(mirror.rotationSteps);
-			message.add(mirror.rotationSteps);
+			rotationMessage.add(mirror.rotationSteps);
 			NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
-			oscP5.send(message, remoteLocation);
+			oscP5.send(rotationMessage, remoteLocation);
 			println("sent to: " + nodeID + " @" + nodeIP);
 		}
 	}
@@ -139,27 +139,31 @@ class Node {
 	//initiate homing sequence by sending /goHome OSC message
 	void goHome() {
 		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
-		OscMessage message = new OscMessage("/goHome");
-		oscP5.send(message, remoteLocation);
+		OscMessage homeMessage = new OscMessage("/goHome");
+		oscP5.send(homeMessage, remoteLocation);
 	}
 
 	//update node's firmware by sending /updateFirmware OSC message 
 	void updateFirmware() {
-		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
+		if (nodeIP == null) {
+			println("node " + nodeID + " has IP: " + nodeIP);	
+		} else {		
+			NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 
-		//tell node where 'version.txt' is located
-		OscMessage versionURLmessage = new OscMessage("/ufversionurl");
-		versionURLmessage.add(firmwareVersionURL);
-		oscP5.send(versionURLmessage, remoteLocation);
+			//tell node where 'version.txt' is located
+			OscMessage versionURLmessage = new OscMessage("/ufversionurl");
+			versionURLmessage.add(firmwareVersionURL);
+			oscP5.send(versionURLmessage, remoteLocation);
 
-		//tell node where 'firmware.bin' is located
-		OscMessage binaryURLmessage = new OscMessage("/ufbinaryurl");
-		binaryURLmessage.add(firmwareBinaryURL);
-		oscP5.send(binaryURLmessage, remoteLocation);
+			//tell node where 'firmware.bin' is located
+			OscMessage binaryURLmessage = new OscMessage("/ufbinaryurl");
+			binaryURLmessage.add(firmwareBinaryURL);
+			oscP5.send(binaryURLmessage, remoteLocation);
 
-		//tell node to update firmware from that location
-		OscMessage updateMessage = new OscMessage("/updateFirmware");
-		oscP5.send(updateMessage, remoteLocation);
+			//tell node to update firmware from that location
+			OscMessage updateMessage = new OscMessage("/updateFirmware");
+			oscP5.send(updateMessage, remoteLocation);
+		}
 	}
 
 	// ------------------------ ControlP5 input field for ID ------------------------ //

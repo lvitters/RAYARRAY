@@ -5,3 +5,5 @@ RAYARRAY_processing/configs
 firmware_server/package-lock.json
 firmware_server/package.json
 firmware_server/node_modules
+
+RAYARRAY_arduino/build

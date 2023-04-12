@@ -135,10 +135,9 @@ void oscEvent(OscMessage theOscMessage) {
 		//set ping IP to node IP if there is a match in IDs
 		for (Node n : nodes) {
 			if (id == n.nodeID) {
-				println("node with ID: " + n.nodeID + " has IP: " + ip);	//TODO: why does this print even when the string isn't empty
+				//if (n.nodeIP == null) 
+				println("node with ID: " + n.nodeID + " has IP: " + ip);
 				n.nodeIP = ip;
-			} else {
-				n.nodeIP = "";
 			}
 		}
 

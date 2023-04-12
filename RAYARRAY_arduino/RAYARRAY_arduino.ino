@@ -19,7 +19,7 @@ int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and re
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.01; // important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.02; // important for the firmware ota flashing process / increment for next upload
 
 // server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 // change server IP if needed
@@ -95,7 +95,9 @@ void setup() {
   initUDP();
   // ---------------------------------------------------------------------------------------- //
 
-  initStepperMotor();
+  //init stepper motor
+  stepper.setMaxSpeed(800);          //max 1500
+  stepper.setAcceleration(1500);
   direction = randomDirection();
 
   //init hall sensor
@@ -118,43 +120,9 @@ void loop() {
   //testLED();
 }
 
-void initStepperMotor() {
-  stepper.setMaxSpeed(800);          //max 1500
-  stepper.setAcceleration(1500);
-}
-
-//rotate from OSC messages
-void OSCrotate(OSCMessage &msg, int addrOffset) {
-  Serial.print("/rotate ");
-  float inputRotation = msg.getFloat(0);
-  Serial.print("\n");
-
-  //rotation = rotation % stepsPerRevolution;
-
-  rotation = (long) inputRotation;
-  
-  Serial.print(rotation);
-
-  //set destination
-  stepper.moveTo(rotation);
-}
-
 //move continuously
 void jog() {
   stepper.moveTo(jogValue * direction);
-}
-
-//pick either -1 or 1
-float randomDirection() {
-  int n = random(-1, 2);
-  while (n == 0) n = random (-1, 2);
-  Serial.println("direction changed");
-  return n;
-}
-
-//initialize homing sequence
-void OSCinitHoming(OSCMessage &msg, int addrOffset) {
-  homing = true;
 }
 
 //go to where hall sensor voltage is the highest
@@ -175,6 +143,14 @@ void goHome() {
   Serial.println(voltage);
 }
 
+//pick either -1 or 1
+float randomDirection() {
+  int n = random(-1, 2);
+  while (n == 0) n = random (-1, 2);
+  Serial.println("direction changed");
+  return n;
+}
+
 void testLED() {
   // turn on LED
   digitalWrite(LED_PIN, HIGH);
@@ -182,6 +158,27 @@ void testLED() {
   // turn off LED
   digitalWrite(LED_PIN, LOW);
   delay(1000);
+}
+
+//initialize homing sequence
+void OSCinitHoming(OSCMessage &msg, int addrOffset) {
+  homing = true;
+}
+
+//rotate from OSC messages
+void OSCrotate(OSCMessage &msg, int addrOffset) {
+  Serial.print("/rotate ");
+  float inputRotation = msg.getFloat(0);
+  Serial.print("\n");
+
+  //rotation = rotation % stepsPerRevolution;
+
+  rotation = (long) inputRotation;
+  
+  Serial.print(rotation);
+
+  //set destination
+  stepper.moveTo(rotation);
 }
 
 void updateFirmware() {
