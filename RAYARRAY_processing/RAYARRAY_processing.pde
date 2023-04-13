@@ -10,17 +10,17 @@ import controlP5.*;
 ControlP5 cp5InputFields;
 ControlFrame cf;
 
-//GUI appearance
+ArrayList<Node> nodes;
+
+//GUI
 PFont guiFont, idFont;
 CColor guiColor;
 int guiOffset = 150;
-
 DropdownList modesList;
 boolean showIDs;
 boolean sendRotation;
 int sendFreq = 100;		//in milliseconds
 
-ArrayList<Node> nodes;
 
 int gridX = 1;
 int gridY = 1;

@@ -68,9 +68,10 @@ class Node {
 		}
 	}
 
-	//draw the ID under the node if there is one
+	//draw the ID under the node if there is one; draw green if it has an associated IP and red if it doesn't
 	void drawID() {
-		fill(color( 60, 204,  99));
+		if (nodeIP != null && nodeIP != "") fill(color( 60, 204,  99));
+		else fill(255, 0, 0);
 		textSize(20);
 		text(nodeID, position.x + 15, position.y + 25);
 	}
