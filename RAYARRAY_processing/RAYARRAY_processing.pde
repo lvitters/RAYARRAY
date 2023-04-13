@@ -1,18 +1,15 @@
+//network
 import netP5.*;
 import oscP5.*;
-
 OscP5 oscP5;
 int remotePort = 8888;
 String firmwareVersionURL = "http://192.168.1.162:8080/release/version.txt";	//change both when router gives new IP with DHCP
 String firmwareBinaryURL = "http://192.168.1.162:8080/release/firmware.bin";
 
+//GUI
 import controlP5.*;
 ControlP5 cp5InputFields;
 ControlFrame cf;
-
-ArrayList<Node> nodes;
-
-//GUI
 PFont guiFont, idFont;
 CColor guiColor;
 int guiOffset = 150;
@@ -21,19 +18,23 @@ boolean showIDs;
 boolean sendRotation;
 int sendFreq = 100;		//in milliseconds
 
+//nodes
+ArrayList<Node> nodes = new ArrayList<Node>();
+ArrayList<String> pings = new ArrayList<String>();
 
+//grid
 int gridX = 1;
 int gridY = 1;
-
 float scaleCentimetersToPixels = 4.0;	//adjust for screen size
-
 float windowX, windowY;
 float absoluteConnectionLength = 45.0;	//in cm
 float absoluteMirrorWidth = 12.0;		//in cm
 float offset = absoluteConnectionLength * scaleCentimetersToPixels;	//offset between nodes
 
+//laser reflection
 int recursionGuard = 0;
 
+//rotation
 boolean rotateLaser = false;
 float rotationSpeed = 1;
 int rotationMode = 0;
@@ -75,30 +76,10 @@ void draw() {
 	updateNodes();
 }
 
-//draw each node
-void updateNodes() {
-	
-	//draw all graphical elements first so they are in the background
-	for (Node n : nodes) {
-		//joints and highlights
-		n.drawJoints();
-		n.drawHighlight();
-
-		//draw IDs if toggle is set to true
-		if (showIDs) n.drawID();
-	}
-
-	//then draw the mirrors or lasers on top of everything else and update them
-	for (Node n : nodes) {
-		n.update();
-		n.sendRotationToNode();
-	}
-}
-
 //depending on the configuration, construct a grid of nodes in the given pattern
 void constructGrid() {
 	//init arrayList
-	nodes = new ArrayList<Node>();
+	//nodes = new ArrayList<Node>();
 
 	//calculate width of the entire grid
 	float gridWidth = gridX * offset;
@@ -118,19 +99,44 @@ void constructGrid() {
 	}
 }
 
-//incoming pings from nodes (OSC messages)
+//draw each node
+void updateNodes() {
+	//draw all graphical elements first so they are in the background
+	for (Node n : nodes) {
+		//joints and highlights
+		n.drawJoints();
+		n.drawHighlight();
+
+		//draw IDs if toggle is set to true
+		if (showIDs) n.drawID();
+	}
+
+	//then draw the mirrors or lasers on top of everything else and update them
+	for (Node n : nodes) {
+		n.update();
+		n.sendRotationToNode();
+	}
+}
+
+//incoming OSC messages from nodes
 void oscEvent(OscMessage theOscMessage) {
+	//if it is a ping
 	if (theOscMessage.addrPattern().equals("/ping") == true) {
+		//record info from node
 		int id = theOscMessage.get(1).intValue();
 		String ip = theOscMessage.get(2).stringValue();
 		String mac = theOscMessage.get(3).stringValue();
 		float fw_version = theOscMessage.get(4).floatValue();
-		
+
 		// println("got a ping from:");
 		// println("ID: " + id + " with IP: " + ip);
 		// println("id         : " + id);
 		// println("fw_version : " + fw_version);
 		// println("mac        : " + mac);
+		
+		//add IP from ping to list of IPs
+		if (!pings.contains(ip)) pings.add(ip);
+		//println(pings);
 	
 		//set ping IP to node IP if there is a match in IDs
 		for (Node n : nodes) {
@@ -142,6 +148,7 @@ void oscEvent(OscMessage theOscMessage) {
 			}
 		}
 
+	//if something goes wrong
 	} else {
 		print("### received an osc message.");
 		print(" addrpattern: "+theOscMessage.addrPattern());
@@ -151,7 +158,6 @@ void oscEvent(OscMessage theOscMessage) {
 
 //init CP5 instance for ID inputfields and ControlFrame for GUI window, set GUI elements in "ControlFrame.pde"
 void setupGUI() {
-
 	//init cp5
 	cp5InputFields = new ControlP5(this);
 
@@ -272,9 +278,10 @@ void mouseReleased() {
 }
 
 void keyPressed() {
-	//input node's ID
+	//input node's IDs
 	if (keyCode == 'I') {
 		for (Node n : nodes) {
+			//set inputField to active only when there is a mirror, the mouse is over it and it isn't active yet
 			if (n.mouseOver() && n.mirror != null && n.inputField.isVisible() == false) {
 				n.setInputfieldActive(true);
 			} else {
@@ -282,6 +289,7 @@ void keyPressed() {
 			}
 		}
 	}
+	//submit ID and disable input field when pressing ENTER
 	if (keyCode == ENTER) {
 		for (Node n : nodes) {
 			if (n.inputField.isVisible()) {
