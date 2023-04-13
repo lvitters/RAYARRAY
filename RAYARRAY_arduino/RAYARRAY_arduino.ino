@@ -124,9 +124,6 @@ void loop() {
 
   //do whatever the stepper was told to
   stepper.run();
-
-  //check if LED should be turned off (turned on by trigger)
-  stopFlash();
 }
 
 void initStepperMotor() {
@@ -191,25 +188,6 @@ void goHome() {
   Serial.println(lowestVoltage);
 }
 
-//init flashing sequence
-void initFlash() {
-  millisAtLastFlash = millis();
-  flashing = true;
-  digitalWrite(LED_PIN, HIGH); 
-}
-
-//turn off LED after flashInterval milliseconds
-void stopFlash() {
-  //get current millis
-  float currentMillis = millis();
-  
-  //turn off and reset timer if interval is reached
-  if (flashing == true && (currentMillis - millisAtLastFlash >= flashInterval)) {
-    flashing = false;
-    digitalWrite(LED_PIN, LOW);
-  }
-}
-
 //do something every couple seconds
 void ping() {
   if (pingTimer.hasPassed(pingInterval)) {
@@ -218,6 +196,7 @@ void ping() {
   }
 }
 
+//check for new firmware on the server
 void updateFirmware() {
   if (UPDATE_FIRMWARE) {
     if (getFirmwareVersionFromServer()) { // check if a new version is avaiable on the server
@@ -226,3 +205,23 @@ void updateFirmware() {
     UPDATE_FIRMWARE = false; // update done
   }
 }
+
+// THIS WILL INTERRUPT THE ROTATION AND IS NOT IMPORTANT ENOUGH TO DEAL WITH FOR THE MOMENT
+// //init flashing sequence
+// void initFlash() {
+//   millisAtLastFlash = millis();
+//   flashing = true;
+//   digitalWrite(LED_PIN, HIGH); 
+// }
+
+// //turn off LED after flashInterval milliseconds
+// void stopFlash() {
+//   //get current millis
+//   float currentMillis = millis();
+  
+//   //turn off and reset timer if interval is reached
+//   if (flashing == true && (currentMillis - millisAtLastFlash >= flashInterval)) {
+//     flashing = false;
+//     digitalWrite(LED_PIN, LOW);
+//   }
+// }

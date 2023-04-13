@@ -1,5 +1,6 @@
+//when OSC message comes
 void onPacketOSC(AsyncUDPPacket packet) {
-  if (LOCK_UDP_RECEIVER) { // lock from firmware flash process
+  if (LOCK_UDP_RECEIVER) { //lock from firmware flash process
     packet.flush();
     return; // do nothing!
   }
@@ -9,12 +10,11 @@ void onPacketOSC(AsyncUDPPacket packet) {
     packet.flush();
     if (!msgIn.hasError()) {
 
-      //flash LED to show packets are coming in
-      //initFlash();
-
       msgIn.route("/rotate", OSCrotate);
       
       msgIn.route("/goHome", OSCinitHoming);
+
+      msgIn.route("/pingNode", OSCincomingPing);
 
       msgIn.route("/updateFirmware", OSCupdateFirmware);
       msgIn.route("/ufversionurl", OSCupdateFirmwareSetVersionURL);
@@ -26,11 +26,27 @@ void onPacketOSC(AsyncUDPPacket packet) {
   packet.flush();
 }
 
+//turn LED on or off depending on if IP was set correctly in processing
+void OSCincomingPing(OSCMessage &msg, int addrOffset) {
+  char tmpstr[512];
+  msg.getString(0, tmpstr);
+  String ip = (char*)tmpstr;
+
+  Serial.println(ip);
+
+  if (ip == WiFi.localIP().toString().c_str()) {
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+    Serial.println("turned off");
+  }
+}
+
 void OSCupdateFirmware(OSCMessage &msg, int addrOffset) {
   Serial.print("/updatefirmware");
 
-  UPDATE_FIRMWARE = true; // set the hook for the main loooooop
-  // update procedure has to be initiated from the "main" loop other wise memory acces is limited.
+  UPDATE_FIRMWARE = true; // set the hook for the main loop
+  //update procedure has to be initiated from the "main" loop other wise memory acces is limited.
 }
 
 void OSCupdateFirmwareSetVersionURL(OSCMessage &msg, int addrOffset) {

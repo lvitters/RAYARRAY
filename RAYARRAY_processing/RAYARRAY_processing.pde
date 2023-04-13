@@ -20,11 +20,12 @@ int sendFreq = 100;		//in milliseconds
 
 //nodes
 ArrayList<Node> nodes = new ArrayList<Node>();
-ArrayList<String> pings = new ArrayList<String>();
+ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
 int gridX = 1;
 int gridY = 1;
+
 float scaleCentimetersToPixels = 4.0;	//adjust for screen size
 float windowX, windowY;
 float absoluteConnectionLength = 45.0;	//in cm
@@ -132,16 +133,21 @@ void oscEvent(OscMessage theOscMessage) {
 		// println("mac        : " + mac);
 		
 		//add IP from ping to list of IPs
-		if (!pings.contains(ip)) pings.add(ip);
+		if (!ipAdresses.contains(ip)) ipAdresses.add(ip);
 		//println(pings);
 	
-		//set ping IP to node IP if there is a match in IDs
+		//for all nodes
 		for (Node n : nodes) {
-			if (id == n.nodeID) {
-				if (n.nodeIP == null) println("node with ID: " + n.nodeID + " has IP: " + ip + " and firmware v" + fw_version);		//print only once
+			//set nodeIP to ping's IP if there is a match in IDs
+			if (n.nodeID == id) {
+				//print only if IP hasn't been set yet
+				if (n.nodeIP == null) println("node with ID: " + n.nodeID + " has IP: " + ip + " and firmware v" + fw_version);
 				n.nodeIP = ip;
+				n.pingNode(n.nodeIP);
+			//if there is no match, send wrong string to node, which turns the LED off, then set nodeIP to null
 			} else {
-				n.nodeIP = "";
+				n.pingNode("not the correct IP");
+				n.nodeIP = null;
 			}
 		}
 
@@ -300,14 +306,14 @@ void keyPressed() {
 	if (keyCode == 'U') {
 		println("updateFirmware");
 
-		//update nodes that are in grid
+		//update only nodes that are in grid
 		// for (Node n : nodes) {
 		// 	n.updateFirmware();
 		// }
 
-		//update all nodes
-		for (String p : pings) {
-			NetAddress remoteLocation= new NetAddress(p, remotePort);
+		//update all nodes from list of IP adresses
+		for (String ip : ipAdresses) {
+			NetAddress remoteLocation= new NetAddress(ip, remotePort);
 
 			//tell node where 'version.txt' is located
 			OscMessage versionURLmessage = new OscMessage("/ufversionurl");

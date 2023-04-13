@@ -70,7 +70,7 @@ class Node {
 
 	//draw the ID under the node if there is one; draw green if it has an associated IP and red if it doesn't
 	void drawID() {
-		if (nodeIP != null && nodeIP != "") fill(color( 60, 204,  99));
+		if (nodeIP != null) fill(color( 60, 204,  99));
 		else fill(255, 0, 0);
 		textSize(20);
 		text(nodeID, position.x + 15, position.y + 25);
@@ -142,6 +142,14 @@ class Node {
 		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 		OscMessage homeMessage = new OscMessage("/goHome");
 		oscP5.send(homeMessage, remoteLocation);
+	}
+
+	//confirm if node receives ping and turn on its LED
+	void pingNode(String ip) {
+		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
+		OscMessage pingMessage = new OscMessage("/pingNode");
+		pingMessage.add(ip);
+		oscP5.send(pingMessage, remoteLocation);
 	}
 
 	//update node's firmware by sending /updateFirmware OSC message 
