@@ -9,6 +9,9 @@ void onPacketOSC(AsyncUDPPacket packet) {
     packet.flush();
     if (!msgIn.hasError()) {
 
+      //flash LED to show packets are coming in
+      //initFlash();
+
       msgIn.route("/rotate", OSCrotate);
       
       msgIn.route("/goHome", OSCinitHoming);

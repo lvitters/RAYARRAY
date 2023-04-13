@@ -147,7 +147,7 @@ class Node {
 	//update node's firmware by sending /updateFirmware OSC message 
 	void updateFirmware() {
 		if (nodeIP == null) {
-			println("node " + nodeID + " has IP: " + nodeIP);	
+			println("node " + nodeID + " has no IP");	
 		} else {		
 			NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 

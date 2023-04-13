@@ -66,7 +66,7 @@ void setup() {
 
 	constructGrid();
 
-	//try to load config at startup, if there is one
+	//try to load config also at startup, if there is one
 	loadConfig();
 }
 
@@ -78,9 +78,6 @@ void draw() {
 
 //depending on the configuration, construct a grid of nodes in the given pattern
 void constructGrid() {
-	//init arrayList
-	//nodes = new ArrayList<Node>();
-
 	//calculate width of the entire grid
 	float gridWidth = gridX * offset;
 	float gridHeight = gridY * offset;
@@ -89,7 +86,7 @@ void constructGrid() {
 	float xPos = (width - gridWidth)/2 + offset/2;
 	float yPos = (height - gridHeight)/2 + offset/2;
 
-	//add nodes depending on grid size, go through rows first for ID numbering
+	//add nodes depending on grid dimensions, go through rows first for ID numbering
 	for (int y = 0; y < gridY; y++) {
 		for (int x = 0; x < gridX; x++) {
 			Node n;
@@ -141,7 +138,7 @@ void oscEvent(OscMessage theOscMessage) {
 		//set ping IP to node IP if there is a match in IDs
 		for (Node n : nodes) {
 			if (id == n.nodeID) {
-				if (n.nodeIP == null) println("node with ID: " + n.nodeID + " has IP: " + ip);		//print only once
+				if (n.nodeIP == null) println("node with ID: " + n.nodeID + " has IP: " + ip + " and firmware v" + fw_version);		//print only once
 				n.nodeIP = ip;
 			} else {
 				n.nodeIP = "";
@@ -218,7 +215,7 @@ void saveConfig() {
 	saveJSONArray(config, "configs/" + gridX + "x" + gridY + ".json");
 }
 
-//load config from file with current grid size and write to grid
+//load config from file with current grid dimensions and write to grid; if there is a config file
 void loadConfig() {
 	println("loadConfig");
 
@@ -302,8 +299,29 @@ void keyPressed() {
 	//update firmware
 	if (keyCode == 'U') {
 		println("updateFirmware");
-		for (Node n : nodes) {
-			n.updateFirmware();
+
+		//update nodes that are in grid
+		// for (Node n : nodes) {
+		// 	n.updateFirmware();
+		// }
+
+		//update all nodes
+		for (String p : pings) {
+			NetAddress remoteLocation= new NetAddress(p, remotePort);
+
+			//tell node where 'version.txt' is located
+			OscMessage versionURLmessage = new OscMessage("/ufversionurl");
+			versionURLmessage.add(firmwareVersionURL);
+			oscP5.send(versionURLmessage, remoteLocation);
+
+			//tell node where 'firmware.bin' is located
+			OscMessage binaryURLmessage = new OscMessage("/ufbinaryurl");
+			binaryURLmessage.add(firmwareBinaryURL);
+			oscP5.send(binaryURLmessage, remoteLocation);
+
+			//tell node to update firmware from that location
+			OscMessage updateMessage = new OscMessage("/updateFirmware");
+			oscP5.send(updateMessage, remoteLocation);
 		}
 	}
 }

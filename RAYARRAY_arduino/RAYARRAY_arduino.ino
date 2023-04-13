@@ -1,5 +1,5 @@
-// take specific libraries for ESP8266
-// board file from here: https://arduino.esp8266.com/stable/package_esp8266com_index.json
+//take specific libraries for ESP8266
+//board file from here: https://arduino.esp8266.com/stable/package_esp8266com_index.json
 #include <ESP8266WiFi.h>
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266HTTPClient.h>
@@ -55,27 +55,32 @@ AsyncUDP udpOut;
 //initialize the stepper library
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 
-const int stepsPerRevolution = 2038;  // change this to fit the number of steps per revolution
+const int stepsPerRevolution = 2038;      //change this to fit the number of steps per revolution
 long rotation = 0;
-float jogValue = 999999999;
+float jogValue = 999999999;               //super high number as target for 'infinite' jog
 int direction;
 
 //95A Hall sensor analog input
-#define Hall_Sensor_Pin A0
+#define HALL_SENSOR_PIN A0
 
-float voltage;                  //voltage in this measuring cycle
-float lowestVoltage = 600;      //start higher than it ever will be
-float millisSinceLastHome = 0;  //how many milliseconds ago where we last home
-boolean homing = false;         //are we homing right now?
+float voltage;                            //voltage in this measuring cycle
+float lowestVoltage = 600;                //start higher than it ever will be
+float millisSinceLastHome = 0;            //how many milliseconds ago where we last home
+boolean homing = false;                   //are we homing right now?
 
 //LED pin
 #define LED_PIN 2
+int ledState = LOW;                       //is the LED on or off
+const long flashInterval = 500;             //how quickly does the LED flash in milliseconds
+unsigned long millisAtLastFlash = 0;   //how many milliseconds ago did we last turn on the LED
+boolean flashing = false;
 
 void setup() {
-  // ---------------------------------------------------------------------------------------- //
+  //do something with the firmware URLs?
   strncpy(URL_FW_VERSION, DEFAULT_URL_FW_VERSION, strlen(DEFAULT_URL_FW_VERSION));
   strncpy(URL_FW_BINARY, DEFAULT_URL_FW_BINARY, strlen(DEFAULT_URL_FW_BINARY));
   
+  //empty Serial port, not sure if this does anything
   Serial.flush();
 
   //init serial port
@@ -91,18 +96,19 @@ void setup() {
   Serial.print(" --> FW_VERSION: ");
   Serial.println(FW_VERSION);
   
+  //init networking stuff
   initWIFI();
   initUDP();
-  // ---------------------------------------------------------------------------------------- //
 
+  //init stepper and set to random direction for now
   initStepperMotor();
   direction = randomDirection();
 
   //init hall sensor
-  pinMode(Hall_Sensor_Pin, INPUT);
+  pinMode(HALL_SENSOR_PIN, INPUT);
 
   //init LED
-  //pinMode(LED_PIN, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
 }
 
 void loop() {
@@ -119,7 +125,8 @@ void loop() {
   //do whatever the stepper was told to
   stepper.run();
 
-  //flashLED();
+  //check if LED should be turned off (turned on by trigger)
+  stopFlash();
 }
 
 void initStepperMotor() {
@@ -164,10 +171,11 @@ void OSCinitHoming(OSCMessage &msg, int addrOffset) {
 //go to where hall sensor voltage is the highest
 void goHome() {
   //read hall sensor
-  float voltage = analogRead(Hall_Sensor_Pin);
+  float voltage = analogRead(HALL_SENSOR_PIN);
+  Serial.println(voltage);
 
   //find lowest voltage
-  if (voltage < lowestVoltage) lowestVoltage = voltage + 1;
+  if (voltage < lowestVoltage) lowestVoltage = voltage;
 
   //determine if we're home or not
   if (voltage > lowestVoltage) {
@@ -180,16 +188,26 @@ void goHome() {
     stepper.stop();
     delay(2000);
   }
-  Serial.println(voltage);
+  Serial.println(lowestVoltage);
 }
 
-void flashLED() {
-  // turn on LED
-  digitalWrite(LED_PIN, HIGH);
-  delay(1000);
-  // turn off LED
-  digitalWrite(LED_PIN, LOW);
-  delay(1000);
+//init flashing sequence
+void initFlash() {
+  millisAtLastFlash = millis();
+  flashing = true;
+  digitalWrite(LED_PIN, HIGH); 
+}
+
+//turn off LED after flashInterval milliseconds
+void stopFlash() {
+  //get current millis
+  float currentMillis = millis();
+  
+  //turn off and reset timer if interval is reached
+  if (flashing == true && (currentMillis - millisAtLastFlash >= flashInterval)) {
+    flashing = false;
+    digitalWrite(LED_PIN, LOW);
+  }
 }
 
 //do something every couple seconds
