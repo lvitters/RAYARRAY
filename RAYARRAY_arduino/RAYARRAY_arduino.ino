@@ -70,7 +70,9 @@ float lowestVoltage = 600;                //start higher than it ever will be
 boolean lowestVoltageFound = false;       //has the lowest voltage been found
 float lastVoltage;
 float voltageFindingCounter;
-float avrgVltg[10];
+float avrgVltg[5];
+unsigned int arraySize = 5;
+unsigned int homingCounter = 0;
 
 //LED pin
 #define LED_PIN 2
@@ -122,11 +124,6 @@ void loop() {
   else if (homing && lowestVoltageFound) {
     goHome();
   }
-
-  //if (homing) goHome();
-
-  //record stepper position
-  //stepperLastPosition = stepper.currentPosition();
 
   //do whatever the stepper was told to
   stepper.run();
@@ -193,28 +190,31 @@ void findLowestVoltage() {
 
   stepper.moveTo(jogValue);
 
-  for (int i = 9; i > 0; i--) {
-    if (i == 0) {
-      avrgVltg[i] = voltage;
-      Serial.println(avrgVltg[i - 1]);
-    } else {
-      avrgVltg[i] = avrgVltg[i - 1];
-    }
-    Serial.println(avrgVltg[i - 1]);
-    averageVoltage += avrgVltg[i - 1];
+  homingCounter++;
+
+  //move everything one index and add to averageVoltage
+  for(int i = arraySize-1; i > 0; i--)  {
+    avrgVltg[i] = avrgVltg[i-1];
+    averageVoltage += avrgVltg[i-1];
   }
+  //write new voltage to first index
+  avrgVltg[0] = voltage;
     
-  //averageVoltage /= 10;
+  //get average of last arraySize measurements
+  averageVoltage /= arraySize;
   
   Serial.println("averageVoltage: " + (String)averageVoltage + " lowestVoltage: " + (String)lowestVoltage);
 
-  //find lowest voltage
-  if (averageVoltage <= lowestVoltage) {
-    lowestVoltage = averageVoltage;
-  }
-  else if (averageVoltage > lowestVoltage) {
-    //lowestVoltageFound = true;
-    Serial.println("lowest voltage found");
+  //only start homing after avrgVltg is filled with measurements
+  if (homingCounter > 10) {
+    //find lowest voltage
+    if (averageVoltage <= lowestVoltage) {
+      lowestVoltage = averageVoltage;
+    }
+    else if (averageVoltage > lowestVoltage) {
+      lowestVoltageFound = true;
+      Serial.println("lowest voltage found");
+    }
   }
 }
 
