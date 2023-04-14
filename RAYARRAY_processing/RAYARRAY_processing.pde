@@ -10,6 +10,7 @@ String firmwareBinaryURL = "http://192.168.1.162:8080/release/firmware.bin";
 import controlP5.*;
 ControlP5 cp5InputFields;
 ControlFrame cf;
+Toggle jogToggle;		//global so it can be toggled off by other buttons
 PFont guiFont, idFont;
 CColor guiColor;
 int guiOffset = 150;

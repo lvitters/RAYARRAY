@@ -128,8 +128,8 @@ class ControlFrame extends PApplet {
 			.setColor(guiColor)
 			;		
 			
-		//put mirror to default
-		cp5GUI.addButton("jog")
+		//toggle jogging (button isn't a toggle because it doesn't know what state the node is in)
+		cp5GUI.addButton("toggle jog")
 			.plugTo(parent, "jog")
 			.setPosition(guiOffset/4, guiOffset * 5/3 + 10)
 			.setSize(100, 20)

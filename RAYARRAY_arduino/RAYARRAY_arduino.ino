@@ -145,7 +145,7 @@ void OSCrotate(OSCMessage &msg, int addrOffset) {
 }
 
 //init jogging toggle
-void OSCinitJogging(OSCMessage &msg, int addrOffset) {
+void OSCtoggleJogging(OSCMessage &msg, int addrOffset) {
   if (!jogging) {
     homing = false;
     jogging = true;

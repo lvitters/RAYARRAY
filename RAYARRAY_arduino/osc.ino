@@ -14,7 +14,7 @@ void onPacketOSC(AsyncUDPPacket packet) {
       
       msgIn.route("/goHome", OSCinitHoming);
 
-      msgIn.route("/jog", OSCinitJogging);
+      msgIn.route("/jog", OSCtoggleJogging);
 
       msgIn.route("/pingNode", OSCincomingPing);
 
