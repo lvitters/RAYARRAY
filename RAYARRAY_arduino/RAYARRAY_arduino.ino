@@ -115,7 +115,6 @@ void loop() {
   //do whatever
   if (homing && !lowestVoltageFound) findLowestVoltage();
   else if (homing && lowestVoltageFound) goHome();
-  else if (jogging) jog();
 
   //record stepper position
   //stepperLastPosition = stepper.currentPosition();
@@ -147,13 +146,14 @@ void OSCrotate(OSCMessage &msg, int addrOffset) {
 
 //init jogging toggle
 void OSCinitJogging(OSCMessage &msg, int addrOffset) {
-  Serial.println("jogging: " + (String)jogging);
   if (!jogging) {
     homing = false;
     jogging = true;
+    jog();
   } else {
     homing = false;
     jogging = false;
+    stepper.stop();
   }
 }
 
@@ -204,6 +204,7 @@ void goHome() {
   } else if (voltage > lowestVoltage) {
     Serial.println("home");
     homing = false;
+    lowestVoltageFound = false;
     direction = randomDirection();
     stepper.stop();
   }
