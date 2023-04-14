@@ -57,23 +57,20 @@ AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 
 const int stepsPerRevolution = 2038;      //change this to fit the number of steps per revolution
 long rotation = 0;
-float jogValue = 999999999;               //super high number as target for 'infinite' jog
 int direction;
+float jogValue = 999999999;               //super high number as target for 'infinite' jog
+boolean jogging = false;
 
 //95A Hall sensor analog input
 #define HALL_SENSOR_PIN A0
 
 float voltage;                            //voltage in this measuring cycle
 float lowestVoltage = 600;                //start higher than it ever will be
-float millisSinceLastHome = 0;            //how many milliseconds ago where we last home
 boolean homing = false;                   //are we homing right now?
+boolean lowestVoltageFound = false;       //has the lowest voltage been found
 
 //LED pin
 #define LED_PIN 2
-int ledState = LOW;                       //is the LED on or off
-const long flashInterval = 500;             //how quickly does the LED flash in milliseconds
-unsigned long millisAtLastFlash = 0;   //how many milliseconds ago did we last turn on the LED
-boolean flashing = false;
 
 void setup() {
   //do something with the firmware URLs?
@@ -115,12 +112,13 @@ void loop() {
   updateFirmware();
   ping();
 
-  //goHome if homing or jog if not homing (for testing)
-  if (homing) goHome();
-  else jog();
+  //do whatever
+  if (homing && !lowestVoltageFound) findLowestVoltage();
+  else if (homing && lowestVoltageFound) goHome();
+  else if (jogging) jog();
 
-  //count since last time homing sequence was finished
-  millisSinceLastHome++;
+  //record stepper position
+  //stepperLastPosition = stepper.currentPosition();
 
   //do whatever the stepper was told to
   stepper.run();
@@ -147,6 +145,18 @@ void OSCrotate(OSCMessage &msg, int addrOffset) {
   stepper.moveTo(rotation);
 }
 
+//init jogging toggle
+void OSCinitJogging(OSCMessage &msg, int addrOffset) {
+  Serial.println("jogging: " + (String)jogging);
+  if (!jogging) {
+    homing = false;
+    jogging = true;
+  } else {
+    homing = false;
+    jogging = false;
+  }
+}
+
 //move continuously
 void jog() {
   stepper.moveTo(jogValue * direction);
@@ -162,30 +172,41 @@ float randomDirection() {
 
 //initialize homing sequence
 void OSCinitHoming(OSCMessage &msg, int addrOffset) {
+  jogging = false;
   homing = true;
+}
+
+//read voltage and record lowest one
+void findLowestVoltage() {
+  //read hall sensor
+  float voltage = analogRead(HALL_SENSOR_PIN);
+  
+  Serial.println("voltage: " + (String)voltage + " lowestVoltage: " + (String)lowestVoltage);
+
+  //find lowest voltage
+  if (voltage <= lowestVoltage) {
+    lowestVoltage = voltage;
+  }
+  else if (voltage > lowestVoltage) {
+    lowestVoltageFound = true;
+    Serial.println("lowest voltage found");
+  }
 }
 
 //go to where hall sensor voltage is the highest
 void goHome() {
   //read hall sensor
   float voltage = analogRead(HALL_SENSOR_PIN);
-  Serial.println(voltage);
-
-  //find lowest voltage
-  if (voltage < lowestVoltage) lowestVoltage = voltage;
 
   //determine if we're home or not
-  if (voltage > lowestVoltage) {
-    jog();
-  } else if (voltage <= lowestVoltage) {
+  if (voltage <= lowestVoltage) {
+    stepper.moveTo(jogValue * direction);
+  } else if (voltage > lowestVoltage) {
     Serial.println("home");
     homing = false;
-    millisSinceLastHome = 0;
     direction = randomDirection();
     stepper.stop();
-    delay(2000);
   }
-  Serial.println(lowestVoltage);
 }
 
 //do something every couple seconds

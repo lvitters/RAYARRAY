@@ -14,6 +14,8 @@ void onPacketOSC(AsyncUDPPacket packet) {
       
       msgIn.route("/goHome", OSCinitHoming);
 
+      msgIn.route("/jog", OSCinitJogging);
+
       msgIn.route("/pingNode", OSCincomingPing);
 
       msgIn.route("/updateFirmware", OSCupdateFirmware);
@@ -31,14 +33,12 @@ void OSCincomingPing(OSCMessage &msg, int addrOffset) {
   char tmpstr[512];
   msg.getString(0, tmpstr);
   String ip = (char*)tmpstr;
-
-  Serial.println(ip);
+  //Serial.println(ip);
 
   if (ip == WiFi.localIP().toString().c_str()) {
     digitalWrite(LED_PIN, HIGH);
   } else {
     digitalWrite(LED_PIN, LOW);
-    Serial.println("turned off");
   }
 }
 

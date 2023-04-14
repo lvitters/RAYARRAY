@@ -144,35 +144,19 @@ class Node {
 		oscP5.send(homeMessage, remoteLocation);
 	}
 
+	//init jogging by sending /jog OSC message
+	void jog() {
+		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
+		OscMessage homeMessage = new OscMessage("/jog");
+		oscP5.send(homeMessage, remoteLocation);
+	}
+
 	//confirm if node receives ping and turn on its LED
 	void pingNode(String ip) {
 		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 		OscMessage pingMessage = new OscMessage("/pingNode");
 		pingMessage.add(ip);
 		oscP5.send(pingMessage, remoteLocation);
-	}
-
-	//update node's firmware by sending /updateFirmware OSC message 
-	void updateFirmware() {
-		if (nodeIP == null) {
-			println("node " + nodeID + " has no IP");	
-		} else {		
-			NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
-
-			//tell node where 'version.txt' is located
-			OscMessage versionURLmessage = new OscMessage("/ufversionurl");
-			versionURLmessage.add(firmwareVersionURL);
-			oscP5.send(versionURLmessage, remoteLocation);
-
-			//tell node where 'firmware.bin' is located
-			OscMessage binaryURLmessage = new OscMessage("/ufbinaryurl");
-			binaryURLmessage.add(firmwareBinaryURL);
-			oscP5.send(binaryURLmessage, remoteLocation);
-
-			//tell node to update firmware from that location
-			OscMessage updateMessage = new OscMessage("/updateFirmware");
-			oscP5.send(updateMessage, remoteLocation);
-		}
 	}
 
 	// ------------------------ ControlP5 input field for ID ------------------------ //

@@ -197,6 +197,11 @@ void controlEvent(ControlEvent theEvent) {
 		if (theEvent.getController().toString() == "goHome") {
 			goHome();
 		}
+
+		//if it comes from the "jog" controller then jog()
+		if (theEvent.getController().toString() == "jog") {
+			jog();
+		}
 	}
 }
 
@@ -256,6 +261,14 @@ void goHome() {
 	}
 }
 
+//init jogging for all nodes
+void jog() {
+	println("jog");
+	for (Node n : nodes) {
+		n.jog();
+	}
+}
+
 //control lasers
 void mousePressed() {		
 		//switch mode for the node that was clicked on with LEFT mouse button
@@ -306,11 +319,6 @@ void keyPressed() {
 	if (keyCode == 'U') {
 		println("updateFirmware");
 
-		//update only nodes that are in grid
-		// for (Node n : nodes) {
-		// 	n.updateFirmware();
-		// }
-
 		//update all nodes from list of IP adresses
 		for (String ip : ipAdresses) {
 			NetAddress remoteLocation= new NetAddress(ip, remotePort);
@@ -328,6 +336,8 @@ void keyPressed() {
 			//tell node to update firmware from that location
 			OscMessage updateMessage = new OscMessage("/updateFirmware");
 			oscP5.send(updateMessage, remoteLocation);
+
+			println("sent firmware update to: " + ip);
 		}
 	}
 }

@@ -122,7 +122,16 @@ class ControlFrame extends PApplet {
 		//put mirror to default
 		cp5GUI.addButton("go home")
 			.plugTo(parent, "goHome")
-			.setPosition(guiOffset/4, guiOffset * 5/3)
+			.setPosition(guiOffset/4, guiOffset * 5/3 - 10)
+			.setSize(100, 20)
+			.setFont(guiFont)
+			.setColor(guiColor)
+			;		
+			
+		//put mirror to default
+		cp5GUI.addButton("jog")
+			.plugTo(parent, "jog")
+			.setPosition(guiOffset/4, guiOffset * 5/3 + 10)
 			.setSize(100, 20)
 			.setFont(guiFont)
 			.setColor(guiColor)
