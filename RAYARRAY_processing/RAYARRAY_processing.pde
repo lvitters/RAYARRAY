@@ -264,7 +264,7 @@ void goHome() {
 
 //init jogging for all nodes
 void jog() {
-	println("jog");
+	println("jog toggle");
 	for (Node n : nodes) {
 		n.jog();
 	}

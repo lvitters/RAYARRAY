@@ -65,9 +65,12 @@ boolean jogging = false;
 #define HALL_SENSOR_PIN A0
 
 float voltage;                            //voltage in this measuring cycle
-float lowestVoltage = 600;                //start higher than it ever will be
 boolean homing = false;                   //are we homing right now?
+float lowestVoltage = 600;                //start higher than it ever will be
 boolean lowestVoltageFound = false;       //has the lowest voltage been found
+float lastVoltage;
+float voltageFindingCounter;
+float avrgVltg[10];
 
 //LED pin
 #define LED_PIN 2
@@ -113,8 +116,14 @@ void loop() {
   ping();
 
   //do whatever
-  if (homing && !lowestVoltageFound) findLowestVoltage();
-  else if (homing && lowestVoltageFound) goHome();
+  if (homing && !lowestVoltageFound) {
+    findLowestVoltage();
+  }
+  else if (homing && lowestVoltageFound) {
+    goHome();
+  }
+
+  //if (homing) goHome();
 
   //record stepper position
   //stepperLastPosition = stepper.currentPosition();
@@ -180,15 +189,31 @@ void OSCinitHoming(OSCMessage &msg, int addrOffset) {
 void findLowestVoltage() {
   //read hall sensor
   float voltage = analogRead(HALL_SENSOR_PIN);
+  float averageVoltage;
+
+  stepper.moveTo(jogValue);
+
+  for (int i = 9; i > 0; i--) {
+    if (i == 0) {
+      avrgVltg[i] = voltage;
+      Serial.println(avrgVltg[i - 1]);
+    } else {
+      avrgVltg[i] = avrgVltg[i - 1];
+    }
+    Serial.println(avrgVltg[i - 1]);
+    averageVoltage += avrgVltg[i - 1];
+  }
+    
+  //averageVoltage /= 10;
   
-  Serial.println("voltage: " + (String)voltage + " lowestVoltage: " + (String)lowestVoltage);
+  Serial.println("averageVoltage: " + (String)averageVoltage + " lowestVoltage: " + (String)lowestVoltage);
 
   //find lowest voltage
-  if (voltage <= lowestVoltage) {
-    lowestVoltage = voltage;
+  if (averageVoltage <= lowestVoltage) {
+    lowestVoltage = averageVoltage;
   }
-  else if (voltage > lowestVoltage) {
-    lowestVoltageFound = true;
+  else if (averageVoltage > lowestVoltage) {
+    //lowestVoltageFound = true;
     Serial.println("lowest voltage found");
   }
 }
@@ -198,15 +223,16 @@ void goHome() {
   //read hall sensor
   float voltage = analogRead(HALL_SENSOR_PIN);
 
+  Serial.println("voltage: " + (String)voltage + " lowestVoltage: " + (String)lowestVoltage);
+
   //determine if we're home or not
   if (voltage <= lowestVoltage) {
-    stepper.moveTo(jogValue * direction);
+    stepper.moveTo(jogValue);
   } else if (voltage > lowestVoltage) {
+    stepper.stop();
     Serial.println("home");
     homing = false;
-    lowestVoltageFound = false;
     direction = randomDirection();
-    stepper.stop();
   }
 }
 
