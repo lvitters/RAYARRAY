@@ -11,7 +11,7 @@ class Node {
 	String inputName;
 	Textfield inputField;
 
-	int nodeID;
+	int nodeID = -1;
 	String nodeIP = null;
 	long lastSend = 0;
 
@@ -181,10 +181,23 @@ class Node {
 
 	//get text input on submit
 	void submitID() {
-		//set node ID to input
-		nodeID = int(inputField.getText());
-		//reset node IP to be assigned again with next ping
-		nodeIP = null;
+		int id = int(inputField.getText());
+
+		//f the submitted ID is different from before
+		if (nodeID != id) {
+			//set node ID to input
+			nodeID = id;
+			
+			//ping node with something that is not its IP so it knows it is not assigned anymore (turn LED off)
+			pingNode("wrong IP");
+			
+			//reset node IP to possibly be assigned again with next ping
+			nodeIP = null;
+
+		//if it has not been set yet at all, just assign the submitted ID
+		} else if (nodeID == -1) {
+			nodeID = id;
+		}
 
 		//println("nodeID: " + nodeID);
 	}
