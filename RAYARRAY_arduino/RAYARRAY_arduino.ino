@@ -19,7 +19,7 @@ int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and re
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.01; // important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.03; // important for the firmware ota flashing process / increment for next upload
 
 // server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 // change server IP if needed
@@ -117,13 +117,13 @@ void loop() {
   updateFirmware();
   ping();
 
-  //do whatever
-  if (homing && !lowestVoltageFound) {
-    findLowestVoltage();
-  }
-  else if (homing && lowestVoltageFound) {
-    goHome();
-  }
+  // //do whatever
+  // if (homing && !lowestVoltageFound) {
+  //   findLowestVoltage();
+  // }
+  // else if (homing && lowestVoltageFound) {
+  //   goHome();
+  // }
 
   //do whatever the stepper was told to
   stepper.run();
@@ -193,27 +193,28 @@ void findLowestVoltage() {
   homingCounter++;
 
   //move everything one index and add to averageVoltage
-  for(int i = arraySize-1; i > 0; i--)  {
+  for(int i = arraySize; i > 0; i--)  {
     avrgVltg[i] = avrgVltg[i-1];
     averageVoltage += avrgVltg[i-1];
   }
+
   //write new voltage to first index
   avrgVltg[0] = voltage;
     
   //get average of last arraySize measurements
   averageVoltage /= arraySize;
   
-  Serial.println("averageVoltage: " + (String)averageVoltage + " lowestVoltage: " + (String)lowestVoltage);
+  Serial.println("voltage: " + (String)voltage + " averageVoltage: " + (String)averageVoltage + " lowestVoltage: " + (String)lowestVoltage);
 
   //only start homing after avrgVltg is filled with measurements
-  if (homingCounter > 10) {
+  if (homingCounter > arraySize * 2) {
     //find lowest voltage
     if (averageVoltage <= lowestVoltage) {
       lowestVoltage = averageVoltage;
     }
     else if (averageVoltage > lowestVoltage) {
-      lowestVoltageFound = true;
-      Serial.println("lowest voltage found");
+      //lowestVoltageFound = true;
+      //Serial.println("lowest voltage found");
     }
   }
 }

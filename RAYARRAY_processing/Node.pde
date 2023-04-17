@@ -181,7 +181,11 @@ class Node {
 
 	//get text input on submit
 	void submitID() {
+		//set node ID to input
 		nodeID = int(inputField.getText());
+		//reset node IP to be assigned again with next ping
+		nodeIP = null;
+
 		//println("nodeID: " + nodeID);
 	}
 }

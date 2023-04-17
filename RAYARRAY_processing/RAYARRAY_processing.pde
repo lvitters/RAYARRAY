@@ -24,8 +24,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 1;
-int gridY = 1;
+int gridX = 2;
+int gridY = 2;
 
 float scaleCentimetersToPixels = 4.0;	//adjust for screen size
 float windowX, windowY;
@@ -145,10 +145,6 @@ void oscEvent(OscMessage theOscMessage) {
 				if (n.nodeIP == null) println("node with ID: " + n.nodeID + " has IP: " + ip + " and firmware v" + fw_version);
 				n.nodeIP = ip;
 				n.pingNode(n.nodeIP);
-			//if there is no match, send wrong string to node, which turns the LED off, then set nodeIP to null
-			} else {
-				n.pingNode("not the correct IP");
-				n.nodeIP = null;
 			}
 		}
 
