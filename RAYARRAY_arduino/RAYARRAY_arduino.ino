@@ -19,7 +19,7 @@ int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and re
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.04; // important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.07; // important for the firmware ota flashing process / increment for next upload
 
 // server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 // change server IP if needed
@@ -129,8 +129,9 @@ void initStepperMotor() {
 
 //init jogging toggle
 void OSCtoggleJogging(OSCMessage &msg, int addrOffset) {
+  int OSCdirection = msg.getInt(0);
   if (!jogging) {
-    direction = randomDirection();
+    direction = OSCdirection;
     jogging = true;
     jog();
   } else {
@@ -200,6 +201,20 @@ void OSCgoHome(OSCMessage &msg, int addrOffset) {
   jogging = false;
   Serial.println("going home");
   stepper.moveTo(0);
+}
+
+//rotate from OSC messages
+void OSCrotate(OSCMessage &msg, int addrOffset) {
+  Serial.print("/rotate ");
+  float inputRotation = msg.getFloat(0);
+  Serial.print("\n");
+
+  rotation = (long) inputRotation % stepsPerRevolution;
+  
+  Serial.print(rotation);
+
+  //set destination
+  stepper.moveTo(rotation);
 }
 
 //do something every couple seconds

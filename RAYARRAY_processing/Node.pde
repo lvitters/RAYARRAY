@@ -145,9 +145,10 @@ class Node {
 	}
 
 	//init jogging by sending /jog OSC message
-	void jog() {
+	void jog(int direction) {
 		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 		OscMessage homeMessage = new OscMessage("/jog");
+		homeMessage.add(direction);
 		oscP5.send(homeMessage, remoteLocation);
 	}
 

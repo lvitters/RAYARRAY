@@ -24,8 +24,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 1;
-int gridY = 1;
+int gridX = 2;
+int gridY = 2;
 
 float scaleCentimetersToPixels = 4.0;	//adjust for screen size
 float windowX, windowY;
@@ -162,7 +162,7 @@ void setupGUI() {
 	cp5InputFields = new ControlP5(this);
 
 	//init controlFrame
-	cf = new ControlFrame(this, 400, 400, "GUI");
+	cf = new ControlFrame(this, 400, 600, "GUI");
 	surface.setLocation(420, 10);
 }
 
@@ -195,10 +195,16 @@ void controlEvent(ControlEvent theEvent) {
 			goHome();
 		}
 
-		//if it comes from the "jog" controller then jog()
-		if (theEvent.getController().toString() == "jog") {
-			jog();
+		//if it comes from the "jogLeft" controller then jog()
+		if (theEvent.getController().toString() == "jogLeft") {
+			jogLeft();
 		}
+
+		//if it comes from the "jogRight" controller then jog()
+		if (theEvent.getController().toString() == "jogRight") {
+			jogRight();
+		}
+
 	}
 }
 
@@ -259,10 +265,18 @@ void goHome() {
 }
 
 //init jogging for all nodes
-void jog() {
-	println("toggle jog");
+void jogLeft() {
+	println("toggled jogging left");
 	for (Node n : nodes) {
-		n.jog();
+		n.jog(-1);
+	}
+}
+
+//init jogging for all nodes
+void jogRight() {
+	println("toggled joging right");
+	for (Node n : nodes) {
+		n.jog(1);
 	}
 }
 
@@ -314,8 +328,6 @@ void keyPressed() {
 
 	//update firmware
 	if (keyCode == 'U') {
-		println("updateFirmware");
-
 		//update all nodes from list of IP adresses
 		for (String ip : ipAdresses) {
 			NetAddress remoteLocation= new NetAddress(ip, remotePort);

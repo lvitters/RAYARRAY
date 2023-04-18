@@ -14,6 +14,8 @@ void onPacketOSC(AsyncUDPPacket packet) {
 
       msgIn.route("/jog", OSCtoggleJogging);
 
+      msgIn.route("/rotate", OSCrotate);
+
       msgIn.route("/pingNode", OSCincomingPing);
 
       msgIn.route("/updateFirmware", OSCupdateFirmware);
