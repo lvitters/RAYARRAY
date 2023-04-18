@@ -69,7 +69,7 @@ boolean homing = true;                  //are we homing right now?
 unsigned int homingDuration = 25000;    //in milliseconds
 float previousVoltage = 0;              //voltage in the previous measuring cycle
 float lowestVoltage = 600;              //higher than it will ever be
-float smoothAlpha = 0.7;                //how much does the previous value affect the smoothed one
+float smoothAlpha = 0.5;                //how much does the previous value affect the smoothed one
 int homeStep;                           //step with the lowest voltage
 
 //LED pin
@@ -115,21 +115,7 @@ void loop() {
   updateFirmware();
   ping();
 
-  //after starting the program for x milliseconds and every x milliseconds
-  if ((millis() < homingDuration) && (millis() % 5 == 0) && homing == true) {
-    findLowestVoltage();
-  //if the lowest voltage was found after x milliseconds
-  } else if ((millis() > homingDuration) && homing) {
-    //move to recorded homeStep
-    stepper.moveTo(homeStep);
-    //if we're at that step, set to 0
-    if (stepper.currentPosition() == homeStep) {
-      stepper.setCurrentPosition(stepper.currentPosition());
-      Serial.println("home");
-      //set homing to false to stop this nightmare
-      homing = false;
-    }
-  }
+  findHomeStep();
 
   //do whatever the stepper was told to
   stepper.run();
@@ -178,7 +164,7 @@ void findLowestVoltage() {
   //find lowest voltage
   if (smoothVoltage <= lowestVoltage && smoothVoltage > 450) {  //TODO: hardcoded number is bad!
     lowestVoltage = smoothVoltage;
-    homeStep = stepper.currentPosition() % 2038;
+    homeStep = stepper.currentPosition();
   }
 
   Serial.println("voltage: " + (String)voltage + " smoothVoltage: " + (String)smoothVoltage + " lowestVoltage: " + (String)lowestVoltage);
@@ -187,7 +173,27 @@ void findLowestVoltage() {
   previousVoltage = voltage;
 }
 
-//go to the position recorded as home (0)
+//find where the homeStep is and go there
+void findHomeStep() {
+  //after starting the program for x milliseconds and every x milliseconds
+  if ((millis() < homingDuration) && (millis() % 5 == 0) && homing == true) {
+    findLowestVoltage();
+  //if the lowest voltage was found after x milliseconds
+  } else if ((millis() > homingDuration) && homing) {
+    //move to recorded homeStep
+    stepper.moveTo(homeStep);
+    //Serial.println("homeStep: " + (String)homeStep + " currentStep: " + (String)stepper.currentPosition());
+    //if we're at that step, set to 0
+    if (stepper.currentPosition() == homeStep) {
+      stepper.setCurrentPosition(0);
+      Serial.println("home found");
+      //set homing to false to stop this nightmare
+      homing = false;
+    }
+  }
+}
+
+//go to the position recorded as home
 void OSCgoHome(OSCMessage &msg, int addrOffset) {
   jogging = false;
   Serial.println("going home");
