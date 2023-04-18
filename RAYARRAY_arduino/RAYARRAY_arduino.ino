@@ -19,7 +19,7 @@ int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and re
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.03; // important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.04; // important for the firmware ota flashing process / increment for next upload
 
 // server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 // change server IP if needed
@@ -172,7 +172,7 @@ void findLowestVoltage() {
   //find lowest voltage
   if (smoothVoltage <= lowestVoltage && smoothVoltage > 500) {  //TODO: hardcoded number is bad!
     lowestVoltage = smoothVoltage;
-    homeStep = stepper.currentPosition();
+    homeStep = stepper.currentPosition() % 2038;
   }
 
   Serial.println("voltage: " + (String)voltage + " smoothVoltage: " + (String)smoothVoltage + " lowestVoltage: " + (String)lowestVoltage);
@@ -185,7 +185,7 @@ void findLowestVoltage() {
 void OSCgoHome(OSCMessage &msg, int addrOffset) {
   jogging = false;
   Serial.println("going home");
-  stepper.moveTo(0);
+  stepper.moveTo(homeStep);
 }
 
 //do something every couple seconds
