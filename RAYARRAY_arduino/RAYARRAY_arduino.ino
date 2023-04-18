@@ -59,21 +59,17 @@ const int stepsPerRevolution = 2038;      //change this to fit the number of ste
 long rotation = 0;
 int direction;
 float jogValue = 999999999;               //super high number as target for 'infinite' jog
-boolean jogging = false;
+boolean jogging = false;                  //are we jogging right now?
 
 //95A Hall sensor analog input
 #define HALL_SENSOR_PIN A0
 
-float voltage;                            //voltage in this measuring cycle
-boolean homing = true;                   //are we homing right now?
-float lowestVoltage = 600;                //start higher than it ever will be
-boolean lowestVoltageFound = false;       //has the lowest voltage been found
-float lastVoltage;
-float voltageFindingCounter;
-float avrgVltg[5];
-unsigned int arraySize = 5;
-unsigned int homingCounter = 0;
-int homeStep;
+//homing
+boolean homing = true;                  //are we homing right now?
+float previousVoltage = 0;              //voltage in the previous measuring cycle
+float lowestVoltage = 600;              //higher than it will ever be
+float smoothAlpha = 0.7;                //how much does the previous value affect the smoothed one
+int homeStep;                           //step with the lowest voltage
 
 //LED pin
 #define LED_PIN 2
@@ -118,13 +114,15 @@ void loop() {
   updateFirmware();
   ping();
 
-  if (millis() % 50 == 0) {
-    if (homing && !lowestVoltageFound) {
-      findLowestVoltage();
-    }
-    else if (homing && lowestVoltageFound) {
-      goHome();
-    }
+  //Serial.println(millis());
+
+  //after starting the program for x milliseconds and every x milliseconds
+  if ((millis() < 20000) && (millis() % 10 == 0) && homing == true) {
+    findLowestVoltage();
+  } else if ((millis() > 20000) && homing) {
+    stepper.moveTo(homeStep);
+    Serial.println("home");
+    homing = false;
   }
 
   //do whatever the stepper was told to
@@ -136,30 +134,12 @@ void initStepperMotor() {
   stepper.setAcceleration(1500);
 }
 
-//rotate from OSC messages
-void OSCrotate(OSCMessage &msg, int addrOffset) {
-  Serial.print("/rotate ");
-  float inputRotation = msg.getFloat(0);
-  Serial.print("\n");
-
-  //rotation = rotation % stepsPerRevolution;
-
-  rotation = (long) inputRotation;
-  
-  Serial.print(rotation);
-
-  //set destination
-  stepper.moveTo(rotation);
-}
-
 //init jogging toggle
 void OSCtoggleJogging(OSCMessage &msg, int addrOffset) {
   if (!jogging) {
-    homing = false;
     jogging = true;
     jog();
   } else {
-    homing = false;
     jogging = false;
     stepper.stop();
   }
@@ -178,67 +158,34 @@ float randomDirection() {
   return n;
 }
 
-//initialize homing sequence
-void OSCinitHoming(OSCMessage &msg, int addrOffset) {
-  jogging = false;
-  homing = true;
-}
-
-//read voltage and record lowest one
+//read voltage and record lowest one and the step where it is at
 void findLowestVoltage() {
   //read hall sensor
   float voltage = analogRead(HALL_SENSOR_PIN);
-  float averageVoltage;
 
+  //formula from Felix Fisgus
+  float smoothVoltage = smoothAlpha * voltage + (1-smoothAlpha) * previousVoltage;
+
+  //move along
   stepper.moveTo(jogValue);
 
-  //move everything one index and add to averageVoltage
-  for(int i = arraySize; i > 0; i--)  {
-    avrgVltg[i] = avrgVltg[i-1];
-    averageVoltage += avrgVltg[i-1];
+  //find lowest voltage
+  if (smoothVoltage <= lowestVoltage && smoothVoltage > 500) {  //TODO: hardcoded number is bad!
+    lowestVoltage = smoothVoltage;
+    homeStep = stepper.currentPosition();
   }
 
-  //write new voltage to first index
-  avrgVltg[0] = voltage;
-    
-  //get average of last arraySize measurements
-  averageVoltage /= arraySize;
-  
-  Serial.println("voltage: " + (String)voltage + " averageVoltage: " + (String)averageVoltage + " lowestVoltage: " + (String)lowestVoltage);
+  Serial.println("voltage: " + (String)voltage + " smoothVoltage: " + (String)smoothVoltage + " lowestVoltage: " + (String)lowestVoltage);
 
-  homingCounter++;
-
-  //only start homing after avrgVltg is filled with measurements
-  if (homingCounter > arraySize * 2) {
-    //find lowest voltage
-    if (averageVoltage <= lowestVoltage) {
-      lowestVoltage = averageVoltage;
-    }
-    else if (averageVoltage > lowestVoltage) {
-      //lowestVoltageFound = true;
-      homeStep = stepper.currentPosition();
-      //Serial.println(homeStep);
-      //Serial.println("lowest voltage found");
-    }
-  }
+  //record voltage for next measuring cycle
+  previousVoltage = voltage;
 }
 
-//go to where hall sensor voltage is the highest
-void goHome() {
-  //read hall sensor
-  float voltage = analogRead(HALL_SENSOR_PIN);
-
-  Serial.println("voltage: " + (String)voltage + " lowestVoltage: " + (String)lowestVoltage);
-
-  //determine if we're home or not
-  if (voltage <= lowestVoltage) {
-    stepper.moveTo(jogValue);
-  } else if (voltage > lowestVoltage) {
-    stepper.stop();
-    Serial.println("home");
-    homing = false;
-    direction = randomDirection();
-  }
+//go to the position recorded as home
+void OSCgoHome(OSCMessage &msg, int addrOffset) {
+  jogging = false;
+  Serial.println("going home");
+  stepper.moveTo(0);
 }
 
 //do something every couple seconds

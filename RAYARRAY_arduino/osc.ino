@@ -9,10 +9,8 @@ void onPacketOSC(AsyncUDPPacket packet) {
     msgIn.fill(packet.data(), packet.length());
     packet.flush();
     if (!msgIn.hasError()) {
-
-      msgIn.route("/rotate", OSCrotate);
       
-      msgIn.route("/goHome", OSCinitHoming);
+      msgIn.route("/goHome", OSCgoHome);
 
       msgIn.route("/jog", OSCtoggleJogging);
 
