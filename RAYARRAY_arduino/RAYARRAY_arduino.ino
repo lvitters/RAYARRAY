@@ -115,7 +115,8 @@ void loop() {
   updateFirmware();
   ping();
 
-  findHomeStep();
+  //for homingDuration milliseconds after startup, find the home step
+  setHomeStep();
 
   //do whatever the stepper was told to
   stepper.run();
@@ -129,6 +130,7 @@ void initStepperMotor() {
 //init jogging toggle
 void OSCtoggleJogging(OSCMessage &msg, int addrOffset) {
   if (!jogging) {
+    direction = randomDirection();
     jogging = true;
     jog();
   } else {
@@ -146,7 +148,7 @@ void jog() {
 float randomDirection() {
   int n = random(-1, 2);
   while (n == 0) n = random (-1, 2);
-  Serial.println("direction changed");
+  Serial.println("direction: " + (String)n);
   return n;
 }
 
@@ -164,17 +166,17 @@ void findLowestVoltage() {
   //find lowest voltage
   if (smoothVoltage <= lowestVoltage && smoothVoltage > 450) {  //TODO: hardcoded number is bad!
     lowestVoltage = smoothVoltage;
-    homeStep = stepper.currentPosition();
+    homeStep = stepper.currentPosition() % stepsPerRevolution;
   }
 
-  Serial.println("voltage: " + (String)voltage + " smoothVoltage: " + (String)smoothVoltage + " lowestVoltage: " + (String)lowestVoltage);
+  //Serial.println("voltage: " + (String)voltage + " smoothVoltage: " + (String)smoothVoltage + " lowestVoltage: " + (String)lowestVoltage);
 
   //record voltage for next measuring cycle
   previousVoltage = voltage;
 }
 
 //find where the homeStep is and go there
-void findHomeStep() {
+void setHomeStep() {
   //after starting the program for x milliseconds and every x milliseconds
   if ((millis() < homingDuration) && (millis() % 5 == 0) && homing == true) {
     findLowestVoltage();
@@ -184,7 +186,7 @@ void findHomeStep() {
     stepper.moveTo(homeStep);
     //Serial.println("homeStep: " + (String)homeStep + " currentStep: " + (String)stepper.currentPosition());
     //if we're at that step, set to 0
-    if (stepper.currentPosition() == homeStep) {
+    if (stepper.currentPosition() % stepsPerRevolution == homeStep) {
       stepper.setCurrentPosition(0);
       Serial.println("home found");
       //set homing to false to stop this nightmare
@@ -217,23 +219,3 @@ void updateFirmware() {
     UPDATE_FIRMWARE = false; // update done
   }
 }
-
-// THIS WILL INTERRUPT THE ROTATION AND IS NOT IMPORTANT ENOUGH TO DEAL WITH FOR THE MOMENT
-// //init flashing sequence
-// void initFlash() {
-//   millisAtLastFlash = millis();
-//   flashing = true;
-//   digitalWrite(LED_PIN, HIGH); 
-// }
-
-// //turn off LED after flashInterval milliseconds
-// void stopFlash() {
-//   //get current millis
-//   float currentMillis = millis();
-  
-//   //turn off and reset timer if interval is reached
-//   if (flashing == true && (currentMillis - millisAtLastFlash >= flashInterval)) {
-//     flashing = false;
-//     digitalWrite(LED_PIN, LOW);
-//   }
-// }
