@@ -65,7 +65,7 @@ boolean jogging = false;
 #define HALL_SENSOR_PIN A0
 
 float voltage;                            //voltage in this measuring cycle
-boolean homing = false;                   //are we homing right now?
+boolean homing = true;                   //are we homing right now?
 float lowestVoltage = 600;                //start higher than it ever will be
 boolean lowestVoltageFound = false;       //has the lowest voltage been found
 float lastVoltage;
@@ -73,6 +73,7 @@ float voltageFindingCounter;
 float avrgVltg[5];
 unsigned int arraySize = 5;
 unsigned int homingCounter = 0;
+int homeStep;
 
 //LED pin
 #define LED_PIN 2
@@ -117,12 +118,13 @@ void loop() {
   updateFirmware();
   ping();
 
-  // //do whatever
-  if (homing && !lowestVoltageFound) {
-    findLowestVoltage();
-  }
-  else if (homing && lowestVoltageFound) {
-    goHome();
+  if (millis() % 50 == 0) {
+    if (homing && !lowestVoltageFound) {
+      findLowestVoltage();
+    }
+    else if (homing && lowestVoltageFound) {
+      goHome();
+    }
   }
 
   //do whatever the stepper was told to
@@ -190,35 +192,35 @@ void findLowestVoltage() {
 
   stepper.moveTo(jogValue);
 
-  //homingCounter++;
-
   //move everything one index and add to averageVoltage
-  // for(int i = arraySize; i > 0; i--)  {
-  //   avrgVltg[i] = avrgVltg[i-1];
-  //   averageVoltage += avrgVltg[i-1];
-  // }
+  for(int i = arraySize; i > 0; i--)  {
+    avrgVltg[i] = avrgVltg[i-1];
+    averageVoltage += avrgVltg[i-1];
+  }
 
   //write new voltage to first index
-  //avrgVltg[0] = voltage;
+  avrgVltg[0] = voltage;
     
   //get average of last arraySize measurements
-  //averageVoltage /= arraySize;
+  averageVoltage /= arraySize;
   
-  //Serial.println("voltage: " + (String)voltage + " averageVoltage: " + (String)averageVoltage + " lowestVoltage: " + (String)lowestVoltage);
+  Serial.println("voltage: " + (String)voltage + " averageVoltage: " + (String)averageVoltage + " lowestVoltage: " + (String)lowestVoltage);
 
-  Serial.println("voltage: " + (String)voltage);
+  homingCounter++;
 
   //only start homing after avrgVltg is filled with measurements
-  // if (homingCounter > arraySize * 2) {
-  //   //find lowest voltage
-  //   if (averageVoltage <= lowestVoltage) {
-  //     lowestVoltage = averageVoltage;
-  //   }
-  //   else if (averageVoltage > lowestVoltage) {
-  //     //lowestVoltageFound = true;
-  //     //Serial.println("lowest voltage found");
-  //   }
-  // }
+  if (homingCounter > arraySize * 2) {
+    //find lowest voltage
+    if (averageVoltage <= lowestVoltage) {
+      lowestVoltage = averageVoltage;
+    }
+    else if (averageVoltage > lowestVoltage) {
+      //lowestVoltageFound = true;
+      homeStep = stepper.currentPosition();
+      //Serial.println(homeStep);
+      //Serial.println("lowest voltage found");
+    }
+  }
 }
 
 //go to where hall sensor voltage is the highest
