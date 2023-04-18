@@ -66,6 +66,7 @@ boolean jogging = false;                  //are we jogging right now?
 
 //homing
 boolean homing = true;                  //are we homing right now?
+unsigned int homingDuration = 25000;    //in milliseconds
 float previousVoltage = 0;              //voltage in the previous measuring cycle
 float lowestVoltage = 600;              //higher than it will ever be
 float smoothAlpha = 0.7;                //how much does the previous value affect the smoothed one
@@ -114,15 +115,20 @@ void loop() {
   updateFirmware();
   ping();
 
-  //Serial.println(millis());
-
   //after starting the program for x milliseconds and every x milliseconds
-  if ((millis() < 20000) && (millis() % 10 == 0) && homing == true) {
+  if ((millis() < homingDuration) && (millis() % 5 == 0) && homing == true) {
     findLowestVoltage();
-  } else if ((millis() > 20000) && homing) {
+  //if the lowest voltage was found after x milliseconds
+  } else if ((millis() > homingDuration) && homing) {
+    //move to recorded homeStep
     stepper.moveTo(homeStep);
-    Serial.println("home");
-    homing = false;
+    //if we're at that step, set to 0
+    if (stepper.currentPosition() == homeStep) {
+      stepper.setCurrentPosition(stepper.currentPosition());
+      Serial.println("home");
+      //set homing to false to stop this nightmare
+      homing = false;
+    }
   }
 
   //do whatever the stepper was told to
@@ -170,7 +176,7 @@ void findLowestVoltage() {
   stepper.moveTo(jogValue);
 
   //find lowest voltage
-  if (smoothVoltage <= lowestVoltage && smoothVoltage > 500) {  //TODO: hardcoded number is bad!
+  if (smoothVoltage <= lowestVoltage && smoothVoltage > 450) {  //TODO: hardcoded number is bad!
     lowestVoltage = smoothVoltage;
     homeStep = stepper.currentPosition() % 2038;
   }
@@ -181,11 +187,11 @@ void findLowestVoltage() {
   previousVoltage = voltage;
 }
 
-//go to the position recorded as home
+//go to the position recorded as home (0)
 void OSCgoHome(OSCMessage &msg, int addrOffset) {
   jogging = false;
   Serial.println("going home");
-  stepper.moveTo(homeStep);
+  stepper.moveTo(0);
 }
 
 //do something every couple seconds
