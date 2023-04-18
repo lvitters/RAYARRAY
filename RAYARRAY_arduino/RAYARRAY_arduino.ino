@@ -118,12 +118,12 @@ void loop() {
   ping();
 
   // //do whatever
-  // if (homing && !lowestVoltageFound) {
-  //   findLowestVoltage();
-  // }
-  // else if (homing && lowestVoltageFound) {
-  //   goHome();
-  // }
+  if (homing && !lowestVoltageFound) {
+    findLowestVoltage();
+  }
+  else if (homing && lowestVoltageFound) {
+    goHome();
+  }
 
   //do whatever the stepper was told to
   stepper.run();
@@ -190,33 +190,35 @@ void findLowestVoltage() {
 
   stepper.moveTo(jogValue);
 
-  homingCounter++;
+  //homingCounter++;
 
   //move everything one index and add to averageVoltage
-  for(int i = arraySize; i > 0; i--)  {
-    avrgVltg[i] = avrgVltg[i-1];
-    averageVoltage += avrgVltg[i-1];
-  }
+  // for(int i = arraySize; i > 0; i--)  {
+  //   avrgVltg[i] = avrgVltg[i-1];
+  //   averageVoltage += avrgVltg[i-1];
+  // }
 
   //write new voltage to first index
-  avrgVltg[0] = voltage;
+  //avrgVltg[0] = voltage;
     
   //get average of last arraySize measurements
-  averageVoltage /= arraySize;
+  //averageVoltage /= arraySize;
   
-  Serial.println("voltage: " + (String)voltage + " averageVoltage: " + (String)averageVoltage + " lowestVoltage: " + (String)lowestVoltage);
+  //Serial.println("voltage: " + (String)voltage + " averageVoltage: " + (String)averageVoltage + " lowestVoltage: " + (String)lowestVoltage);
+
+  Serial.println("voltage: " + (String)voltage);
 
   //only start homing after avrgVltg is filled with measurements
-  if (homingCounter > arraySize * 2) {
-    //find lowest voltage
-    if (averageVoltage <= lowestVoltage) {
-      lowestVoltage = averageVoltage;
-    }
-    else if (averageVoltage > lowestVoltage) {
-      //lowestVoltageFound = true;
-      //Serial.println("lowest voltage found");
-    }
-  }
+  // if (homingCounter > arraySize * 2) {
+  //   //find lowest voltage
+  //   if (averageVoltage <= lowestVoltage) {
+  //     lowestVoltage = averageVoltage;
+  //   }
+  //   else if (averageVoltage > lowestVoltage) {
+  //     //lowestVoltageFound = true;
+  //     //Serial.println("lowest voltage found");
+  //   }
+  // }
 }
 
 //go to where hall sensor voltage is the highest
