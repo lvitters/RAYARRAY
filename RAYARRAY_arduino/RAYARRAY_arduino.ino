@@ -19,7 +19,7 @@ int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and re
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.07; // important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.08; // important for the firmware ota flashing process / increment for next upload
 
 // server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 // change server IP if needed
@@ -55,11 +55,12 @@ AsyncUDP udpOut;
 //initialize the stepper library
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 
-const int stepsPerRevolution = 2038;      //change this to fit the number of steps per revolution
+const int stepsPerRevolution = 2038 * 2;      //change this to fit the number of steps per revolution
 long rotation = 0;
 int direction;
 float jogValue = 999999999;               //super high number as target for 'infinite' jog
 boolean jogging = false;                  //are we jogging right now?
+unsigned long homingSteps = 0;            //step counter for homing
 
 //95A Hall sensor analog input
 #define HALL_SENSOR_PIN A0
@@ -70,7 +71,7 @@ unsigned int homingDuration = 25000;    //in milliseconds
 float previousVoltage = 0;              //voltage in the previous measuring cycle
 float lowestVoltage = 600;              //higher than it will ever be
 float smoothAlpha = 0.5;                //how much does the previous value affect the smoothed one
-int homeStep;                           //step with the lowest voltage
+unsigned long homeStep;                 //step with the lowest voltage
 
 //LED pin
 #define LED_PIN 2
@@ -100,7 +101,7 @@ void setup() {
   initWIFI();
   initUDP();
 
-  //init stepper and set to random direction for now
+  //init stepper and set to random direction for now, record where homing began
   initStepperMotor();
   direction = randomDirection();
 
@@ -158,11 +159,29 @@ void findLowestVoltage() {
   //read hall sensor
   float voltage = analogRead(HALL_SENSOR_PIN);
 
-  //formula from Felix Fisgus
+  //smoothing formula from Felix Fisgus
   float smoothVoltage = smoothAlpha * voltage + (1-smoothAlpha) * previousVoltage;
 
+  //get current step
+  long currentStep = stepper.currentPosition();
+
+  // //change direction after x steps
+  // if (currentStep > stepsPerRevolution + 100 + homingSteps) {
+  //   direction = -direction;
+  //   homingSteps = currentStep;
+  // }
+
+  //change direction after x steps
+  if (currentStep > stepsPerRevolution + 100) {
+    direction = -1;
+  } else if (currentStep < -100) {
+    direction = 1;
+  }
+
   //move along
-  stepper.moveTo(jogValue);
+  stepper.moveTo(jogValue * direction);
+
+  Serial.println("current: " + (String)currentStep + " direction: " + (String)direction);
 
   //find lowest voltage
   if (smoothVoltage <= lowestVoltage && smoothVoltage > 450) {  //TODO: hardcoded number is bad!
