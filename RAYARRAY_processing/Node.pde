@@ -155,7 +155,7 @@ class Node {
 	//send message to nodes to retrieve step
 	void getStep() {
 		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
-		OscMessage stepMessage = new OscMessage("/step");
+		OscMessage stepMessage = new OscMessage("/getStep");
 		oscP5.send(stepMessage, remoteLocation);
 	}
 

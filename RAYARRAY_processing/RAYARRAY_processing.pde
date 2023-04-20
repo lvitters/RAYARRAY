@@ -119,14 +119,31 @@ void updateNodes() {
 
 //incoming OSC messages from nodes
 void oscEvent(OscMessage theOscMessage) {
+	//if it is a step
+	if (theOscMessage.addrPattern().equals("/step") == true) {
+		//record info from node
+		int id = theOscMessage.get(0).intValue();
+		//String ip = theOscMessage.get(2).stringValue();
+		//String mac = theOscMessage.get(3).stringValue();
+		//float fw_version = theOscMessage.get(4).floatValue();
+		int step = theOscMessage.get(1).intValue();
+
+		println(step);
+		
+		// for (Node n : nodes) {
+		// 	if (n.nodeID == id) {
+		// 		n.rotationSteps = step;
+		// 	}
+		// }
+	}
+
 	//if it is a ping
-	if (theOscMessage.addrPattern().equals("/ping") == true) {
+	else if (theOscMessage.addrPattern().equals("/ping") == true) {
 		//record info from node
 		int id = theOscMessage.get(1).intValue();
 		String ip = theOscMessage.get(2).stringValue();
 		//String mac = theOscMessage.get(3).stringValue();
 		float fw_version = theOscMessage.get(4).floatValue();
-		int step = theOscMessage.get(5).intValue();
 
 		// println("got a ping from:");
 		// println("ID: " + id + " with IP: " + ip);
@@ -279,7 +296,7 @@ void jogLeft() {
 
 //init jogging for all nodes
 void jogRight() {
-	println("toggled joging right");
+	println("toggled jogging right");
 	for (Node n : nodes) {
 		n.jog(1);
 	}

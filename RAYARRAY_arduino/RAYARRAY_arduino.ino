@@ -244,22 +244,27 @@ void ping() {
   }
 }
 
-void sendStepAfterMessage(OSCMessage &msg, int addrOffset) {
-  sendPingToProcessing();
+void sendStepToProcessing(OSCMessage &msg, int addrOffset) {
+  AsyncUDPMessage udpMsgStep;
+  OSCMessage oscMsgPing("/step");
+  oscMsgPing.add(NODE_ID);
+  oscMsgPing.add((int)stepper.currentPosition());
+  oscMsgPing.send(udpMsgStep);
+  oscMsgPing.empty();
+  udpOut.broadcastTo(udpMsgStep, networkOutPort);
 }
 
 void sendPingToProcessing() {
-  AsyncUDPMessage udpMsg;
-  OSCMessage oscMsg("/ping");
-  oscMsg.add(int(millis()));
-  oscMsg.add(NODE_ID);
-  oscMsg.add(WiFi.localIP().toString().c_str());
-  oscMsg.add(WiFi.macAddress().c_str());
-  oscMsg.add(FW_VERSION);
-  oscMsg.add((int)stepper.currentPosition());
-  oscMsg.send(udpMsg);
-  oscMsg.empty();
-  udpOut.broadcastTo(udpMsg, networkOutPort);
+  AsyncUDPMessage udpMsgPing;
+  OSCMessage oscMsgPing("/ping");
+  oscMsgPing.add(int(millis()));
+  oscMsgPing.add(NODE_ID);
+  oscMsgPing.add(WiFi.localIP().toString().c_str());
+  oscMsgPing.add(WiFi.macAddress().c_str());
+  oscMsgPing.add(FW_VERSION);
+  oscMsgPing.send(udpMsgPing);
+  oscMsgPing.empty();
+  udpOut.broadcastTo(udpMsgPing, networkOutPort);
 }
 
 //check for new firmware on the server

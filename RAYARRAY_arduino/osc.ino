@@ -16,7 +16,7 @@ void onPacketOSC(AsyncUDPPacket packet) {
 
       msgIn.route("/rotate", OSCrotate);
 
-      msgIn.route("/getStep", sendStepAfterMessage);
+      msgIn.route("/getStep", sendStepToProcessing);
 
       msgIn.route("/pingNode", OSCincomingPing);
 
