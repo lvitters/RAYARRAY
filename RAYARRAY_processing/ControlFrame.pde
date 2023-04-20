@@ -72,7 +72,7 @@ class ControlFrame extends PApplet {
 			.setPosition(guiOffset/4, guiOffset)
 			.setSize(200, 20)
 			.setRange(1, 100)
-			.setValue(10)
+			.setValue(30)
 			;
 
 		//save config
@@ -96,7 +96,7 @@ class ControlFrame extends PApplet {
 		//toggle jogging (button isn't a toggle because it doesn't know what state the node is in)
 		cp5GUI.addButton("jog left")
 			.plugTo(parent, "jogLeft")
-			.setPosition(guiOffset/4, guiOffset * 4/3 + 40)
+			.setPosition(guiOffset/4, guiOffset * 4.5/3)
 			.setSize(80, 20)
 			.setFont(guiFont)
 			.setColor(guiColor)
@@ -105,10 +105,19 @@ class ControlFrame extends PApplet {
 		//toggle jogging (button isn't a toggle because it doesn't know what state the node is in)
 		cp5GUI.addButton("jog right")
 			.plugTo(parent, "jogRight")
-			.setPosition(guiOffset/4 + 90, guiOffset * 4/3 + 40)
+			.setPosition(guiOffset/4 + 90, guiOffset * 4.5/3)
 			.setSize(80, 20)
 			.setFont(guiFont)
 			.setColor(guiColor)
+			;
+			
+		//get the mirrors' current step
+		cp5GUI.addButton("get steps")
+			.plugTo(parent, "getSteps")
+			.setFont(guiFont)
+			.setColor(guiColor)
+			.setPosition(guiOffset/4, guiOffset * 5/3)
+			.setSize(100, 20)
 			;	
 			
 		//toggle if mirror should rotate
@@ -118,7 +127,7 @@ class ControlFrame extends PApplet {
 			.setColor(guiColor)
 			.setPosition(guiOffset/4, guiOffset * 6.5/3)
 			.setSize(100, 20)
-			.setValue(true)
+			.setValue(false)
 			;
 
 		//rotation modes

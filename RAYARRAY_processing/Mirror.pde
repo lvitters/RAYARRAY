@@ -55,7 +55,7 @@ class Mirror {
 		rotationDegrees *= rotationSpeed;
 
 		//translate to stepper motor steps
-		rotationSteps = map(rotationDegrees, 0, 360, 0, 2038);
+		rotationSteps = map(rotationDegrees, 0, 360, 0, 2038 * 2);
 
 		//translate to radians for display
 		rotationRadians = radians(rotationDegrees);

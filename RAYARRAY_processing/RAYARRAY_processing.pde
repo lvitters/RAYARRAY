@@ -24,8 +24,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 2;
-int gridY = 2;
+int gridX = 1;
+int gridY = 1;
 
 float scaleCentimetersToPixels = 4.0;	//adjust for screen size
 float windowX, windowY;
@@ -124,14 +124,15 @@ void oscEvent(OscMessage theOscMessage) {
 		//record info from node
 		int id = theOscMessage.get(1).intValue();
 		String ip = theOscMessage.get(2).stringValue();
-		String mac = theOscMessage.get(3).stringValue();
-		float fw_version = theOscMessage.get(4).floatValue();
+		float fw_version = theOscMessage.get(3).floatValue();
+		int step = theOscMessage.get(4).intValue();
+
+		println(step);
 
 		// println("got a ping from:");
 		// println("ID: " + id + " with IP: " + ip);
 		// println("id         : " + id);
 		// println("fw_version : " + fw_version);
-		// println("mac        : " + mac);
 		
 		//add IP from ping to list of IPs
 		if (!ipAdresses.contains(ip)) ipAdresses.add(ip);
@@ -203,6 +204,11 @@ void controlEvent(ControlEvent theEvent) {
 		//if it comes from the "jogRight" controller then jog()
 		if (theEvent.getController().toString() == "jogRight") {
 			jogRight();
+		}
+
+		//if it comes from the "getStep" controller then getSteps()
+		if (theEvent.getController().toString() == "getSteps") {
+			getSteps();
 		}
 
 	}
@@ -277,6 +283,14 @@ void jogRight() {
 	println("toggled joging right");
 	for (Node n : nodes) {
 		n.jog(1);
+	}
+}
+
+//get current step from all nodes
+void getSteps() {
+	println("get current step from nodes");
+	for (Node n : nodes) {
+		n.getStep();
 	}
 }
 

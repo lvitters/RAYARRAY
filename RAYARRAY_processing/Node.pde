@@ -152,6 +152,13 @@ class Node {
 		oscP5.send(homeMessage, remoteLocation);
 	}
 
+	//send message to nodes to retrieve step
+	void getStep() {
+		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
+		OscMessage stepMessage = new OscMessage("/step");
+		oscP5.send(stepMessage, remoteLocation);
+	}
+
 	//confirm if node receives ping and turn on its LED
 	void pingNode(String ip) {
 		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);

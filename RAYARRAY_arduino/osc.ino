@@ -16,6 +16,8 @@ void onPacketOSC(AsyncUDPPacket packet) {
 
       msgIn.route("/rotate", OSCrotate);
 
+      msgIn.route("/getStep", sendStepAfterMessage);
+
       msgIn.route("/pingNode", OSCincomingPing);
 
       msgIn.route("/updateFirmware", OSCupdateFirmware);
@@ -79,15 +81,18 @@ void OSCupdateFirmwareSetBinaryURL(OSCMessage &msg, int addrOffset) {
   }
 }
 
+void sendStepAfterMessage(OSCMessage &msg, int addrOffset) {
+  sendPingToProcessing();
+}
+
 void sendPingToProcessing() {
   AsyncUDPMessage udpMsg;
   OSCMessage oscMsg("/ping");
   oscMsg.add(int(millis()));
   oscMsg.add(NODE_ID);
   oscMsg.add(WiFi.localIP().toString().c_str());
-  oscMsg.add(WiFi.macAddress().c_str());
   oscMsg.add(FW_VERSION);
-  oscMsg.add(123); // send some other data
+  oscMsg.add((int)stepper.currentPosition());
   oscMsg.send(udpMsg);
   oscMsg.empty();
   udpOut.broadcastTo(udpMsg, networkOutPort);
