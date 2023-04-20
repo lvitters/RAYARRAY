@@ -20,7 +20,9 @@ class Mirror {
 	//set start and end point according to rotation
 	void setPointsAlongRadius(float r) {
 		
-		r = -r/2; //TODO: understand why
+		r = -r/2; 	//TODO: understand why
+
+		r += PI/4;	//to correct for the actual nodes orientation
 		
 		//apply rotation to beginning and end point of mirror here instead of using rotate() so that the cast() method knows all the absolute points
 		start.set(mirrorRadius * sin(r), mirrorRadius * cos(r));
@@ -39,23 +41,23 @@ class Mirror {
 		//increment "time" if rotateMirrors is true
 		if (rotateMirrors) rT += .003;
 
-		//rotate according to rotation_mode (set by DropdownList)
-		switch(rotationMode) {
-			//sine rotation
-			case 0:
-				rotationDegrees = map(sin(rT), -1, 1, 0, 360);
-				break;
-			//noise rotation
-			case 1:
-				rotationDegrees = map(noise(rT), -1, 1, 0, 360);
-				break;
-		}
+		// //rotate according to rotation_mode (set by DropdownList)
+		// switch(rotationMode) {
+		// 	//sine rotation
+		// 	case 0:
+		// 		rotationDegrees = map(sin(rT), -1, 1, 0, 360);
+		// 		break;
+		// 	//noise rotation
+		// 	case 1:
+		// 		rotationDegrees = map(noise(rT), -1, 1, 0, 360);
+		// 		break;
+		// }
 
 		//apply rotation speed
-		rotationDegrees *= rotationSpeed;
+		//rotationDegrees *= rotationSpeed;
 
 		//translate to stepper motor steps
-		rotationSteps = map(rotationDegrees, 0, 360, 0, 2038 * 2);
+		rotationSteps = rotationDegrees * (stepsPerRevolution / 360);
 
 		//translate to radians for display
 		rotationRadians = radians(rotationDegrees);
@@ -68,7 +70,7 @@ class Mirror {
         stroke(255);
         line(start.x, start.y, end.x, end.y);
 
-        //draw normal (DPP)
+        //draw normal (from DPP)
         // strokeWeight(1);
         // final float mNormalScale = 10;
         // line(

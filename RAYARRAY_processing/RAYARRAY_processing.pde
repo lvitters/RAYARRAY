@@ -41,6 +41,7 @@ boolean rotateLaser = false;
 float rotationSpeed = 1;
 int rotationMode = 0;
 boolean rotateMirrors;
+int stepsPerRevolution = 2038 * 2;
 
 void settings() {
 	//scale window size according to grid measurements
@@ -123,18 +124,16 @@ void oscEvent(OscMessage theOscMessage) {
 	if (theOscMessage.addrPattern().equals("/step") == true) {
 		//record info from node
 		int id = theOscMessage.get(0).intValue();
-		//String ip = theOscMessage.get(2).stringValue();
-		//String mac = theOscMessage.get(3).stringValue();
-		//float fw_version = theOscMessage.get(4).floatValue();
 		int step = theOscMessage.get(1).intValue();
 
-		println(step);
+		//println(step);
 		
-		// for (Node n : nodes) {
-		// 	if (n.nodeID == id) {
-		// 		n.rotationSteps = step;
-		// 	}
-		// }
+		for (Node n : nodes) {
+			if (n.nodeID == id) {
+				n.mirror.rotationDegrees = step / (stepsPerRevolution / 360) * 2;		//why the hell is this 2??
+				//println(n.mirror.rotationDegrees);
+			}
+		}
 	}
 
 	//if it is a ping

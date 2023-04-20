@@ -55,12 +55,11 @@ AsyncUDP udpOut;
 //initialize the stepper library
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 
-const int stepsPerRevolution = 2038 * 2;      //change this to fit the number of steps per revolution
-long rotation = 0;
-int direction;
+const int stepsPerRevolution = 2038 * 2;  //change this to fit the number of steps per revolution
+long rotationSteps = 0;                   //current rotation in steps
+int direction;                            //direction of automatic rotation
 float jogValue = 999999999;               //super high number as target for 'infinite' jog
 boolean jogging = false;                  //are we jogging right now?
-unsigned long homingSteps = 0;            //step counter for homing
 
 //95A Hall sensor analog input
 #define HALL_SENSOR_PIN A0
@@ -71,7 +70,9 @@ unsigned int homingDuration = 25000;    //in milliseconds
 float previousVoltage = 0;              //voltage in the previous measuring cycle
 float lowestVoltage = 600;              //higher than it will ever be
 float smoothAlpha = 0.5;                //how much does the previous value affect the smoothed one
-unsigned long homeStep;                 //step with the lowest voltage
+long homeStep;                          //step with the lowest voltage
+long lastStep;                          //what was the last step?
+long currentStep;                       //where is the motor currently
 
 //LED pin
 #define LED_PIN 2
@@ -160,18 +161,12 @@ void findLowestVoltage() {
   float voltage = analogRead(HALL_SENSOR_PIN);
 
   //smoothing formula from Felix Fisgus
-  float smoothVoltage = smoothAlpha * voltage + (1-smoothAlpha) * previousVoltage;
-
+  float smoothVoltage = smoothAlpha * voltage + (1-smoothAlpha) * previousVoltage;  
+  
   //get current step
   long currentStep = stepper.currentPosition();
 
-  // //change direction after x steps
-  // if (currentStep > stepsPerRevolution + 100 + homingSteps) {
-  //   direction = -direction;
-  //   homingSteps = currentStep;
-  // }
-
-  //change direction after x steps
+  //change direction if "out of bounds"
   if (currentStep > stepsPerRevolution + 100) {
     direction = -1;
   } else if (currentStep < -100) {
@@ -181,12 +176,12 @@ void findLowestVoltage() {
   //move along
   stepper.moveTo(jogValue * direction);
 
-  Serial.println("current: " + (String)currentStep + " direction: " + (String)direction);
+  //Serial.println("current: " + (String)currentStep + " direction: " + (String)direction);
 
   //find lowest voltage
   if (smoothVoltage <= lowestVoltage && smoothVoltage > 450) {  //TODO: hardcoded number is bad!
     lowestVoltage = smoothVoltage;
-    homeStep = stepper.currentPosition() % stepsPerRevolution;
+    homeStep = currentStep % stepsPerRevolution;
   }
 
   //Serial.println("voltage: " + (String)voltage + " smoothVoltage: " + (String)smoothVoltage + " lowestVoltage: " + (String)lowestVoltage);
@@ -204,13 +199,15 @@ void setHomeStep() {
   } else if ((millis() > homingDuration) && homing) {
     //move to recorded homeStep
     stepper.moveTo(homeStep);
+
     //Serial.println("homeStep: " + (String)homeStep + " currentStep: " + (String)stepper.currentPosition());
-    //if we're at that step, set to 0
+
+    //if we're at that step, set to 0 and set homing to false to stop this nightmare
     if (stepper.currentPosition() % stepsPerRevolution == homeStep) {
       stepper.setCurrentPosition(0);
       Serial.println("home found");
-      //set homing to false to stop this nightmare
       homing = false;
+      sendStepToProcessing();
     }
   }
 }
@@ -224,27 +221,22 @@ void OSCgoHome(OSCMessage &msg, int addrOffset) {
 
 //rotate from OSC messages
 void OSCrotate(OSCMessage &msg, int addrOffset) {
-  Serial.print("/rotate ");
+  //get value
   float inputRotation = msg.getFloat(0);
-  Serial.print("\n");
-
-  rotation = (long) inputRotation % stepsPerRevolution;
   
-  Serial.print(rotation);
+  //write to rotationSteps
+  rotationSteps = (long) inputRotation % stepsPerRevolution;
 
-  //set destination
-  stepper.moveTo(rotation);
+  //move there
+  stepper.moveTo(rotationSteps);
 }
 
-//do something every couple seconds
-void ping() {
-  if (pingTimer.hasPassed(pingInterval)) {
-    pingTimer.restart();
-    sendPingToProcessing();
-  }
+//send the node's current step to processing
+void OSCsendStepToProcessing(OSCMessage &msg, int addrOffset) {
+  sendStepToProcessing();
 }
 
-void sendStepToProcessing(OSCMessage &msg, int addrOffset) {
+void sendStepToProcessing() {
   AsyncUDPMessage udpMsgStep;
   OSCMessage oscMsgPing("/step");
   oscMsgPing.add(NODE_ID);
@@ -254,6 +246,15 @@ void sendStepToProcessing(OSCMessage &msg, int addrOffset) {
   udpOut.broadcastTo(udpMsgStep, networkOutPort);
 }
 
+//ping Processing every couple seconds
+void ping() {
+  if (pingTimer.hasPassed(pingInterval)) {
+    pingTimer.restart();
+    sendPingToProcessing();
+  }
+}
+
+//send a ping with node info to processing
 void sendPingToProcessing() {
   AsyncUDPMessage udpMsgPing;
   OSCMessage oscMsgPing("/ping");
@@ -265,6 +266,20 @@ void sendPingToProcessing() {
   oscMsgPing.send(udpMsgPing);
   oscMsgPing.empty();
   udpOut.broadcastTo(udpMsgPing, networkOutPort);
+}
+
+//turn LED on or off depending on if IP was set correctly in processing
+void OSCincomingPing(OSCMessage &msg, int addrOffset) {
+  char tmpstr[512];
+  msg.getString(0, tmpstr);
+  String ip = (char*)tmpstr;
+  //Serial.println(ip);
+
+  if (ip == WiFi.localIP().toString().c_str()) {
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
 }
 
 //check for new firmware on the server
