@@ -11,18 +11,18 @@ class Mirror {
 
 	Mirror(PVector p) {
 		position = p;
-		rT = random(1000);
 
-		//random initial rotation
-		setPointsAlongRadius(random(PI));
+		//initial time at 0
+		rT = 0;
 	}
 
 	//set start and end point according to rotation
 	void setPointsAlongRadius(float r) {
 		
-		r = -r/2; 	//TODO: understand why
+		//r = -r/2; 	//TODO: why was this ever here? let's leave for now so I remember this might have fixed something at some point
 
-		r += PI/4;	//to correct for the actual nodes orientation
+		//to correct for the physical nodes orientation
+		r += PI/4;
 		
 		//apply rotation to beginning and end point of mirror here instead of using rotate() so that the cast() method knows all the absolute points
 		start.set(mirrorRadius * sin(r), mirrorRadius * cos(r));
@@ -38,26 +38,30 @@ class Mirror {
 
 	//update the mirrors values
 	void rotate() {
-		//increment "time" if rotateMirrors is true
-		if (rotateMirrors) rT += .003;
+		if (rotateMirrors) {
 
-		// //rotate according to rotation_mode (set by DropdownList)
-		// switch(rotationMode) {
-		// 	//sine rotation
-		// 	case 0:
-		// 		rotationDegrees = map(sin(rT), -1, 1, 0, 360);
-		// 		break;
-		// 	//noise rotation
-		// 	case 1:
-		// 		rotationDegrees = map(noise(rT), -1, 1, 0, 360);
-		// 		break;
-		// }
+			//rotate according to rotation_mode (set by DropdownList)
+			switch(rotationMode) {
+				//same noise rotation
+				case 0:
+					//increment "time"
+					rT += .003;
+					rotationDegrees = map(sin(rT), -1, 1, 0, 360);
+					break;
+				//individual noise rotation
+				case 1:
+					//increment "time" individually
+					rT += random(.001, .01);
+					rotationDegrees = map(noise(rT), -1, 1, 0, 360);
+					break;
+			}
+		}
 
 		//apply rotation speed
 		//rotationDegrees *= rotationSpeed;
 
 		//translate to stepper motor steps
-		rotationSteps = rotationDegrees * (stepsPerRevolution / 360);
+		rotationSteps = (rotationDegrees * (stepsPerRevolution / 360)) * -1;
 
 		//translate to radians for display
 		rotationRadians = radians(rotationDegrees);

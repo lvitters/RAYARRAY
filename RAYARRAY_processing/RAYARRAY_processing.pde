@@ -24,13 +24,13 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 1;
-int gridY = 1;
+int gridX = 4;
+int gridY = 4;
 
 float scaleCentimetersToPixels = 4.0;	//adjust for screen size
 float windowX, windowY;
-float absoluteConnectionLength = 45.0;	//in cm
-float absoluteMirrorWidth = 12.0;		//in cm
+float absoluteConnectionLength = 50.0;	//in cm
+float absoluteMirrorWidth = 15.0;		//in cm
 float offset = absoluteConnectionLength * scaleCentimetersToPixels;	//offset between nodes
 
 //laser reflection
@@ -124,13 +124,13 @@ void oscEvent(OscMessage theOscMessage) {
 	if (theOscMessage.addrPattern().equals("/step") == true) {
 		//record info from node
 		int id = theOscMessage.get(0).intValue();
-		int step = theOscMessage.get(1).intValue();
+		int step = theOscMessage.get(1).intValue();	//direction is inverted from physical nodes
 
-		//println(step);
+		println("ID: " + id + " step: " + step);
 		
 		for (Node n : nodes) {
 			if (n.nodeID == id) {
-				n.mirror.rotationDegrees = step / (stepsPerRevolution / 360) * 2;		//why the hell is this 2??
+				n.mirror.rotationDegrees = step / (stepsPerRevolution / 360);
 				//println(n.mirror.rotationDegrees);
 			}
 		}

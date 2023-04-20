@@ -129,11 +129,10 @@ class Node {
 		if (millis() - lastSend > sendFreq && nodeIP != null && sendRotation) {
 			lastSend = millis();
 			OscMessage rotationMessage = new OscMessage("/rotate");
-			println(mirror.rotationSteps);
 			rotationMessage.add(mirror.rotationSteps);
 			NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 			oscP5.send(rotationMessage, remoteLocation);
-			println("sent to: " + nodeID + " @" + nodeIP);
+			//println("sent " + mirror.rotationSteps + " to: " + nodeID + " @" + nodeIP);
 		}
 	}
 

@@ -139,8 +139,8 @@ class ControlFrame extends PApplet {
 			.setBarHeight(20)
 			.setItemHeight(20)
 			.setWidth(150)
-			.addItem("sine rotation", 0)
-			.addItem("noise rotation", 1)
+			.addItem("same noise", 0)
+			.addItem("individual noise", 1)
 			;
 
 		//rotation speed
