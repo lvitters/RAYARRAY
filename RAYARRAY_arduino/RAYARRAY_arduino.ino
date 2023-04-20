@@ -244,12 +244,10 @@ void ping() {
   }
 }
 
-//when prompted by Processing, send another ping
-void OSCsendAnotherPing(OSCMessage &msg, int addrOffset) {
+void sendStepAfterMessage(OSCMessage &msg, int addrOffset) {
   sendPingToProcessing();
 }
 
-//send information to Processing
 void sendPingToProcessing() {
   AsyncUDPMessage udpMsg;
   OSCMessage oscMsg("/ping");
@@ -261,20 +259,6 @@ void sendPingToProcessing() {
   oscMsg.send(udpMsg);
   oscMsg.empty();
   udpOut.broadcastTo(udpMsg, networkOutPort);
-}
-
-//turn LED on or off depending on if IP was set correctly in processing
-void OSCincomingPing(OSCMessage &msg, int addrOffset) {
-  char tmpstr[512];
-  msg.getString(0, tmpstr);
-  String ip = (char*)tmpstr;
-  //Serial.println(ip);
-
-  if (ip == WiFi.localIP().toString().c_str()) {
-    digitalWrite(LED_PIN, HIGH);
-  } else {
-    digitalWrite(LED_PIN, LOW);
-  }
 }
 
 //check for new firmware on the server
