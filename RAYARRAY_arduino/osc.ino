@@ -16,7 +16,7 @@ void onPacketOSC(AsyncUDPPacket packet) {
 
       msgIn.route("/rotate", OSCrotate);
 
-      msgIn.route("/getStep", sendStepAfterMessage);
+      msgIn.route("/getStep", OSCsendAnotherPing);
 
       msgIn.route("/pingNode", OSCincomingPing);
 
@@ -28,20 +28,6 @@ void onPacketOSC(AsyncUDPPacket packet) {
     }
   }
   packet.flush();
-}
-
-//turn LED on or off depending on if IP was set correctly in processing
-void OSCincomingPing(OSCMessage &msg, int addrOffset) {
-  char tmpstr[512];
-  msg.getString(0, tmpstr);
-  String ip = (char*)tmpstr;
-  //Serial.println(ip);
-
-  if (ip == WiFi.localIP().toString().c_str()) {
-    digitalWrite(LED_PIN, HIGH);
-  } else {
-    digitalWrite(LED_PIN, LOW);
-  }
 }
 
 void OSCupdateFirmware(OSCMessage &msg, int addrOffset) {
@@ -79,21 +65,4 @@ void OSCupdateFirmwareSetBinaryURL(OSCMessage &msg, int addrOffset) {
     Serial.print("new URL_FW_BINARY = ");
     Serial.println(URL_FW_BINARY);
   }
-}
-
-void sendStepAfterMessage(OSCMessage &msg, int addrOffset) {
-  sendPingToProcessing();
-}
-
-void sendPingToProcessing() {
-  AsyncUDPMessage udpMsg;
-  OSCMessage oscMsg("/ping");
-  oscMsg.add(int(millis()));
-  oscMsg.add(NODE_ID);
-  oscMsg.add(WiFi.localIP().toString().c_str());
-  oscMsg.add(FW_VERSION);
-  oscMsg.add((int)stepper.currentPosition());
-  oscMsg.send(udpMsg);
-  oscMsg.empty();
-  udpOut.broadcastTo(udpMsg, networkOutPort);
 }
