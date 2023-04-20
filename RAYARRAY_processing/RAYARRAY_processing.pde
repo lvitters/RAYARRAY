@@ -124,10 +124,9 @@ void oscEvent(OscMessage theOscMessage) {
 		//record info from node
 		int id = theOscMessage.get(1).intValue();
 		String ip = theOscMessage.get(2).stringValue();
-		float fw_version = theOscMessage.get(3).floatValue();
-		int step = theOscMessage.get(4).intValue();
-
-		println(step);
+		//String mac = theOscMessage.get(3).stringValue();
+		float fw_version = theOscMessage.get(4).floatValue();
+		int step = theOscMessage.get(5).intValue();
 
 		// println("got a ping from:");
 		// println("ID: " + id + " with IP: " + ip);

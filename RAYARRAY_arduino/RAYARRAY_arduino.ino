@@ -254,6 +254,7 @@ void sendPingToProcessing() {
   oscMsg.add(int(millis()));
   oscMsg.add(NODE_ID);
   oscMsg.add(WiFi.localIP().toString().c_str());
+  oscMsg.add(WiFi.macAddress().c_str());
   oscMsg.add(FW_VERSION);
   oscMsg.add((int)stepper.currentPosition());
   oscMsg.send(udpMsg);
