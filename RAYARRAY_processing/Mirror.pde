@@ -8,6 +8,7 @@ class Mirror {
 	float rotationRadians;
 	float rotationDegrees;
 	float rotationSteps;
+	float rotationDirection = 1;
 
 	Mirror(PVector p) {
 		position = p;
@@ -52,15 +53,31 @@ class Mirror {
 				//individual noise rotation
 				case 1:
 					//increment "time" individually and apply rotationSpeed
-					rT += random(.001, .01) + rotationSpeed;
+					rT += random(.001, .01) * rotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees = map(noise(rT), -1, 1, 0, 360);
 					break;
+				//same direction constant rotation
+				case 2:
+					//increment time and apply rotationSpeed
+					rT += .001 * rotationSpeed;
+					//map to rotationDegrees
+					rotationDegrees = rT * 360;
+					break;
+				//individual direction constant rotation
+				case 3:
+					//increment time and apply rotationSpeed
+					rT +=  .001 * rotationSpeed;
+					//map to rotationDegrees
+					rotationDegrees = rT * 360;
 			}
 		}
 
+		//apply direction
+		rotationDegrees *= rotationDirection;
+
 		//translate to stepper motor steps
-		rotationSteps = (rotationDegrees * (stepsPerRevolution / 360)) * -1;
+		rotationSteps = (rotationDegrees * (stepsPerRevolution / 360)) * -1;	//direction in flipped from Arduino
 
 		//translate to radians for display
 		rotationRadians = radians(rotationDegrees);

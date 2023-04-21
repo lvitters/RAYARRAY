@@ -200,15 +200,14 @@ void controlEvent(ControlEvent theEvent) {
 			loadConfig();
 		}
 
-		//if it comes from the "rotationMode" controller apply that value to rotationMode variable
-		if (theEvent.getController().toString() == "rotationMode") {
-			rotationMode = int(theEvent.getController().getValue());
-			//println("rotationMode: " + rotationMode);
-		}
-
 		//if it comes from the "goHome" controller then goHome()
 		if (theEvent.getController().toString() == "goHome") {
 			goHome();
+		}
+
+		//if it comes from the "getStep" controller then getSteps()
+		if (theEvent.getController().toString() == "getSteps") {
+			getSteps();
 		}
 
 		//if it comes from the "jogLeft" controller then jog()
@@ -221,11 +220,38 @@ void controlEvent(ControlEvent theEvent) {
 			jogRight();
 		}
 
-		//if it comes from the "getStep" controller then getSteps()
-		if (theEvent.getController().toString() == "getSteps") {
-			getSteps();
+		//if it comes from the "rotationMode" controller then switchRotationMode accordingly
+		if (theEvent.getController().toString() == "switchRotationMode") {
+			switchRotationMode(int(theEvent.getController().getValue()));
 		}
 
+	}
+}
+
+//set directions between rotationModes when mode was changed (for some reason this doesn't work when called from the controller event function)
+void switchRotationMode(int mode) {
+
+	int rotationMode = mode;
+	println("rotationMode: " + rotationMode);
+
+	//noise modes, keep/reset to "regular" direction since noise moves both directions anyways
+	if(rotationMode == 0 || rotationMode == 1) {
+		for (Node n : nodes) {
+			n.mirror.rotationDirection = 1;
+		}
+	}
+	//same direction constant rotation
+	if (rotationMode == 2) {
+		int randomDirection = getRandomDirection();
+		for (Node n : nodes) {
+			n.mirror.rotationDirection = randomDirection;
+		}
+	//individual direction constand rotation
+	} else if (rotationMode == 3) {
+		for (Node n : nodes) {
+			n.mirror.rotationDirection = getRandomDirection();
+			print(n.mirror.rotationDirection);
+		}
 	}
 }
 
@@ -309,6 +335,14 @@ void getSteps() {
 	for (Node n : nodes) {
 		n.getStep();
 	}
+}
+
+//return either 1 or -1
+int getRandomDirection() {
+	float n = random(2);
+	if (n >= 1) n = 1;
+	else n = -1;
+  	return (int)n;
 }
 
 //control lasers
