@@ -19,7 +19,7 @@ int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and re
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.11; // important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.19; // important for the firmware ota flashing process / increment for next upload
 
 // server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 // change server IP if needed
@@ -55,11 +55,11 @@ AsyncUDP udpOut;
 //initialize the stepper library
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 
-const int stepsPerRevolution = 2038 * 2;  //change this to fit the number of steps per revolution
-long rotationSteps = 0;                   //current rotation in steps
-int direction;                            //direction of automatic rotation
-float jogValue = 999999999;               //super high number as target for 'infinite' jog
-boolean jogging = false;                  //are we jogging right now?
+const int stepsPerRevolution = 2038 * 2;      //change this to fit the number of steps per revolution
+long rotationSteps = 0;                       //current rotation in steps
+int direction;                                //direction of automatic rotation
+long jogValue = 100000 * stepsPerRevolution;  //super high number as target for 'infinite' jog
+boolean jogging = false;                      //are we jogging right now?
 
 //95A Hall sensor analog input
 #define HALL_SENSOR_PIN A0
@@ -125,8 +125,8 @@ void loop() {
 }
 
 void initStepperMotor() {
-  stepper.setMaxSpeed(800);          //max 1500
-  stepper.setAcceleration(1500);
+  stepper.setMaxSpeed(1200);          //max 1500
+  stepper.setAcceleration(10000);
 }
 
 //init jogging toggle
@@ -181,7 +181,7 @@ void findLowestVoltage() {
   //find lowest voltage
   if (smoothVoltage <= lowestVoltage && smoothVoltage > 450) {  //TODO: hardcoded number is bad!
     lowestVoltage = smoothVoltage;
-    homeStep = currentStep % stepsPerRevolution;
+    homeStep = currentStep;
   }
 
   //Serial.println("voltage: " + (String)voltage + " smoothVoltage: " + (String)smoothVoltage + " lowestVoltage: " + (String)lowestVoltage);
@@ -203,8 +203,8 @@ void setHomeStep() {
     //Serial.println("homeStep: " + (String)homeStep + " currentStep: " + (String)stepper.currentPosition());
 
     //if we're at that step, set to 0 and set homing to false to stop this nightmare
-    if (stepper.currentPosition() % stepsPerRevolution == homeStep) {
-      stepper.setCurrentPosition(0);
+    if (stepper.currentPosition() == homeStep) {
+      stepper.setCurrentPosition(jogValue/2);
       Serial.println("home found");
       homing = false;
       sendStepToProcessing();
@@ -216,7 +216,8 @@ void setHomeStep() {
 void OSCgoHome(OSCMessage &msg, int addrOffset) {
   jogging = false;
   Serial.println("going home");
-  stepper.moveTo(0);
+  //always go the "nearest" home
+  stepper.moveTo(stepper.currentPosition() - (long)((int)stepper.currentPosition() % stepsPerRevolution));
 }
 
 //rotate from OSC messages
@@ -228,7 +229,7 @@ void OSCrotate(OSCMessage &msg, int addrOffset) {
   rotationSteps = (long) inputRotation;
 
   //move there
-  stepper.moveTo(rotationSteps);
+  stepper.moveTo(rotationSteps + jogValue/2);
 }
 
 //send the node's current step to processing

@@ -24,8 +24,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 4;
-int gridY = 4;
+int gridX = 1;
+int gridY = 1;
 
 float scaleCentimetersToPixels = 4.0;	//adjust for screen size
 float windowX, windowY;
@@ -231,20 +231,27 @@ void controlEvent(ControlEvent theEvent) {
 //set directions between rotationModes when mode was changed (for some reason this doesn't work when called from the controller event function)
 void switchRotationMode(int mode) {
 
-	int rotationMode = mode;
+	rotationMode = mode;
 	println("rotationMode: " + rotationMode);
 
 	//noise modes, keep/reset to "regular" direction since noise moves both directions anyways
-	if(rotationMode == 0 || rotationMode == 1) {
+	if(rotationMode == 0) {
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = 1;
 		}
 	}
+	//individual noise rotation needs individual starting points for time
+	if(rotationMode == 1) {
+		for (Node n : nodes) {
+			n.mirror.rT = random(1000);
+		}
+	}
+
 	//same direction constant rotation
 	if (rotationMode == 2) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
-			n.mirror.rotationDirection = randomDirection;
+			n.mirror.rotationDirection = randomDirection;			
 		}
 	//individual direction constant rotation
 	} else if (rotationMode == 3) {
