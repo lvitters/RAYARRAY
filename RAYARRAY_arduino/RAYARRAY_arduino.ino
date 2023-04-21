@@ -19,7 +19,7 @@ int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and re
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.1; // important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.11; // important for the firmware ota flashing process / increment for next upload
 
 // server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 // change server IP if needed
@@ -225,7 +225,7 @@ void OSCrotate(OSCMessage &msg, int addrOffset) {
   float inputRotation = msg.getFloat(0);
   
   //write to rotationSteps
-  rotationSteps = (long) inputRotation % stepsPerRevolution;
+  rotationSteps = (long) inputRotation;
 
   //move there
   stepper.moveTo(rotationSteps);

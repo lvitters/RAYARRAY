@@ -246,11 +246,10 @@ void switchRotationMode(int mode) {
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = randomDirection;
 		}
-	//individual direction constand rotation
+	//individual direction constant rotation
 	} else if (rotationMode == 3) {
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = getRandomDirection();
-			print(n.mirror.rotationDirection);
 		}
 	}
 }
