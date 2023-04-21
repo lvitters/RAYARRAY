@@ -1,0 +1,1 @@
+cd /Volumes/DATA/git/RAYARRAY/firmware_server && node firmware_server.js

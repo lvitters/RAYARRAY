@@ -1,0 +1,1 @@
+cp '/Volumes/DATA/git/RAYARRAY/RAYARRAY_arduino/build/esp8266.esp8266.d1_mini/RAYARRAY_arduino.ino.bin' '/Volumes/DATA/git/RAYARRAY/firmware_server/firmware/release/firmware.bin' && open -a TextEdit '/Volumes/DATA/git/RAYARRAY/firmware_server/firmware/release/version.txt'
