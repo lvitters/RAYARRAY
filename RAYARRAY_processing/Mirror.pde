@@ -44,21 +44,20 @@ class Mirror {
 			switch(rotationMode) {
 				//same noise rotation
 				case 0:
-					//increment "time"
-					rT += .003;
+					//increment "time" and apply rotationSpeed
+					rT += .001 * rotationSpeed;
+					//map to rotationDegrees
 					rotationDegrees = map(sin(rT), -1, 1, 0, 360);
 					break;
 				//individual noise rotation
 				case 1:
-					//increment "time" individually
-					rT += random(.001, .01);
+					//increment "time" individually and apply rotationSpeed
+					rT += random(.001, .01) + rotationSpeed;
+					//map to rotationDegrees
 					rotationDegrees = map(noise(rT), -1, 1, 0, 360);
 					break;
 			}
 		}
-
-		//apply rotation speed
-		//rotationDegrees *= rotationSpeed;
 
 		//translate to stepper motor steps
 		rotationSteps = (rotationDegrees * (stepsPerRevolution / 360)) * -1;

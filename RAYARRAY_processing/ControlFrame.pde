@@ -151,7 +151,7 @@ class ControlFrame extends PApplet {
 			.setPosition(guiOffset/4, guiOffset * 9/3)
 			.setSize(200, 20)
 			.setRange(.1, 10)
-			.setValue(5)
+			.setValue(1)
 			//.setDecimalPrecision(1) 
 			;
 	}

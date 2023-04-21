@@ -282,6 +282,8 @@ void goHome() {
 	println("goHome");
 	for (Node n : nodes) {
 		n.goHome();
+		n.mirror.rotationDegrees = 0;
+		n.mirror.rT = 0;
 	}
 }
 
