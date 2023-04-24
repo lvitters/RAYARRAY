@@ -12,11 +12,11 @@ void onPacketOSC(AsyncUDPPacket packet) {
       
       //commands
       msgIn.route("/goHome", OSCgoHome);
-      //msgIn.route("/jog", OSCtoggleJogging);
       msgIn.route("/resetHome", OSCresetHome);
       msgIn.route("/rotate", OSCrotate);
       msgIn.route("/getStep", OSCsendStepToProcessing);
       msgIn.route("/pingNode", OSCincomingPing);
+      //msgIn.route("/jog", OSCtoggleJogging);
 
       //firmware stuff
       msgIn.route("/updateFirmware", OSCupdateFirmware);
@@ -32,7 +32,7 @@ void onPacketOSC(AsyncUDPPacket packet) {
 void OSCupdateFirmware(OSCMessage &msg, int addrOffset) {
   Serial.print("/updatefirmware");
 
-  UPDATE_FIRMWARE = true; // set the hook for the main loop
+  UPDATE_FIRMWARE = true; //set the hook for the main loop
   //update procedure has to be initiated from the "main" loop other wise memory acces is limited.
 }
 
@@ -54,7 +54,7 @@ void OSCupdateFirmwareSetVersionURL(OSCMessage &msg, int addrOffset) {
 void OSCupdateFirmwareSetBinaryURL(OSCMessage &msg, int addrOffset) {
   Serial.print(">> /ufbinaryurl ");
   char tmpstr[512];
-  int retlength = msg.getString(0, tmpstr, 512); // xxx.xxx.xxx.xxx = 15 + string ende char = 16
+  int retlength = msg.getString(0, tmpstr, 512); //xxx.xxx.xxx.xxx = 15 + string ende char = 16
   Serial.print(tmpstr);
   Serial.print(" ( ");
   Serial.print(retlength);

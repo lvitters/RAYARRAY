@@ -4,7 +4,7 @@
 #include <ESP8266WiFiMulti.h>
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
-#include <ESPAsyncUDP.h> // https://github.com/me-no-dev/ESPAsyncUDP
+#include <ESPAsyncUDP.h> //https://github.com/me-no-dev/ESPAsyncUDP
 
 //not board specific libraries
 #include <Chrono.h>
@@ -19,23 +19,23 @@ int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and re
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.19; // important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.20; //important for the firmware ota flashing process / increment for next upload
 
-// server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
-// change server IP if needed
-// can be set via osc as well
+//server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
+//change server IP if needed
+//can be set via osc as well
 
 const char DEFAULT_URL_FW_VERSION[] = "http://192.168.1.164:8080/release/version.txt";
 const char  DEFAULT_URL_FW_BINARY[] = "http://192.168.1.164:8080/release/firmware.bin";
 
-boolean LOCK_UDP_RECEIVER = false; // lock UDP/OSC receiver to avoid shit while flashing a new firmware
+boolean LOCK_UDP_RECEIVER = false; //lock UDP/OSC receiver to avoid shit while flashing a new firmware
 char URL_FW_VERSION[512];
 char URL_FW_BINARY[512];
-boolean UPDATE_FIRMWARE = false; // hook in firmwareupdate
+boolean UPDATE_FIRMWARE = false; //hook in firmwareupdate
 
-long pingInterval = 2000; // every 2 seconds
-int networkLocalPort = 8888;  // remote port to receive OSC
-int networkOutPort = 9999; 
+long pingInterval = 2000;     //every 2 seconds
+int networkLocalPort = 8888;  //remote port to receive OSC
+int networkOutPort = 9999;    //port for broadcasting
 
 ESP8266WiFiMulti wifiMulti;
 Chrono pingTimer;
@@ -55,11 +55,15 @@ AsyncUDP udpOut;
 //initialize the stepper library
 AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 
-const int stepsPerRevolution = 2038 * 2;      //change this to fit the number of steps per revolution
-long rotationSteps = 0;                       //current rotation in steps
-int direction;                                //direction of automatic rotation
-long jogValue = 10000 * stepsPerRevolution;  //super high number as target for 'infinite' jog
-boolean jogging = false;                      //are we jogging right now?
+//The stepper motor actually has a different number of teeth in its gears than is stated in the spec sheet, so we counted the teeth, 
+//calculated all the gear ratios, and have this precise measurement of the actual number of steps per revolution.
+//The spec sheet says it would be 2037.8864, so we are lucky it is an integer, sparing us from doing weird datatype casting in order
+//to compute a float with the %(remainder)operator. 
+const int stepsPerRevolution = 2048 * 2;          //our driver does half steps, so the one rev is 2 times the amount
+long rotationSteps = 0;                           //current rotation in steps
+int direction;                                    //direction of rotation
+long jogValue = 10000 * stepsPerRevolution;       //super high number as target for 'infinite' jog
+boolean jogging = false;                          //are we jogging right now?
 
 //95A Hall sensor analog input
 #define HALL_SENSOR_PIN A0
@@ -104,7 +108,7 @@ void setup() {
 
   //init stepper and set to random direction for now, record where homing began
   initStepperMotor();
-  direction = randomDirection();
+  direction = 1;
 
   //init hall sensor
   pinMode(HALL_SENSOR_PIN, INPUT);
@@ -125,8 +129,22 @@ void loop() {
 }
 
 void initStepperMotor() {
-  stepper.setMaxSpeed(1200);          //max 1500
+  stepper.setMaxSpeed(500);
   stepper.setAcceleration(10000);
+}
+
+//rotate from OSC messages
+void OSCrotate(OSCMessage &msg, int addrOffset) {
+  //get value
+  float inputRotation = msg.getFloat(0);
+  
+  //write to rotationSteps
+  rotationSteps = (long) inputRotation;
+
+  //Serial.println("current: " + (String)stepper.currentPosition() + " steps: " + (String)(rotationSteps + (jogValue/2)));
+
+  //move there, adjust with home position of mirror (jogValue/2)
+  stepper.moveTo(rotationSteps + (jogValue/2));
 }
 
 //read voltage and record lowest one and the step where it is at
@@ -181,7 +199,6 @@ void setHomeStep() {
       stepper.setCurrentPosition(jogValue/2);
       Serial.println("home found");
       homing = false;
-      //sendStepToProcessing();
     }
   }
 }
@@ -189,7 +206,7 @@ void setHomeStep() {
 //go to the position recorded as home
 void OSCgoHome(OSCMessage &msg, int addrOffset) {
   //turn off jogging
-  jogging = false;
+  //jogging = false;
 
   Serial.println("going home");
 
@@ -200,26 +217,13 @@ void OSCgoHome(OSCMessage &msg, int addrOffset) {
   long nextHome = currentPosition - (currentPosition % stepsPerRevolution);
   
   //move there
-  stepper.moveTo(nextHome);
+  stepper.moveTo((long)nextHome);
 }
 
 //reset the current position to home position (jogValue/2), only when Processing says so
 void OSCresetHome(OSCMessage &msg, int addrOffset) {
-  stepper.setCurrentPosition(jogvalue/2);
-}
-
-//rotate from OSC messages
-void OSCrotate(OSCMessage &msg, int addrOffset) {
-  //get value
-  float inputRotation = msg.getFloat(0);
-  
-  //write to rotationSteps
-  rotationSteps = (long) inputRotation;
-
-  Serial.println("current: " + (String)stepper.currentPosition() + " steps: " + (String)(rotationSteps + (jogValue/2)));
-
-  //move there, adjust with home position of mirror (jogValue/2)
-  stepper.moveTo(rotationSteps + (jogValue/2));
+  stepper.setCurrentPosition(jogValue/2);
+  Serial.println("home reset");
 }
 
 //send the node's current step to Processing after OSC command
@@ -284,28 +288,28 @@ void updateFirmware() {
   }
 }
 
-//init jogging toggle
-void OSCtoggleJogging(OSCMessage &msg, int addrOffset) {
-  int OSCdirection = msg.getInt(0);
-  if (!jogging) {
-    direction = OSCdirection;
-    jogging = true;
-    jog();
-  } else {
-    jogging = false;
-    stepper.stop();
-  }
-}
+// //init jogging toggle
+// void OSCtoggleJogging(OSCMessage &msg, int addrOffset) {
+//   int OSCdirection = msg.getInt(0);
+//   if (!jogging) {
+//     direction = OSCdirection;
+//     jogging = true;
+//     jog();
+//   } else {
+//     jogging = false;
+//     stepper.stop();
+//   }
+// }
 
-//move continuously
-void jog() {
-  stepper.moveTo(jogValue * direction);
-}
+// //move continuously
+// void jog() {
+//   stepper.moveTo(jogValue * direction);
+// }
 
-//pick either -1 or 1
-float randomDirection() {
-  int n = random(-1, 2);
-  while (n == 0) n = random (-1, 2);
-  Serial.println("direction: " + (String)n);
-  return n;
-}
+// //pick either -1 or 1
+// float randomDirection() {
+//   int n = random(-1, 2);
+//   while (n == 0) n = random (-1, 2);
+//   Serial.println("direction: " + (String)n);
+//   return n;
+// }

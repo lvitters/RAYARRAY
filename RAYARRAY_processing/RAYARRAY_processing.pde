@@ -41,7 +41,7 @@ boolean rotateLaser = false;
 float rotationSpeed = 1;
 int rotationMode = 0;
 boolean rotateMirrors;
-int stepsPerRevolution = 2038 * 2;
+int stepsPerRevolution = 2048 * 2;
 
 void settings() {
 	//scale window size according to grid measurements
@@ -188,7 +188,8 @@ void controlEvent(ControlEvent theEvent) {
 	if (theEvent.isController()) {
     	//println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
 
-		//TODO: for some reason println() doesn't work inside the if brackets below???
+		//the following if statements can only call a function with the same name as the controller?
+		//probably better for readability to have separate functions for everything anyways 
 
 		//if it comes from the "saveConfig" controller then saveConfig()
 		if (theEvent.getController().toString() == "saveConfig") {
@@ -223,7 +224,7 @@ void controlEvent(ControlEvent theEvent) {
 	}
 }
 
-//set directions between rotationModes when mode was changed (for some reason this doesn't work when called from the controller event function)
+//set directions between rotationModes when mode was changed
 void switchRotationMode(int mode) {
 
 	rotationMode = mode;
@@ -249,10 +250,11 @@ void switchRotationMode(int mode) {
 	if (rotationMode == 2) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
-			n.mirror.rotationDirection = randomDirection;			
+			n.mirror.rotationDirection = randomDirection;
 			n.mirror.rotationDegrees = 0;
 			n.mirror.rT = 0;
 		}
+
 	//individual direction constant rotation
 	} else if (rotationMode == 3) {
 		for (Node n : nodes) {

@@ -107,7 +107,7 @@ class ControlFrame extends PApplet {
 			.setColor(guiColor)
 			.setPosition(guiOffset/4, guiOffset * 4/3)
 			.setSize(200, 20)
-			.setRange(.1, 10)
+			.setRange(.5, 3)
 			.setValue(1)
 			//.setDecimalPrecision(1) 
 			;
@@ -119,8 +119,8 @@ class ControlFrame extends PApplet {
 			.setColor(guiColor)
 			.setPosition(guiOffset/4, guiOffset * 5/3)
 			.setSize(200, 20)
-			.setRange(1, 100)
-			.setValue(30)
+			.setRange(1, 50)
+			.setValue(10)
 			;
 
 		//rotation modes

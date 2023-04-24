@@ -47,30 +47,30 @@ class Mirror {
 				//same noise rotation
 				case 0:
 					//increment "time" and apply rotationSpeed
-					rT += .001 * rotationSpeed;
+					rT += .005 * rotationSpeed;
 					//map to rotationDegrees
-					rotationDegrees = map(sin(rT), -1, 1, 0, 360);
+					rotationDegrees = map(noise(rT), -1, 1, 0, 360);
 					break;
 				//individual noise rotation
 				case 1:
 					//increment "time" individually and apply rotationSpeed
-					rT += random(.00001, .005) * rotationSpeed;
+					rT += random(.0001, .01) * rotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees = map(noise(rT), -1, 1, 0, 360);
 					break;
 				//same direction constant rotation
 				case 2:
 					//increment time and apply rotationSpeed
-					rT += .001 * rotationSpeed;
+					rT += .5 * rotationSpeed;
 					//map to rotationDegrees
-					rotationDegrees = rT * 360;
+					rotationDegrees = rT;
 					break;
 				//individual direction constant rotation
 				case 3:
 					//increment time and apply rotationSpeed
-					rT +=  .001 * rotationSpeed;
+					rT +=  .5 * rotationSpeed;
 					//map to rotationDegrees
-					rotationDegrees = rT * 360;
+					rotationDegrees = rT;
 					break;
 			}
 
@@ -79,6 +79,7 @@ class Mirror {
 			
 			//translate to stepper motor steps
 			rotationSteps = (rotationDegrees * (stepsPerRevolution / 360)) * -1;	//direction is flipped from Arduino
+			println(rotationSteps);
 		}
 
 
