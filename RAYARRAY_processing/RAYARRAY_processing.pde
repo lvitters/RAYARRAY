@@ -159,6 +159,7 @@ void oscEvent(OscMessage theOscMessage) {
 				//print only if IP hasn't been set yet
 				if (n.nodeIP == null) println("node with ID: " + n.nodeID + " has IP: " + ip + " and firmware v" + fw_version);
 				n.nodeIP = ip;
+				n.remoteLocation = new NetAddress(n.nodeIP, remotePort);
 				n.pingNode(n.nodeIP);
 			}
 		}
@@ -177,7 +178,7 @@ void setupGUI() {
 	cp5InputFields = new ControlP5(this);
 
 	//init controlFrame
-	cf = new ControlFrame(this, 400, 600, "GUI");
+	cf = new ControlFrame(this, 400, 500, "GUI");
 	surface.setLocation(420, 10);
 }
 
@@ -204,19 +205,14 @@ void controlEvent(ControlEvent theEvent) {
 			goHome();
 		}
 
+		//if it comes from the "resetHomes" controller then resetHomes()
+		if (theEvent.getController().toString() == "resetHomes") {
+			resetHomes();
+		}
+
 		//if it comes from the "getStep" controller then getSteps()
 		if (theEvent.getController().toString() == "getSteps") {
 			getSteps();
-		}
-
-		//if it comes from the "jogLeft" controller then jog()
-		if (theEvent.getController().toString() == "jogLeft") {
-			jogLeft();
-		}
-
-		//if it comes from the "jogRight" controller then jog()
-		if (theEvent.getController().toString() == "jogRight") {
-			jogRight();
 		}
 
 		//if it comes from the "rotationMode" controller then switchRotationMode accordingly
@@ -237,12 +233,15 @@ void switchRotationMode(int mode) {
 	if(rotationMode == 0) {
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = 1;
+			n.mirror.rotationDegrees = 0;
+			n.mirror.rT = 0;
 		}
 	}
 	//individual noise rotation needs individual starting points for time
 	if(rotationMode == 1) {
 		for (Node n : nodes) {
-			n.mirror.rT = random(10);
+			n.mirror.rT = random(100);
+			n.mirror.rotationDegrees = 0;
 		}
 	}
 
@@ -251,11 +250,15 @@ void switchRotationMode(int mode) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = randomDirection;			
+			n.mirror.rotationDegrees = 0;
+			n.mirror.rT = 0;
 		}
 	//individual direction constant rotation
 	} else if (rotationMode == 3) {
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = getRandomDirection();
+			n.mirror.rotationDegrees = 0;
+			n.mirror.rT = 0;
 		}
 	}
 }
@@ -320,19 +323,11 @@ void goHome() {
 	}
 }
 
-//init jogging for all nodes
-void jogLeft() {
-	println("toggled jogging left");
+//reset all mirrors' home positions to their current positions, only after goHome() to catch some errors?
+void resetHomes() {
+	println("resetHomes");
 	for (Node n : nodes) {
-		n.jog(-1);
-	}
-}
-
-//init jogging for all nodes
-void jogRight() {
-	println("toggled jogging right");
-	for (Node n : nodes) {
-		n.jog(1);
+		n.resetHome();
 	}
 }
 

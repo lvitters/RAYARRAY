@@ -45,39 +45,37 @@ class ControlFrame extends PApplet {
 			.setValue(true)
 			;
 
-		//load config
-		cp5GUI.addButton("load config")
-			.plugTo(parent, "loadConfig")
-			.setPosition(guiOffset * 1.5, (guiOffset * 1/3) +20)
-			.setSize(100, 20)
-			.setFont(guiFont)
-			.setColor(guiColor)
-			;
-		
-		//send_frequency slider
-		cp5GUI.addSlider("send freq")
-			.plugTo(parent, "sendFreq")
-			.setFont(guiFont)
-			.setColor(guiColor)
-			.setPosition(guiOffset/4, guiOffset)
-			.setSize(200, 20)
-			.setRange(1, 100)
-			.setValue(30)
-			;
-
 		//save config
 		cp5GUI.addButton("save config")
 			.plugTo(parent, "saveConfig")
-			.setPosition(guiOffset * 1.5, guiOffset * 1/3)
+			.setPosition(guiOffset/4 + 110, guiOffset * 1/3)
 			.setSize(100, 20)
 			.setFont(guiFont)
 			.setColor(guiColor)
-			;			
+			;	
+
+		//load config
+		cp5GUI.addButton("load config")
+			.plugTo(parent, "loadConfig")
+			.setPosition(guiOffset/4 + 220, guiOffset * 1/3)
+			.setSize(100, 20)
+			.setFont(guiFont)
+			.setColor(guiColor)
+			;		
 			
 		//put mirror to default
 		cp5GUI.addButton("go home")
 			.plugTo(parent, "goHome")
-			.setPosition(guiOffset/4, guiOffset * 4/3)
+			.setPosition(guiOffset/4, guiOffset * 2/3)
+			.setSize(100, 20)
+			.setFont(guiFont)
+			.setColor(guiColor)
+			;		
+			
+		//tell node to reset its home position to the current one
+		cp5GUI.addButton("reset homes")
+			.plugTo(parent, "resetHomes")
+			.setPosition(guiOffset/4 + 110, guiOffset * 2/3)
 			.setSize(100, 20)
 			.setFont(guiFont)
 			.setColor(guiColor)
@@ -88,34 +86,16 @@ class ControlFrame extends PApplet {
 			.plugTo(parent, "getSteps")
 			.setFont(guiFont)
 			.setColor(guiColor)
-			.setPosition(guiOffset/4 + 110, guiOffset * 4/3)
+			.setPosition(guiOffset/4 + 220, guiOffset * 2/3)
 			.setSize(100, 20)
-			;		
-			
-		//toggle jogging (button isn't a toggle because it doesn't know what state the node is in)
-		cp5GUI.addButton("jog left")
-			.plugTo(parent, "jogLeft")
-			.setPosition(guiOffset/4, guiOffset * 5/3)
-			.setSize(100, 20)
-			.setFont(guiFont)
-			.setColor(guiColor)
 			;
-
-		//toggle jogging (button isn't a toggle because it doesn't know what state the node is in)
-		cp5GUI.addButton("jog right")
-			.plugTo(parent, "jogRight")
-			.setPosition(guiOffset/4 + 110, guiOffset * 5/3)
-			.setSize(100, 20)
-			.setFont(guiFont)
-			.setColor(guiColor)
-			;	
 			
 		//toggle if mirror should rotate
 		cp5GUI.addToggle("rotate mirrors")
 			.plugTo(parent, "rotateMirrors")
 			.setFont(guiFont)
 			.setColor(guiColor)
-			.setPosition(guiOffset/4, guiOffset * 6/3)
+			.setPosition(guiOffset/4, guiOffset * 3/3)
 			.setSize(100, 20)
 			.setValue(false)
 			;
@@ -125,17 +105,28 @@ class ControlFrame extends PApplet {
 			.plugTo(parent, "rotationSpeed")
 			.setFont(guiFont)
 			.setColor(guiColor)
-			.setPosition(guiOffset/4, guiOffset * 7/3)
+			.setPosition(guiOffset/4, guiOffset * 4/3)
 			.setSize(200, 20)
 			.setRange(.1, 10)
 			.setValue(1)
 			//.setDecimalPrecision(1) 
 			;
+		
+		//send_frequency slider
+		cp5GUI.addSlider("send freq")
+			.plugTo(parent, "sendFreq")
+			.setFont(guiFont)
+			.setColor(guiColor)
+			.setPosition(guiOffset/4, guiOffset * 5/3)
+			.setSize(200, 20)
+			.setRange(1, 100)
+			.setValue(30)
+			;
 
 		//rotation modes
 		modesList = cp5GUI.addDropdownList("rotation mode")
 			.plugTo(parent, "switchRotationMode")
-			.setPosition(guiOffset/4, guiOffset * 8/3)
+			.setPosition(guiOffset/4, guiOffset * 6/3)
 			.setFont(guiFont)
 			.setColor(guiColor)
 			.setBarHeight(20)

@@ -10,16 +10,15 @@ void onPacketOSC(AsyncUDPPacket packet) {
     packet.flush();
     if (!msgIn.hasError()) {
       
+      //commands
       msgIn.route("/goHome", OSCgoHome);
-
-      msgIn.route("/jog", OSCtoggleJogging);
-
+      //msgIn.route("/jog", OSCtoggleJogging);
+      msgIn.route("/resetHome", OSCresetHome);
       msgIn.route("/rotate", OSCrotate);
-
       msgIn.route("/getStep", OSCsendStepToProcessing);
-
       msgIn.route("/pingNode", OSCincomingPing);
 
+      //firmware stuff
       msgIn.route("/updateFirmware", OSCupdateFirmware);
       msgIn.route("/ufversionurl", OSCupdateFirmwareSetVersionURL);
       msgIn.route("/ufbinaryurl", OSCupdateFirmwareSetBinaryURL);

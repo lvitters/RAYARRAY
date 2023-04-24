@@ -13,6 +13,7 @@ class Node {
 
 	int nodeID = -1;
 	String nodeIP = null;
+	NetAddress remoteLocation;
 	long lastSend = 0;
 
 	Node(PVector p, int x, int y, int i) {
@@ -130,41 +131,43 @@ class Node {
 			lastSend = millis();
 			OscMessage rotationMessage = new OscMessage("/rotate");
 			rotationMessage.add(mirror.rotationSteps);
-			NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 			oscP5.send(rotationMessage, remoteLocation);
-			println("sent " + mirror.rotationSteps + " to: " + nodeID + " @" + nodeIP);
+			//println("sent " + mirror.rotationSteps + " to: " + nodeID + " @" + nodeIP);
 		}
 	}
 
-	//initiate homing sequence by sending /goHome OSC message
+	//initiate homing sequence
 	void goHome() {
-		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 		OscMessage homeMessage = new OscMessage("/goHome");
 		oscP5.send(homeMessage, remoteLocation);
 	}
 
-	//init jogging by sending /jog OSC message
-	void jog(int direction) {
-		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
-		OscMessage homeMessage = new OscMessage("/jog");
-		homeMessage.add(direction);
-		oscP5.send(homeMessage, remoteLocation);
+	//reset node's home position
+	void resetHome() {
+		OscMessage homeResetMessage = new OscMessage("/resetHome");
+		oscP5.send(homeResetMessage, remoteLocation);
 	}
 
 	//send message to nodes to retrieve step
 	void getStep() {
-		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 		OscMessage stepMessage = new OscMessage("/getStep");
 		oscP5.send(stepMessage, remoteLocation);
 	}
 
 	//confirm if node receives ping and turn on its LED
 	void pingNode(String ip) {
-		NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
 		OscMessage pingMessage = new OscMessage("/pingNode");
 		pingMessage.add(ip);
 		oscP5.send(pingMessage, remoteLocation);
 	}
+
+	// //init jogging by sending /jog OSC message
+	// void jog(int direction) {
+	// 	NetAddress remoteLocation= new NetAddress(nodeIP, remotePort);
+	// 	OscMessage homeMessage = new OscMessage("/jog");
+	// 	homeMessage.add(direction);
+	// 	oscP5.send(homeMessage, remoteLocation);
+	// }
 
 	// ------------------------ ControlP5 input field for ID ------------------------ //
 	void setNodeID() {

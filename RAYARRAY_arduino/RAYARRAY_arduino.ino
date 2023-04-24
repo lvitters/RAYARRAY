@@ -129,32 +129,6 @@ void initStepperMotor() {
   stepper.setAcceleration(10000);
 }
 
-//init jogging toggle
-void OSCtoggleJogging(OSCMessage &msg, int addrOffset) {
-  int OSCdirection = msg.getInt(0);
-  if (!jogging) {
-    direction = OSCdirection;
-    jogging = true;
-    jog();
-  } else {
-    jogging = false;
-    stepper.stop();
-  }
-}
-
-//move continuously
-void jog() {
-  stepper.moveTo(jogValue * direction);
-}
-
-//pick either -1 or 1
-float randomDirection() {
-  int n = random(-1, 2);
-  while (n == 0) n = random (-1, 2);
-  Serial.println("direction: " + (String)n);
-  return n;
-}
-
 //read voltage and record lowest one and the step where it is at
 void findLowestVoltage() {
   //read hall sensor
@@ -225,11 +199,13 @@ void OSCgoHome(OSCMessage &msg, int addrOffset) {
   //always go the "nearest" home
   long nextHome = currentPosition - (currentPosition % stepsPerRevolution);
   
-  //Serial.println(nextHome);
-  //Serial.println(currentPosition % stepsPerRevolution);
-  
   //move there
   stepper.moveTo(nextHome);
+}
+
+//reset the current position to home position (jogValue/2), only when Processing says so
+void OSCresetHome(OSCMessage &msg, int addrOffset) {
+  stepper.setCurrentPosition(jogvalue/2);
 }
 
 //rotate from OSC messages
@@ -246,11 +222,12 @@ void OSCrotate(OSCMessage &msg, int addrOffset) {
   stepper.moveTo(rotationSteps + (jogValue/2));
 }
 
-//send the node's current step to processing
+//send the node's current step to Processing after OSC command
 void OSCsendStepToProcessing(OSCMessage &msg, int addrOffset) {
   sendStepToProcessing();
 }
 
+//send current step to Processing (maybe this will be used even without the incoming OSC command, so it's its own function)
 void sendStepToProcessing() {
   AsyncUDPMessage udpMsgStep;
   OSCMessage oscMsgPing("/step");
@@ -266,7 +243,6 @@ void ping() {
   if (pingTimer.hasPassed(pingInterval)) {
     pingTimer.restart();
     sendPingToProcessing();
-    //sendStepToProcessing();
   }
 }
 
@@ -306,4 +282,30 @@ void updateFirmware() {
     }
     UPDATE_FIRMWARE = false; // update done
   }
+}
+
+//init jogging toggle
+void OSCtoggleJogging(OSCMessage &msg, int addrOffset) {
+  int OSCdirection = msg.getInt(0);
+  if (!jogging) {
+    direction = OSCdirection;
+    jogging = true;
+    jog();
+  } else {
+    jogging = false;
+    stepper.stop();
+  }
+}
+
+//move continuously
+void jog() {
+  stepper.moveTo(jogValue * direction);
+}
+
+//pick either -1 or 1
+float randomDirection() {
+  int n = random(-1, 2);
+  while (n == 0) n = random (-1, 2);
+  Serial.println("direction: " + (String)n);
+  return n;
 }
