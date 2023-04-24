@@ -9,6 +9,7 @@ class Mirror {
 	float rotationDegrees;
 	float rotationSteps;
 	float rotationDirection = 1;
+	float lastRotationSteps;
 
 	Mirror(PVector p) {
 		position = p;
@@ -23,7 +24,7 @@ class Mirror {
 		//r = -r/2; 	//TODO: why was this ever here? let's leave for now so I remember this might have fixed something at some point
 
 		//to correct for the physical nodes orientation
-		r += PI/4;
+		r -= PI * 3/4;
 		
 		//apply rotation to beginning and end point of mirror here instead of using rotate() so that the cast() method knows all the absolute points
 		start.set(mirrorRadius * sin(r), mirrorRadius * cos(r));
@@ -76,13 +77,14 @@ class Mirror {
 
 		//apply direction
 		rotationDegrees *= rotationDirection;
-
+		
 		//translate to stepper motor steps
 		rotationSteps = (rotationDegrees * (stepsPerRevolution / 360)) * -1;	//direction is flipped from Arduino
 
 		//translate to radians for display
 		rotationRadians = radians(rotationDegrees);
 		setPointsAlongRadius(rotationRadians);
+
 	}
 
 	//draw line to show the mirrors

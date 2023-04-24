@@ -58,7 +58,7 @@ AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 const int stepsPerRevolution = 2038 * 2;      //change this to fit the number of steps per revolution
 long rotationSteps = 0;                       //current rotation in steps
 int direction;                                //direction of automatic rotation
-long jogValue = 100000 * stepsPerRevolution;  //super high number as target for 'infinite' jog
+long jogValue = 10000 * stepsPerRevolution;  //super high number as target for 'infinite' jog
 boolean jogging = false;                      //are we jogging right now?
 
 //95A Hall sensor analog input
@@ -207,17 +207,29 @@ void setHomeStep() {
       stepper.setCurrentPosition(jogValue/2);
       Serial.println("home found");
       homing = false;
-      sendStepToProcessing();
+      //sendStepToProcessing();
     }
   }
 }
 
 //go to the position recorded as home
 void OSCgoHome(OSCMessage &msg, int addrOffset) {
+  //turn off jogging
   jogging = false;
+
   Serial.println("going home");
+
+  //get current position
+  long currentPosition = stepper.currentPosition();
+
   //always go the "nearest" home
-  stepper.moveTo(stepper.currentPosition() - (long)((int)stepper.currentPosition() % stepsPerRevolution));
+  long nextHome = currentPosition - (currentPosition % stepsPerRevolution);
+  
+  //Serial.println(nextHome);
+  //Serial.println(currentPosition % stepsPerRevolution);
+  
+  //move there
+  stepper.moveTo(nextHome);
 }
 
 //rotate from OSC messages
@@ -228,8 +240,10 @@ void OSCrotate(OSCMessage &msg, int addrOffset) {
   //write to rotationSteps
   rotationSteps = (long) inputRotation;
 
-  //move there
-  stepper.moveTo(rotationSteps + jogValue/2);
+  Serial.println("current: " + (String)stepper.currentPosition() + " steps: " + (String)(rotationSteps + (jogValue/2)));
+
+  //move there, adjust with home position of mirror (jogValue/2)
+  stepper.moveTo(rotationSteps + (jogValue/2));
 }
 
 //send the node's current step to processing

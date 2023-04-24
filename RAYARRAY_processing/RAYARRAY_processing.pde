@@ -131,7 +131,6 @@ void oscEvent(OscMessage theOscMessage) {
 		for (Node n : nodes) {
 			if (n.nodeID == id) {
 				n.mirror.rotationDegrees = step / (stepsPerRevolution / 360);
-				//println(n.mirror.rotationDegrees);
 			}
 		}
 	}
