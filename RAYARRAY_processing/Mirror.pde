@@ -73,13 +73,15 @@ class Mirror {
 					rotationDegrees = rT * 360;
 					break;
 			}
+
+			//apply direction
+			rotationDegrees *= rotationDirection;
+			
+			//translate to stepper motor steps
+			rotationSteps = (rotationDegrees * (stepsPerRevolution / 360)) * -1;	//direction is flipped from Arduino
 		}
 
-		//apply direction
-		rotationDegrees *= rotationDirection;
-		
-		//translate to stepper motor steps
-		rotationSteps = (rotationDegrees * (stepsPerRevolution / 360)) * -1;	//direction is flipped from Arduino
+
 
 		//translate to radians for display
 		rotationRadians = radians(rotationDegrees);

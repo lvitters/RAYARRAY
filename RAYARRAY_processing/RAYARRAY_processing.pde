@@ -242,7 +242,7 @@ void switchRotationMode(int mode) {
 	//individual noise rotation needs individual starting points for time
 	if(rotationMode == 1) {
 		for (Node n : nodes) {
-			n.mirror.rT = random(1000);
+			n.mirror.rT = random(10);
 		}
 	}
 
@@ -308,13 +308,15 @@ void loadConfig() {
 	}
 }
 
-//init homing sequence for all nodes
+//init homing sequence for all nodes, set everything back to zero and turn off rotation
 void goHome() {
 	println("goHome");
 	for (Node n : nodes) {
 		n.goHome();
 		n.mirror.rotationDegrees = 0;
 		n.mirror.rT = 0;
+		rotateMirrors = false;
+		cf.cp5GUI.getController("rotate mirrors").setValue(0);
 	}
 }
 
