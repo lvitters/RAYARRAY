@@ -80,7 +80,7 @@ class Node {
 	//check if mouse is hovering over the node's area
 	boolean mouseOver() {
 		//circular hitbox
-		if(dist(mouseX, mouseY, position.x, position.y) < offset/2) {
+		if(dist(mouseX, mouseY, position.x, position.y) < (offset/2 * .75)) {
 			return true;
 		} else {
 			return false;

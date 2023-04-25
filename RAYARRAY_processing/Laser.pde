@@ -98,6 +98,6 @@ class Laser {
 			facingDirection = 8;				
 			direction = new PVector(0, -1);
 		}
-		println(facingDirection);
+		//println(facingDirection);
 	}
 }
