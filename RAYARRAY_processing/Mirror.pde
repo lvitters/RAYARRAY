@@ -7,7 +7,7 @@ class Mirror {
 	float rT;
 	float rotationRadians;
 	float rotationDegrees;
-	float rotationSteps;
+	int rotationSteps;
 	float rotationDirection = 1;
 	float lastRotationSteps;
 
@@ -21,9 +21,9 @@ class Mirror {
 	//set start and end point according to rotation
 	void setPointsAlongRadius(float r) {
 		
-		//r = -r/2; 	//TODO: why was this ever here? let's leave for now so I remember this might have fixed something at some point
+		//r = -r/2; 	//TODO: why was this ever here? let's leave it for now so I remember this might have fixed something at some point
 
-		//to correct for the physical nodes orientation
+		//to correct for the physical node's orientation
 		r -= PI * 3/4;
 		
 		//apply rotation to beginning and end point of mirror here instead of using rotate() so that the cast() method knows all the absolute points
@@ -47,16 +47,16 @@ class Mirror {
 				//same noise rotation
 				case 0:
 					//increment "time" and apply rotationSpeed
-					rT += .005 * rotationSpeed;
+					rT += .002 * rotationSpeed;
 					//map to rotationDegrees
-					rotationDegrees = map(noise(rT), -1, 1, 0, 360);
+					rotationDegrees = map(noise(rT), -1, 1, 0, 360 * 3);
 					break;
 				//individual noise rotation
 				case 1:
 					//increment "time" individually and apply rotationSpeed
-					rT += random(.0001, .01) * rotationSpeed;
+					rT += random(.0001, .005) * rotationSpeed;
 					//map to rotationDegrees
-					rotationDegrees = map(noise(rT), -1, 1, 0, 360);
+					rotationDegrees = map(noise(rT), -1, 1, 0, 360 * 3);
 					break;
 				//same direction constant rotation
 				case 2:
@@ -78,16 +78,12 @@ class Mirror {
 			rotationDegrees *= rotationDirection;
 			
 			//translate to stepper motor steps
-			rotationSteps = (rotationDegrees * (stepsPerRevolution / 360)) * -1;	//direction is flipped from Arduino
-			println(rotationSteps);
+			rotationSteps = int((rotationDegrees * (stepsPerDegree))) * -1;	//direction is flipped from Arduino
 		}
-
-
 
 		//translate to radians for display
 		rotationRadians = radians(rotationDegrees);
 		setPointsAlongRadius(rotationRadians);
-
 	}
 
 	//draw line to show the mirrors

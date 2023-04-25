@@ -24,8 +24,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 1;
-int gridY = 1;
+int gridX = 2;
+int gridY = 2;
 
 float scaleCentimetersToPixels = 4.0;	//adjust for screen size
 float windowX, windowY;
@@ -42,6 +42,7 @@ float rotationSpeed = 1;
 int rotationMode = 0;
 boolean rotateMirrors;
 int stepsPerRevolution = 2048 * 2;
+float stepsPerDegree = stepsPerRevolution / 360;
 
 void settings() {
 	//scale window size according to grid measurements
@@ -130,7 +131,7 @@ void oscEvent(OscMessage theOscMessage) {
 		
 		for (Node n : nodes) {
 			if (n.nodeID == id) {
-				n.mirror.rotationDegrees = step / (stepsPerRevolution / 360);
+				n.mirror.rotationDegrees = ((step % stepsPerRevolution) / stepsPerDegree) * -1;	//direction is flipped from Arduino
 			}
 		}
 	}
@@ -227,22 +228,23 @@ void controlEvent(ControlEvent theEvent) {
 //set directions between rotationModes when mode was changed
 void switchRotationMode(int mode) {
 
+	//apply rotation mode
 	rotationMode = mode;
 	println("rotationMode: " + rotationMode);
+
+	//send nodes to their home to start fresh
+	goHome();
 
 	//noise modes, keep/reset to "regular" direction since noise moves both directions anyways
 	if(rotationMode == 0) {
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = 1;
-			n.mirror.rotationDegrees = 0;
-			n.mirror.rT = 0;
 		}
 	}
 	//individual noise rotation needs individual starting points for time
 	if(rotationMode == 1) {
 		for (Node n : nodes) {
 			n.mirror.rT = random(100);
-			n.mirror.rotationDegrees = 0;
 		}
 	}
 
@@ -251,16 +253,12 @@ void switchRotationMode(int mode) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = randomDirection;
-			n.mirror.rotationDegrees = 0;
-			n.mirror.rT = 0;
 		}
 
 	//individual direction constant rotation
 	} else if (rotationMode == 3) {
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = getRandomDirection();
-			n.mirror.rotationDegrees = 0;
-			n.mirror.rT = 0;
 		}
 	}
 }
@@ -317,7 +315,7 @@ void loadConfig() {
 void goHome() {
 	println("goHome");
 	for (Node n : nodes) {
-		n.goHome();
+		if (n.mirror != null) n.goHome();
 		n.mirror.rotationDegrees = 0;
 		n.mirror.rT = 0;
 		rotateMirrors = false;

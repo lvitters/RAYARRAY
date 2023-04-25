@@ -19,7 +19,7 @@ int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and re
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.20; //important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.21; //important for the firmware ota flashing process / increment for next upload
 
 //server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 //change server IP if needed
@@ -58,8 +58,10 @@ AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 //The stepper motor actually has a different number of teeth in its gears than is stated in the spec sheet, so we counted the teeth, 
 //calculated all the gear ratios, and have this precise measurement of the actual number of steps per revolution.
 //The spec sheet says it would be 2037.8864, so we are lucky it is an integer, sparing us from doing weird datatype casting in order
-//to compute a float with the %(remainder)operator. 
-const int stepsPerRevolution = 2048 * 2;          //our driver does half steps, so the one rev is 2 times the amount
+//to compute a float with the %(remainder)operator. Unfortunately for some reason it still doesn't seem to be 100% precise. Maybe
+//there are even differences between the motors from a single order? 
+
+const int stepsPerRevolution = 2048 * 2;          //our driver does half steps, so one rev is 2 times the amount
 long rotationSteps = 0;                           //current rotation in steps
 int direction;                                    //direction of rotation
 long jogValue = 10000 * stepsPerRevolution;       //super high number as target for 'infinite' jog
@@ -129,17 +131,17 @@ void loop() {
 }
 
 void initStepperMotor() {
-  stepper.setMaxSpeed(500);
+  stepper.setMaxSpeed(1000);
   stepper.setAcceleration(10000);
 }
 
 //rotate from OSC messages
 void OSCrotate(OSCMessage &msg, int addrOffset) {
   //get value
-  float inputRotation = msg.getFloat(0);
+  int inputRotation = msg.getInt(0);
   
   //write to rotationSteps
-  rotationSteps = (long) inputRotation;
+  long rotationSteps = (long)inputRotation;
 
   //Serial.println("current: " + (String)stepper.currentPosition() + " steps: " + (String)(rotationSteps + (jogValue/2)));
 

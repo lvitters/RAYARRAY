@@ -65,7 +65,7 @@ class Node {
 		if (mouseOver()) {
 			fill(100, 255, 100, 50);
 			noStroke();
-			ellipse(position.x, position.y, offset, offset);
+			ellipse(position.x, position.y, .75 * offset, .75 * offset);
 		}
 	}
 
@@ -127,10 +127,14 @@ class Node {
 
 	//send rotation to node every x milliseconds
 	void sendRotationToNode() {
-		if (millis() - lastSend > sendFreq && nodeIP != null && rotateMirrors) {
+		if (millis() - lastSend > sendFreq && nodeIP != null) {
 			lastSend = millis();
 			OscMessage rotationMessage = new OscMessage("/rotate");
-			rotationMessage.add(mirror.rotationSteps);
+			if (mirror != null && rotateMirrors) {
+				rotationMessage.add(mirror.rotationSteps);
+			} else if (laser != null) {
+				rotationMessage.add(laser.rotationSteps);
+			}
 			oscP5.send(rotationMessage, remoteLocation);
 			//println("sent " + mirror.rotationSteps + " to: " + nodeID + " @" + nodeIP);
 		}
