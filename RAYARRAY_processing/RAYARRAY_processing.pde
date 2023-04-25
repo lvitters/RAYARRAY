@@ -24,10 +24,10 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 3;
-int gridY = 3;
+int gridX = 10;
+int gridY = 5;
 
-float scaleCentimetersToPixels = 4.0;	//adjust for screen size
+float scaleCentimetersToPixels = 3.0;	//adjust for screen size
 float windowX, windowY;
 float absoluteConnectionLength = 50.0;	//in cm
 float absoluteMirrorWidth = 15.0;		//in cm
@@ -40,7 +40,7 @@ int recursionGuard = 0;
 boolean rotateLaser = false;
 boolean rotateLasers = false;
 float rotationSpeed = 1;
-int rotationModeMirrors = 0;
+int mirrorRotationMode = 0;
 boolean rotateMirrors;
 int stepsPerRevolution = 2048 * 2;
 float stepsPerDegree = stepsPerRevolution / 360;
@@ -220,55 +220,66 @@ void controlEvent(ControlEvent theEvent) {
 		}
 
 		//if it comes from the "rotationModeMirrors" controller then switchrotationModeMirrors accordingly
-		if (theEvent.getController().toString() == "switchrotationModeMirrors") {
-			switchrotationModeMirrors(int(theEvent.getController().getValue()));
+		if (theEvent.getController().toString() == "switchMirrorRotationMode") {
+			switchMirrorRotationMode(int(theEvent.getController().getValue()));
 		}
 
 	}
 }
 
 //set directions between rotationModeMirrorss when mode was changed
-void switchrotationModeMirrors(int mode) {
+void switchMirrorRotationMode(int mode) {
 
 	//apply rotation mode
-	rotationModeMirrors = mode;
-	println("rotationModeMirrors: " + rotationModeMirrors);
+	mirrorRotationMode = mode;
+	println("mirrorRotationMode: " + mirrorRotationMode);
+
+	//turn off rotation
+	rotateMirrors = false;
 
 	//noise modes, keep/reset to "regular" direction since noise moves both directions anyways
-	if(rotationModeMirrors == 0) {
+	if(mirrorRotationMode == 0) {
 		for (Node n : nodes) {
-			n.mirror.rotationDirection = 1;
-			n.mirror.rT = 0;
-			n.mirror.rotationDegrees = 0;
-			n.mirror.rotationSteps = 0;
+			if (n.mirror != null) {
+				n.mirror.rotationDirection = 1;
+				n.mirror.rT = 0;
+				n.mirror.rotationDegrees = 0;
+				n.mirror.rotationSteps = 0;
+			}
 		}
 	}
 	//individual noise rotation needs individual starting points for time
-	if(rotationModeMirrors == 1) {
+	if(mirrorRotationMode == 1) {
 		for (Node n : nodes) {
-			n.mirror.rT = random(100);
-			n.mirror.rotationDegrees = 0;
-			n.mirror.rotationSteps = 0;
+			if (n.mirror != null) {
+				n.mirror.rT = random(100);
+				n.mirror.rotationDegrees = 0;
+				n.mirror.rotationSteps = 0;
+			}
 		}
 	}
 
 	//same direction constant rotation
-	if (rotationModeMirrors == 2) {
+	if (mirrorRotationMode == 2) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
-			n.mirror.rotationDirection = randomDirection;
-			n.mirror.rT = 0;
-			n.mirror.rotationDegrees = 0;
-			n.mirror.rotationSteps = 0;
+			if (n.mirror != null) {
+				n.mirror.rotationDirection = randomDirection;
+				n.mirror.rT = 0;
+				n.mirror.rotationDegrees = 0;
+				n.mirror.rotationSteps = 0;
+			}
 		}
 
 	//individual direction constant rotation
-	} else if (rotationModeMirrors == 3) {
+	} else if (mirrorRotationMode == 3) {
 		for (Node n : nodes) {
-			n.mirror.rotationDirection = getRandomDirection();
-			n.mirror.rT = 0;
-			n.mirror.rotationDegrees = 0;
-			n.mirror.rotationSteps = 0;
+			if (n.mirror != null) {
+				n.mirror.rotationDirection = getRandomDirection();
+				n.mirror.rT = 0;
+				n.mirror.rotationDegrees = 0;
+				n.mirror.rotationSteps = 0;
+			}
 		}
 	}
 }

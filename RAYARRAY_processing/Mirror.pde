@@ -42,7 +42,7 @@ class Mirror {
 		if (rotateMirrors) {
 
 			//rotate according to rotation_mode (set by DropdownList)
-			switch(rotationModeMirrors) {
+			switch(mirrorRotationMode) {
 				//same noise rotation
 				case 0:
 					//increment "time" and apply rotationSpeed

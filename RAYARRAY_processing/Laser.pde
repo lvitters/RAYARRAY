@@ -109,9 +109,7 @@ class Laser {
 		
 		//change to degrees
 		rotationDegrees = degrees(rotationRadians);
-
-		println(rotationDegrees);
-
+		
 		//write to steps
 		rotationSteps = int((rotationDegrees) * stepsPerDegree) * -1;		//direction is flipped from Arduino
 	}
@@ -141,7 +139,7 @@ class Laser {
 		else if (column == 0 ) {					//left side
 			facingDirection = 5;				
 			direction = new PVector(1, 0);
-		} else if (column == gridY-1) {				//right side
+		} else if (column == gridX-1) {				//right side
 			facingDirection = 6;				
 			direction = new PVector(-1, 0);
 		} else if (row == 0 && column != 0) {		//top

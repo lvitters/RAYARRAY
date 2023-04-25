@@ -144,8 +144,8 @@ class ControlFrame extends PApplet {
 			;
 
 		//rotation modes
-		modesList = cp5GUI.addDropdownList("rotation mode")
-			.plugTo(parent, "switchRotationMode")
+		modesList = cp5GUI.addDropdownList("mirror rotation mode")
+			.plugTo(parent, "switchMirrorRotationMode")
 			.setPosition(guiOffset/4, guiOffset * 6/3)
 			.setFont(guiFont)
 			.setColor(guiColor)
