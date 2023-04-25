@@ -36,8 +36,12 @@ class Node {
 		}
 		if (laser != null) {
 			laser.drawOrigin();
-			if (mouseOver() && rotateLaser) laser.setDirection(new PVector(mouseX - laser.position.x, mouseY - laser.position.y).normalize());
-			laser.update();
+			if (mouseOver() && rotateLaser && !rotateLasers) {
+				laser.setDirection(new PVector(mouseX - laser.position.x, mouseY - laser.position.y).normalize());
+			} else if (rotateLasers) {
+				laser.rotate();
+			}
+			laser.updateRays();
 		}
 
 		//close input field when mouse is not over field

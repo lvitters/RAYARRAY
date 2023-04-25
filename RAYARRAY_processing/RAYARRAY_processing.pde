@@ -38,8 +38,9 @@ int recursionGuard = 0;
 
 //rotation
 boolean rotateLaser = false;
+boolean rotateLasers = false;
 float rotationSpeed = 1;
-int rotationMode = 0;
+int rotationModeMirrors = 0;
 boolean rotateMirrors;
 int stepsPerRevolution = 2048 * 2;
 float stepsPerDegree = stepsPerRevolution / 360;
@@ -62,7 +63,7 @@ void setup() {
 	ellipseMode(CENTER);
 	surface.setResizable(true);
 	idFont = createFont("arial", 20);
-	guiFont = createFont("arial", 12);
+	guiFont = createFont("arial", 11);
 
 	//init oscP5
   	oscP5 = new OscP5(this, 9999);
@@ -218,23 +219,23 @@ void controlEvent(ControlEvent theEvent) {
 			getSteps();
 		}
 
-		//if it comes from the "rotationMode" controller then switchRotationMode accordingly
-		if (theEvent.getController().toString() == "switchRotationMode") {
-			switchRotationMode(int(theEvent.getController().getValue()));
+		//if it comes from the "rotationModeMirrors" controller then switchrotationModeMirrors accordingly
+		if (theEvent.getController().toString() == "switchrotationModeMirrors") {
+			switchrotationModeMirrors(int(theEvent.getController().getValue()));
 		}
 
 	}
 }
 
-//set directions between rotationModes when mode was changed
-void switchRotationMode(int mode) {
+//set directions between rotationModeMirrorss when mode was changed
+void switchrotationModeMirrors(int mode) {
 
 	//apply rotation mode
-	rotationMode = mode;
-	println("rotationMode: " + rotationMode);
+	rotationModeMirrors = mode;
+	println("rotationModeMirrors: " + rotationModeMirrors);
 
 	//noise modes, keep/reset to "regular" direction since noise moves both directions anyways
-	if(rotationMode == 0) {
+	if(rotationModeMirrors == 0) {
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = 1;
 			n.mirror.rT = 0;
@@ -243,7 +244,7 @@ void switchRotationMode(int mode) {
 		}
 	}
 	//individual noise rotation needs individual starting points for time
-	if(rotationMode == 1) {
+	if(rotationModeMirrors == 1) {
 		for (Node n : nodes) {
 			n.mirror.rT = random(100);
 			n.mirror.rotationDegrees = 0;
@@ -252,7 +253,7 @@ void switchRotationMode(int mode) {
 	}
 
 	//same direction constant rotation
-	if (rotationMode == 2) {
+	if (rotationModeMirrors == 2) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = randomDirection;
@@ -262,7 +263,7 @@ void switchRotationMode(int mode) {
 		}
 
 	//individual direction constant rotation
-	} else if (rotationMode == 3) {
+	} else if (rotationModeMirrors == 3) {
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = getRandomDirection();
 			n.mirror.rT = 0;

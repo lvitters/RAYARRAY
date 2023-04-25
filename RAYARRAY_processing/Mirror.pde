@@ -9,7 +9,6 @@ class Mirror {
 	float rotationDegrees;
 	int rotationSteps = 0;
 	float rotationDirection = 1;
-	float lastRotationSteps;
 
 	Mirror(PVector p) {
 		position = p;
@@ -43,7 +42,7 @@ class Mirror {
 		if (rotateMirrors) {
 
 			//rotate according to rotation_mode (set by DropdownList)
-			switch(rotationMode) {
+			switch(rotationModeMirrors) {
 				//same noise rotation
 				case 0:
 					//increment "time" and apply rotationSpeed

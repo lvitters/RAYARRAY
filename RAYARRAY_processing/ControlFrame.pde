@@ -101,6 +101,16 @@ class ControlFrame extends PApplet {
 			;
 			
 		//toggle if mirror should rotate
+		cp5GUI.addToggle("rotate lasers")
+			.plugTo(parent, "rotateLasers")
+			.setFont(guiFont)
+			.setColor(guiColor)
+			.setPosition(guiOffset/4 + 110, guiOffset * 3/3)
+			.setSize(100, 20)
+			.setValue(false)
+			;
+			
+		//toggle if mirror should rotate
 		cp5GUI.addToggle("send rotation")
 			.plugTo(parent, "sendRotation")
 			.setFont(guiFont)

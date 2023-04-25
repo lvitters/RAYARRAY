@@ -9,6 +9,7 @@ class Laser {
 	int rotationSteps;
 	int revolutions = 0;
 	int facingDirection;
+	float rT;
 
 	Laser(PVector p, int column, int row) {
 		position = p;
@@ -29,7 +30,41 @@ class Laser {
 		direction = d;
 		firstRay.setDirection(direction);
 
+		//calc steps for node
 		setRotationSteps(direction);
+	}
+
+	//draw all the rays emitting from that diode recursively
+	void updateRays() {
+		firstRay.update();
+		firstRay.draw();
+	}
+
+	//draw the origin of the laser diode
+	void drawOrigin() {
+		noStroke();
+		if (!active) fill(0, 0, 255);
+		else fill(0, 255, 0);
+		ellipse(position.x, position.y, 10, 10);
+	}
+	
+	//update the mirrors values
+	void rotate() {
+		if (rotateLasers) {
+			//increment "time" and apply rotationSpeed
+			rT += .002 * rotationSpeed;
+			//map to rotationDegrees
+			rotationDegrees += map(sin(rT), 0, 1, 0, 360);
+		}
+
+		//translate to radians for display
+		rotationRadians = radians(rotationDegrees);
+
+		//get new vector
+		PVector newDirection = PVector.fromAngle(rotationRadians).normalize();
+
+		//set to direction
+		setDirection(newDirection);
 	}
 
 	//get rotationSteps from laser's direction to send to node
@@ -45,22 +80,6 @@ class Laser {
 
 		//write to steps
 		rotationSteps = int((rotationDegrees) * stepsPerDegree) * -1;		//direction is flipped from Arduino
-
-		println(d);
-	}
-
-	//draw all the rays emitting from that diode recursively
-	void update() {
-		firstRay.update();
-		firstRay.draw();
-	}
-
-	//draw the origin of the laser diode
-	void drawOrigin() {
-		noStroke();
-		if (!active) fill(0, 0, 255);
-		else fill(0, 255, 0);
-		ellipse(position.x, position.y, 10, 10);
 	}
 
 	//determine which direction the laser is facing, depending on where it is in grid, to limit its movement (it has a cable)
