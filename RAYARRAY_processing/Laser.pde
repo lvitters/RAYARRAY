@@ -30,7 +30,6 @@ class Laser {
 		direction = d;
 		firstRay.setDirection(direction);
 
-		//calc steps for node
 		setRotationSteps(direction);
 	}
 
@@ -54,7 +53,40 @@ class Laser {
 			//increment "time" and apply rotationSpeed
 			rT += .002 * rotationSpeed;
 			//map to rotationDegrees
-			rotationDegrees += map(sin(rT), 0, 1, 0, 360);
+			switch (facingDirection) {
+				//top left
+				case 1:
+					rotationDegrees = map(sin(rT), -1, 1, 0, 90);
+				break;
+				//top right
+				case 2:
+					rotationDegrees = map(sin(rT), -1, 1, 90, 180);
+				break;
+				//bottom right
+				case 3:
+					rotationDegrees = map(sin(rT), -1, 1, 180, 270);
+				break;
+				//bottom left
+				case 4:
+					rotationDegrees = map(sin(rT), -1, 1, 270, 360);
+				break;
+				//left side
+				case 5:
+					rotationDegrees = map(sin(rT), -1, 1, -90, 90);
+				break;
+				//right side
+				case 6:
+					rotationDegrees = map(sin(rT), -1, 1, 270, 90);
+				break;
+				//top
+				case 7:
+					rotationDegrees = map(sin(rT), -1, 1, 180, 0);
+				break;
+				//bottom
+				case 8:
+					rotationDegrees = map(sin(rT), -1, 1, 180, 360);
+				break;
+			}
 		}
 
 		//translate to radians for display
@@ -70,13 +102,15 @@ class Laser {
 	//get rotationSteps from laser's direction to send to node
 	void setRotationSteps(PVector d) {
 		//get radians from direction vector
-		rotationRadians = atan2(d.x, d.y);
+		float rotationRadiansForSteps = atan2(d.x, d.y);
 		
 		//adjust for physical node's orientation
-		rotationRadians -= PI * 3/4;
+		rotationRadiansForSteps -= PI * 3/4;
 		
-		//shift to be from 0 to 360
+		//change to degrees
 		rotationDegrees = degrees(rotationRadians);
+
+		println(rotationDegrees);
 
 		//write to steps
 		rotationSteps = int((rotationDegrees) * stepsPerDegree) * -1;		//direction is flipped from Arduino
@@ -84,7 +118,7 @@ class Laser {
 
 	//determine which direction the laser is facing, depending on where it is in grid, to limit its movement (it has a cable)
 	void determineFacingDirection(int column, int row) {
-		//first somewhere not on the edge of the grid
+		//first somewhere not on the edge of the grid (unused)
 		if (row != 0 && row != gridY-1 && column != 0 && column != gridX-1) {
 			facingDirection = 0;
 			direction = new PVector(random(-1, 1), random(-1,1));
