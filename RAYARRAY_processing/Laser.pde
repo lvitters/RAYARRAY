@@ -5,7 +5,9 @@ class Laser {
 
 	float rotationRadians;
 	float rotationDegrees;
+	float previousDegrees;
 	int rotationSteps;
+	int revolutions = 0;
 
 	Laser(PVector p) {
 		position = p;
@@ -31,11 +33,28 @@ class Laser {
 
 	//get rotationSteps from laser's direction to send to node
 	void setRotationSteps(PVector d) {
+		//get radians from direction vector
 		rotationRadians = atan2(d.x, d.y);
+		
 		//adjust for physical node's orientation
 		rotationRadians -= PI * 3/4;
-		rotationDegrees = degrees(rotationRadians);
-		rotationSteps = int(rotationDegrees * stepsPerDegree) * -1;		//direction is flipped from Arduino
+		
+		//shift to be from 0 to 360
+		rotationDegrees = degrees(rotationRadians) + 315;
+		
+		//count revolutions
+		if(rotationDegrees >= (360)) {
+			revolutions++;
+		} else if (rotationDegrees <= (0)) {
+			revolutions--;
+		}
+		rotationDegrees += revolutions * 360;
+		previousDegrees = rotationDegrees;
+
+		println("revs: " + revolutions + " rotationDegrees: " + rotationDegrees);
+
+		//write to steps
+		rotationSteps = int((rotationDegrees - 315) * stepsPerDegree) * -1;		//direction is flipped from Arduino
 	}
 
 	//draw all the rays emitting from that diode recursively

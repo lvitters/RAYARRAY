@@ -24,8 +24,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 2;
-int gridY = 2;
+int gridX = 1;
+int gridY = 1;
 
 float scaleCentimetersToPixels = 4.0;	//adjust for screen size
 float windowX, windowY;
@@ -43,6 +43,7 @@ int rotationMode = 0;
 boolean rotateMirrors;
 int stepsPerRevolution = 2048 * 2;
 float stepsPerDegree = stepsPerRevolution / 360;
+float rotationCeiling = stepsPerRevolution * 10000;	//10000 revolutions
 
 void settings() {
 	//scale window size according to grid measurements
@@ -189,7 +190,7 @@ void controlEvent(ControlEvent theEvent) {
 	if (theEvent.isController()) {
     	//println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
 
-		//the following if statements can only call a function with the same name as the controller?
+		//the following if statements can only call a function inside them with the same name as the controller?
 		//probably better for readability to have separate functions for everything anyways 
 
 		//if it comes from the "saveConfig" controller then saveConfig()
@@ -232,19 +233,21 @@ void switchRotationMode(int mode) {
 	rotationMode = mode;
 	println("rotationMode: " + rotationMode);
 
-	//send nodes to their home to start fresh
-	goHome();
-
 	//noise modes, keep/reset to "regular" direction since noise moves both directions anyways
 	if(rotationMode == 0) {
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = 1;
+			n.mirror.rT = 0;
+			n.mirror.rotationDegrees = 0;
+			n.mirror.rotationSteps = 0;
 		}
 	}
 	//individual noise rotation needs individual starting points for time
 	if(rotationMode == 1) {
 		for (Node n : nodes) {
 			n.mirror.rT = random(100);
+			n.mirror.rotationDegrees = 0;
+			n.mirror.rotationSteps = 0;
 		}
 	}
 
@@ -253,12 +256,18 @@ void switchRotationMode(int mode) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = randomDirection;
+			n.mirror.rT = 0;
+			n.mirror.rotationDegrees = 0;
+			n.mirror.rotationSteps = 0;
 		}
 
 	//individual direction constant rotation
 	} else if (rotationMode == 3) {
 		for (Node n : nodes) {
 			n.mirror.rotationDirection = getRandomDirection();
+			n.mirror.rT = 0;
+			n.mirror.rotationDegrees = 0;
+			n.mirror.rotationSteps = 0;
 		}
 	}
 }
@@ -311,15 +320,18 @@ void loadConfig() {
 	}
 }
 
-//init homing sequence for all nodes, set everything back to zero and turn off rotation
+//turn off rotation and sending, set GUI elements accordingly, init homing sequence for all nodes, move virtual mirror back to 0
 void goHome() {
 	println("goHome");
+	rotateMirrors = false;
+	sendRotation = false;
+	cf.cp5GUI.getController("rotate mirrors").setValue(0);
+	cf.cp5GUI.getController("send rotation").setValue(0);
 	for (Node n : nodes) {
 		if (n.mirror != null) n.goHome();
-		n.mirror.rotationDegrees = 0;
 		n.mirror.rT = 0;
-		rotateMirrors = false;
-		cf.cp5GUI.getController("rotate mirrors").setValue(0);
+		n.mirror.rotationDegrees = 0;
+		n.mirror.rotationSteps = 0;
 	}
 }
 

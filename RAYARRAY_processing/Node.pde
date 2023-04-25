@@ -127,10 +127,10 @@ class Node {
 
 	//send rotation to node every x milliseconds
 	void sendRotationToNode() {
-		if (millis() - lastSend > sendFreq && nodeIP != null) {
+		if (millis() - lastSend > sendFreq && nodeIP != null && sendRotation) {
 			lastSend = millis();
 			OscMessage rotationMessage = new OscMessage("/rotate");
-			if (mirror != null && rotateMirrors) {
+			if (mirror != null) {
 				rotationMessage.add(mirror.rotationSteps);
 			} else if (laser != null) {
 				rotationMessage.add(laser.rotationSteps);
