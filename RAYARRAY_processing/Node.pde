@@ -111,8 +111,7 @@ class Node {
 			case 1: 
 				mirror = null;
 				if (laser == null) {
-					laser = new Laser(position);
-					if (mouseX > width/2) laser.setDirection(new PVector(-1, 0));
+					laser = new Laser(position, column, row);
 				}
 			break;
 			//node is empty

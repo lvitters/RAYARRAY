@@ -7,7 +7,7 @@ class Mirror {
 	float rT;
 	float rotationRadians;
 	float rotationDegrees;
-	int rotationSteps;
+	int rotationSteps = 0;
 	float rotationDirection = 1;
 	float lastRotationSteps;
 

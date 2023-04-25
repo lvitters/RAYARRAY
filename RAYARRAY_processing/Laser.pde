@@ -8,10 +8,11 @@ class Laser {
 	float previousDegrees;
 	int rotationSteps;
 	int revolutions = 0;
+	int facingDirection;
 
-	Laser(PVector p) {
+	Laser(PVector p, int column, int row) {
 		position = p;
-		direction = new PVector(1, 0);
+		determineFacingDirection(column, row);
 		firstRay = new Ray();
 		firstRay.setOrigin(position);
 		firstRay.setDirection(direction);
@@ -40,21 +41,12 @@ class Laser {
 		rotationRadians -= PI * 3/4;
 		
 		//shift to be from 0 to 360
-		rotationDegrees = degrees(rotationRadians) + 315;
-		
-		//count revolutions
-		if(rotationDegrees >= (360)) {
-			revolutions++;
-		} else if (rotationDegrees <= (0)) {
-			revolutions--;
-		}
-		rotationDegrees += revolutions * 360;
-		previousDegrees = rotationDegrees;
-
-		println("revs: " + revolutions + " rotationDegrees: " + rotationDegrees);
+		rotationDegrees = degrees(rotationRadians);
 
 		//write to steps
-		rotationSteps = int((rotationDegrees - 315) * stepsPerDegree) * -1;		//direction is flipped from Arduino
+		rotationSteps = int((rotationDegrees) * stepsPerDegree) * -1;		//direction is flipped from Arduino
+
+		println(d);
 	}
 
 	//draw all the rays emitting from that diode recursively
@@ -69,5 +61,43 @@ class Laser {
 		if (!active) fill(0, 0, 255);
 		else fill(0, 255, 0);
 		ellipse(position.x, position.y, 10, 10);
+	}
+
+	//determine which direction the laser is facing, depending on where it is in grid, to limit its movement (it has a cable)
+	void determineFacingDirection(int column, int row) {
+		//first somewhere not on the edge of the grid
+		if (row != 0 && row != gridY-1 && column != 0 && column != gridX-1) {
+			facingDirection = 0;
+			direction = new PVector(random(-1, 1), random(-1,1));
+		}
+		//then the corners
+		else if (column == 0 & row == 0) {					//top left
+			facingDirection = 1;				
+			direction = new PVector(1, 1);
+		} else if (column == gridX-1 && row == 0) {			//top right	
+			facingDirection = 2; 				
+			direction = new PVector(-.7, .7);
+		} else if (column == gridX-1 && row == gridY-1) {	//bottom right
+			facingDirection = 3;				
+			direction = new PVector(-.7, -.7);
+		} else if (column == 0 && row == gridY-1) {			//bottom left
+			facingDirection = 4;				
+			direction = new PVector(1, -1);
+		}
+		//now the edges
+		else if (column == 0 ) {					//left side
+			facingDirection = 5;				
+			direction = new PVector(1, 0);
+		} else if (column == gridY-1) {				//right side
+			facingDirection = 6;				
+			direction = new PVector(-1, 0);
+		} else if (row == 0 && column != 0) {		//top
+			facingDirection = 7;				
+			direction = new PVector(0, 1);
+		} else if (row == gridY-1) {				//bottom
+			facingDirection = 8;				
+			direction = new PVector(0, -1);
+		}
+		println(facingDirection);
 	}
 }
