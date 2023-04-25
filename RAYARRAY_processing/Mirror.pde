@@ -46,28 +46,28 @@ class Mirror {
 				//same noise rotation
 				case 0:
 					//increment "time" and apply rotationSpeed
-					rT += .002 * rotationSpeed;
+					rT += .002 * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees += map(noise(rT), 0, 1, -2, 2);
 					break;
 				//individual noise rotation
 				case 1:
 					//increment "time" individually and apply rotationSpeed
-					rT += random(.0001, .005) * rotationSpeed;
+					rT += random(.0001, .005) * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees += map(noise(rT), 0, 1, -2, 2);
 					break;
 				//same direction constant rotation
 				case 2:
 					//increment time and apply rotationSpeed
-					rT += .5 * rotationSpeed;
+					rT += .5 * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees = rT;
 					break;
 				//individual direction constant rotation
 				case 3:
 					//increment time and apply rotationSpeed
-					rT +=  .5 * rotationSpeed;
+					rT +=  .5 * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees = rT;
 					break;

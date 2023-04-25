@@ -99,15 +99,41 @@ class ControlFrame extends PApplet {
 			.setSize(100, 20)
 			.setValue(false)
 			;
+
+		//rotation speed
+		cp5GUI.addSlider("mirror speed")
+			.plugTo(parent, "mirrorRotationSpeed")
+			.setFont(guiFont)
+			.setColor(guiColor)
+			.setPosition(guiOffset/4 + 110, guiOffset * 3/3)
+			.setSize(200, 20)
+			.setRange(.5, 3)
+			.setValue(1)
+			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
+			//.setDecimalPrecision(1) 
+			;
 			
 		//toggle if mirror should rotate
 		cp5GUI.addToggle("rotate lasers")
 			.plugTo(parent, "rotateLasers")
 			.setFont(guiFont)
 			.setColor(guiColor)
-			.setPosition(guiOffset/4 + 110, guiOffset * 3/3)
+			.setPosition(guiOffset/4, guiOffset * 4/3)
 			.setSize(100, 20)
 			.setValue(false)
+			;
+
+		//rotation speed
+		cp5GUI.addSlider("laser speed")
+			.plugTo(parent, "laserRotationSpeed")
+			.setFont(guiFont)
+			.setColor(guiColor)
+			.setPosition(guiOffset/4 + 110, guiOffset * 4/3)
+			.setSize(200, 20)
+			.setRange(.5, 3)
+			.setValue(1)
+			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
+			//.setDecimalPrecision(1) 
 			;
 			
 		//toggle if mirror should rotate
@@ -115,21 +141,9 @@ class ControlFrame extends PApplet {
 			.plugTo(parent, "sendRotation")
 			.setFont(guiFont)
 			.setColor(guiColor)
-			.setPosition(guiOffset/4 + 220, guiOffset * 3/3)
+			.setPosition(guiOffset/4, guiOffset * 5/3)
 			.setSize(100, 20)
 			.setValue(false)
-			;
-
-		//rotation speed
-		cp5GUI.addSlider("rotation speed")
-			.plugTo(parent, "rotationSpeed")
-			.setFont(guiFont)
-			.setColor(guiColor)
-			.setPosition(guiOffset/4, guiOffset * 4/3)
-			.setSize(200, 20)
-			.setRange(.5, 3)
-			.setValue(1)
-			//.setDecimalPrecision(1) 
 			;
 		
 		//send_frequency slider
@@ -137,10 +151,11 @@ class ControlFrame extends PApplet {
 			.plugTo(parent, "sendFreq")
 			.setFont(guiFont)
 			.setColor(guiColor)
-			.setPosition(guiOffset/4, guiOffset * 5/3)
+			.setPosition(guiOffset/4 + 110, guiOffset * 5/3)
 			.setSize(200, 20)
 			.setRange(1, 50)
 			.setValue(10)
+			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			;
 
 		//rotation modes

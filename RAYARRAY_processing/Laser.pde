@@ -51,7 +51,7 @@ class Laser {
 	void rotate() {
 		if (rotateLasers) {
 			//increment "time" and apply rotationSpeed
-			rT += .002 * rotationSpeed;
+			rT += .002 * laserRotationSpeed;
 			//map to rotationDegrees
 			switch (facingDirection) {
 				//top left
@@ -109,7 +109,7 @@ class Laser {
 		
 		//change to degrees
 		rotationDegrees = degrees(rotationRadians);
-		
+
 		//write to steps
 		rotationSteps = int((rotationDegrees) * stepsPerDegree) * -1;		//direction is flipped from Arduino
 	}

@@ -39,12 +39,14 @@ int recursionGuard = 0;
 //rotation
 boolean rotateLaser = false;
 boolean rotateLasers = false;
-float rotationSpeed = 1;
-int mirrorRotationMode = 0;
+float laserRotationSpeed = 1;
+
 boolean rotateMirrors;
+float mirrorRotationSpeed = 1;
+int mirrorRotationMode = 0;
+
 int stepsPerRevolution = 2048 * 2;
 float stepsPerDegree = stepsPerRevolution / 360;
-float rotationCeiling = stepsPerRevolution * 10000;	//10000 revolutions
 
 void settings() {
 	//scale window size according to grid measurements
