@@ -71,7 +71,7 @@ class Mirror {
 		}
 
 		//translate to stepper motor steps
-		rotationSteps = rotationDegrees * stepsPerDegree;
+		rotationSteps = (rotationDegrees * stepsPerDegree) + stepZero;
 
 		//translate to radians for display, flip direction because Arduino is flipped, adjust for mirror's physical orientation
 		rotationRadians = radians(-rotationDegrees) - (PI * .75);

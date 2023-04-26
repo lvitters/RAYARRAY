@@ -19,7 +19,7 @@ int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and re
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.21; //important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.22; //important for the firmware ota flashing process / increment for next upload
 
 //server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 //change server IP if needed
@@ -80,6 +80,8 @@ long homeStep;                          //step with the lowest voltage
 long lastStep;                          //what was the last step?
 long currentStep;                       //where is the motor currently
 
+long loopCount = 0;
+
 //LED pin
 #define LED_PIN 2
 
@@ -137,20 +139,13 @@ void initStepperMotor() {
 
 //rotate from OSC messages
 void OSCrotate(OSCMessage &msg, int addrOffset) {
-  //get value
-  float inputRotation = msg.getFloat(0);
-
-  Serial.println("float: " + (String)inputRotation);
-  
-  //write to rotationSteps
-  long rotationSteps = (long)inputRotation;
-
-  Serial.println("long: " + (String)rotationSteps);
-
-  //Serial.println("current: " + (String)stepper.currentPosition() + " steps: " + (String)(rotationSteps + (jogValue/2)));
+  // //get value
+  // float inputRotation = msg.getFloat(0); 
+  // //write to rotationSteps
+  // long rotationSteps = (long)msg.getFloat(0);
 
   //move there, adjust with home position of mirror (jogValue/2)
-  stepper.moveTo((rotationSteps) + jogValue/2);
+  stepper.moveTo((long)msg.getFloat(0));
 }
 
 //read voltage and record lowest one and the step where it is at
@@ -160,7 +155,7 @@ void findLowestVoltage() {
 
   //smoothing formula from Felix Fisgus
   float smoothVoltage = smoothAlpha * voltage + (1-smoothAlpha) * previousVoltage;  
-  
+
   //get current step
   long currentStep = stepper.currentPosition();
 
@@ -174,15 +169,11 @@ void findLowestVoltage() {
   //move along
   stepper.moveTo(jogValue * direction);
 
-  //Serial.println("current: " + (String)currentStep + " direction: " + (String)direction);
-
   //find lowest voltage
   if (smoothVoltage <= lowestVoltage && smoothVoltage > 450) {  //TODO: hardcoded number is bad!
     lowestVoltage = smoothVoltage;
     homeStep = currentStep;
   }
-
-  //Serial.println("voltage: " + (String)voltage + " smoothVoltage: " + (String)smoothVoltage + " lowestVoltage: " + (String)lowestVoltage);
 
   //record voltage for next measuring cycle
   previousVoltage = voltage;
@@ -193,12 +184,11 @@ void setHomeStep() {
   //after starting the program for x milliseconds and every x milliseconds
   if ((millis() < homingDuration) && (millis() % 5 == 0) && homing == true) {
     findLowestVoltage();
+  
   //if the lowest voltage was found after x milliseconds
   } else if ((millis() > homingDuration) && homing) {
     //move to recorded homeStep
     stepper.moveTo(homeStep);
-
-    //Serial.println("homeStep: " + (String)homeStep + " currentStep: " + (String)stepper.currentPosition());
 
     //if we're at that step, set to 0 and set homing to false to stop this nightmare
     if (stepper.currentPosition() == homeStep) {
@@ -211,9 +201,6 @@ void setHomeStep() {
 
 //go to the position recorded as home
 void OSCgoHome(OSCMessage &msg, int addrOffset) {
-  //turn off jogging
-  //jogging = false;
-
   Serial.println("going home");
 
   //get current position
@@ -221,7 +208,7 @@ void OSCgoHome(OSCMessage &msg, int addrOffset) {
 
   //always go the "nearest" home
   long nextHome = currentPosition - (currentPosition % stepsPerRevolution);
-  
+
   //move there
   stepper.moveTo((long)nextHome);
 }
@@ -275,8 +262,6 @@ void OSCincomingPing(OSCMessage &msg, int addrOffset) {
   char tmpstr[512];
   msg.getString(0, tmpstr);
   String ip = (char*)tmpstr;
-  //Serial.println(ip);
-
   if (ip == WiFi.localIP().toString().c_str()) {
     digitalWrite(LED_PIN, HIGH);
   } else {

@@ -24,8 +24,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 2;
-int gridY = 2;
+int gridX = 8;
+int gridY = 4;
 
 float scaleCentimetersToPixels = 3.0;	//adjust for screen size
 float windowX, windowY;
@@ -46,6 +46,7 @@ float mirrorRotationSpeed = 1;
 int mirrorRotationMode = 0;
 
 int stepsPerRevolution = 2048 * 2;
+int stepZero = (stepsPerRevolution * 10000) / 2;
 float stepsPerDegree = stepsPerRevolution / 360;
 
 void settings() {
