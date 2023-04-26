@@ -21,8 +21,6 @@ class Mirror {
 
 	//set start and end point according to rotation
 	void setPointsAlongRadius(float r) {		
-		//correct for physical node's orientation
-		//r -= PI * 3/4;
 		
 		//apply rotation to beginning and end point of mirror here instead of using rotate() so that the cast() method knows all the absolute points
 		start.set(mirrorRadius * sin(r), mirrorRadius * cos(r));
@@ -65,7 +63,7 @@ class Mirror {
 				//individual direction constant rotation
 				case 3:
 					//increment time and apply rotationSpeed
-					rT +=  .5 * mirrorRotationSpeed * rotationDirection;
+					rT += .5 * mirrorRotationSpeed * rotationDirection;
 					//map to rotationDegrees
 					rotationDegrees = rT;
 				break;
@@ -73,10 +71,10 @@ class Mirror {
 		}
 
 		//translate to stepper motor steps
-		rotationSteps = (rotationDegrees * (stepsPerDegree));
+		rotationSteps = rotationDegrees * stepsPerDegree;
 
 		//translate to radians for display, flip direction because Arduino is flipped, adjust for mirror's physical orientation
-		rotationRadians = radians(rotationDegrees * (-1)) - (PI * 3/4);
+		rotationRadians = radians(-rotationDegrees) - (PI * .75);
 		setPointsAlongRadius(rotationRadians);
 	}
 
@@ -99,6 +97,9 @@ class Mirror {
 
 	//go to default mirror position
 	void goHome() {
+		rT = 0;
+		rotationRadians = (-PI * 3/4);
 		rotationDegrees = 0;
+		rotationSteps = 0;
 	}
 }

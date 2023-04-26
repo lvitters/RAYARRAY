@@ -132,7 +132,7 @@ void loop() {
 
 void initStepperMotor() {
   stepper.setMaxSpeed(1000);
-  stepper.setAcceleration(10000);
+  stepper.setAcceleration(5000);
 }
 
 //rotate from OSC messages
@@ -150,7 +150,7 @@ void OSCrotate(OSCMessage &msg, int addrOffset) {
   //Serial.println("current: " + (String)stepper.currentPosition() + " steps: " + (String)(rotationSteps + (jogValue/2)));
 
   //move there, adjust with home position of mirror (jogValue/2)
-  stepper.moveTo(rotationSteps + (jogValue/2));
+  stepper.moveTo((rotationSteps) + jogValue/2);
 }
 
 //read voltage and record lowest one and the step where it is at

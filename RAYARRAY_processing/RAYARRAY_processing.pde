@@ -131,11 +131,15 @@ void oscEvent(OscMessage theOscMessage) {
 		int id = theOscMessage.get(0).intValue();
 		int step = theOscMessage.get(1).intValue();	//direction is inverted from physical nodes
 
-		println("ID: " + id + " step: " + step);
+		//println("ID: " + id + " step: " + (step - (2048*10000)));
 		
 		for (Node n : nodes) {
 			if (n.nodeID == id) {
-				n.mirror.rotationDegrees = ((step % stepsPerRevolution) / stepsPerDegree) * -1;	//direction is flipped from Arduino
+				println(n.mirror.rotationSteps);
+				println(n.mirror.rotationDegrees * stepsPerDegree);
+				println(degrees(n.mirror.rotationRadians + (PI * .75)) * stepsPerDegree);
+				println(step - (2048 * 10000));
+				n.mirror.rotationDegrees = ((step % stepsPerRevolution) / stepsPerDegree);	//direction is flipped from Arduino
 			}
 		}
 	}
@@ -235,10 +239,8 @@ void switchMirrorRotationMode(int mode) {
 	if(mirrorRotationMode == 0) {
 		for (Node n : nodes) {
 			if (n.mirror != null) {
+				n.mirror.goHome();
 				n.mirror.rotationDirection = 1;
-				n.mirror.rT = 0;
-				n.mirror.rotationDegrees = 0;
-				n.mirror.rotationSteps = 0;
 			}
 		}
 	}
@@ -246,9 +248,8 @@ void switchMirrorRotationMode(int mode) {
 	else if(mirrorRotationMode == 1) {
 		for (Node n : nodes) {
 			if (n.mirror != null) {
+				n.mirror.goHome();
 				n.mirror.rT = random(100);
-				n.mirror.rotationDegrees = 0;
-				n.mirror.rotationSteps = 0;
 			}
 		}
 	}
@@ -257,10 +258,8 @@ void switchMirrorRotationMode(int mode) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
 			if (n.mirror != null) {
+				n.mirror.goHome();
 				n.mirror.rotationDirection = randomDirection;
-				n.mirror.rT = 0;
-				n.mirror.rotationDegrees = 0;
-				n.mirror.rotationSteps = 0;
 			}
 		}
 	}
@@ -268,10 +267,8 @@ void switchMirrorRotationMode(int mode) {
 	else if (mirrorRotationMode == 3) {
 		for (Node n : nodes) {
 			if (n.mirror != null) {
+				n.mirror.goHome();
 				n.mirror.rotationDirection = getRandomDirection();
-				n.mirror.rT = 0;
-				n.mirror.rotationDegrees = 0;
-				n.mirror.rotationSteps = 0;
 			}
 		}
 	}
@@ -338,6 +335,7 @@ void goHome() {
 		if (n.mirror != null || n.laser != null) n.goHome();
 		if (n.mirror != null) {
 			n.mirror.rT = 0;
+			n.mirror.rotationRadians = (-PI * 3/4);
 			n.mirror.rotationDegrees = 0;
 			n.mirror.rotationSteps = 0;
 		} else if (n.laser != null) {
