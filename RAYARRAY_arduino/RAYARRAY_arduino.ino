@@ -138,10 +138,14 @@ void initStepperMotor() {
 //rotate from OSC messages
 void OSCrotate(OSCMessage &msg, int addrOffset) {
   //get value
-  int inputRotation = msg.getInt(0);
+  float inputRotation = msg.getFloat(0);
+
+  Serial.println("float: " + (String)inputRotation);
   
   //write to rotationSteps
   long rotationSteps = (long)inputRotation;
+
+  Serial.println("long: " + (String)rotationSteps);
 
   //Serial.println("current: " + (String)stepper.currentPosition() + " steps: " + (String)(rotationSteps + (jogValue/2)));
 

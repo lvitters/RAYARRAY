@@ -106,7 +106,7 @@ class ControlFrame extends PApplet {
 			.setColor(guiColor)
 			.setPosition(guiOffset/4 + 110, guiOffset * 3/3)
 			.setSize(200, 20)
-			.setRange(.5, 3)
+			.setRange(.5, 5)
 			.setValue(1)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			//.setDecimalPrecision(1) 

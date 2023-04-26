@@ -4,10 +4,12 @@ class Mirror {
 	PVector end = new PVector();
     PVector normal = new PVector();
 	final float mirrorRadius = scaleCentimetersToPixels * absoluteMirrorWidth/2 * (sqrt(2)/2);
+
+	//rotation
 	float rT;
 	float rotationRadians;
 	float rotationDegrees;
-	int rotationSteps = 0;
+	float rotationSteps = 0;
 	float rotationDirection = 1;
 
 	Mirror(PVector p) {
@@ -18,11 +20,9 @@ class Mirror {
 	}
 
 	//set start and end point according to rotation
-	void setPointsAlongRadius(float r) {
-		//r = -r/2; 	//TODO: why was this ever here? let's leave it for now so I remember this might have fixed something at some point
-		
-		//to correct for the physical node's orientation
-		r -= PI * 3/4;
+	void setPointsAlongRadius(float r) {		
+		//correct for physical node's orientation
+		//r -= PI * 3/4;
 		
 		//apply rotation to beginning and end point of mirror here instead of using rotate() so that the cast() method knows all the absolute points
 		start.set(mirrorRadius * sin(r), mirrorRadius * cos(r));
@@ -70,16 +70,16 @@ class Mirror {
 					rotationDegrees = rT;
 				break;
 			}
-
-			//apply direction
-			rotationDegrees *= rotationDirection;
-
-			//translate to stepper motor steps
-			rotationSteps = int((rotationDegrees * (stepsPerDegree))) * -1;	//direction is flipped from Arduino
 		}
 
-		//translate to radians for display
-		rotationRadians = radians(rotationDegrees);
+		//apply direction
+		rotationDegrees *= rotationDirection;
+
+		//translate to stepper motor steps
+		rotationSteps = (rotationDegrees * (stepsPerDegree)) * -1;	//direction is flipped from Arduino
+
+		//translate to radians for display, adjust for mirror's physical orientation
+		rotationRadians = radians(rotationDegrees) - (PI * 3/4);
 		setPointsAlongRadius(rotationRadians);
 	}
 

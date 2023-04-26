@@ -3,13 +3,12 @@ class Laser {
 	boolean active;
 	Ray firstRay;
 
+	//rotation
+	float rT;
 	float rotationRadians;
 	float rotationDegrees;
-	float previousDegrees;
-	int rotationSteps;
-	int revolutions = 0;
+	float rotationSteps;
 	int facingDirection;
-	float rT;
 
 	Laser(PVector p, int column, int row) {
 		position = p;
@@ -91,29 +90,15 @@ class Laser {
 				break;
 			}
 		}
+		
+		//write to laser's rotationSteps, correct for laser's physical orientation
+		rotationSteps = ((rotationDegrees+45) * stepsPerDegree);	//direction for some reason is not flipped from Arduino
+
+		println(rotationSteps);
+
 		//translate to radians for display
-		rotationRadians = radians(rotationDegrees);
-
-		//get new vector
-		PVector newDirection = PVector.fromAngle(rotationRadians).normalize();
-
-		//set to direction
-		setDirection(newDirection);
-	}
-
-	//get rotationSteps from laser's direction to send to node
-	void setRotationSteps() {
-		//get radians from direction vector
-		float rotationRadiansForSteps = atan2(direction.x, direction.y);
-
-		//adjust for physical node's orientation
-		rotationRadiansForSteps -= PI * 3/4;
-
-		//change to degrees
-		rotationDegrees = degrees(rotationRadians);
-
-		//write to steps
-		rotationSteps = int((rotationDegrees) * stepsPerDegree);
+		rotationRadians = radians(rotationDegrees);	
+		setDirection(PVector.fromAngle(rotationRadians).normalize());
 	}
 
 	//bring laser to original direction
@@ -197,8 +182,6 @@ class Laser {
 		else if (row == gridY-1) {				//bottom
 			facingDirection = 8;
 		}
-
-		//println(facingDirection);
 
 		//apply that direction
 		goHome();

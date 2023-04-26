@@ -41,14 +41,11 @@ class Node {
 			} else if (rotateLasers) {
 				laser.rotate();
 			}
-			//update rays dran on screen
 			laser.updateRays();
-			//update rotationSteps for sending to node
-			laser.setRotationSteps();
 		}
 		//close input field when mouse is not over field
 		if (!mouseOver()) {
-			//setInputfieldActive(false);
+			setInputfieldActive(false);
 		}
 	}
 
