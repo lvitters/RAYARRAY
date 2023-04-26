@@ -58,28 +58,25 @@ class Mirror {
 				//same direction constant rotation
 				case 2:
 					//increment time and apply rotationSpeed
-					rT += .5 * mirrorRotationSpeed;
+					rT += .5 * mirrorRotationSpeed * rotationDirection;
 					//map to rotationDegrees
 					rotationDegrees = rT;
 				break;
 				//individual direction constant rotation
 				case 3:
 					//increment time and apply rotationSpeed
-					rT +=  .5 * mirrorRotationSpeed;
+					rT +=  .5 * mirrorRotationSpeed * rotationDirection;
 					//map to rotationDegrees
 					rotationDegrees = rT;
 				break;
 			}
 		}
 
-		//apply direction
-		rotationDegrees *= rotationDirection;
-
 		//translate to stepper motor steps
-		rotationSteps = (rotationDegrees * (stepsPerDegree)) * -1;	//direction is flipped from Arduino
+		rotationSteps = (rotationDegrees * (stepsPerDegree));
 
-		//translate to radians for display, adjust for mirror's physical orientation
-		rotationRadians = radians(rotationDegrees) - (PI * 3/4);
+		//translate to radians for display, flip direction because Arduino is flipped, adjust for mirror's physical orientation
+		rotationRadians = radians(rotationDegrees * (-1)) - (PI * 3/4);
 		setPointsAlongRadius(rotationRadians);
 	}
 

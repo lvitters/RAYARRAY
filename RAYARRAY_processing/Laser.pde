@@ -94,8 +94,6 @@ class Laser {
 		//write to laser's rotationSteps, correct for laser's physical orientation
 		rotationSteps = ((rotationDegrees+45) * stepsPerDegree);	//direction for some reason is not flipped from Arduino
 
-		println(rotationSteps);
-
 		//translate to radians for display
 		rotationRadians = radians(rotationDegrees);	
 		setDirection(PVector.fromAngle(rotationRadians).normalize());
