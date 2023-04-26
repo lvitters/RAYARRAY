@@ -41,9 +41,11 @@ class Node {
 			} else if (rotateLasers) {
 				laser.rotate();
 			}
+			//update rays dran on screen
 			laser.updateRays();
+			//update rotationSteps for sending to node
+			laser.setRotationSteps();
 		}
-
 		//close input field when mouse is not over field
 		if (!mouseOver()) {
 			//setInputfieldActive(false);
@@ -131,6 +133,7 @@ class Node {
 	//send rotation to node every x milliseconds
 	void sendRotationToNode() {
 		if (millis() - lastSend > sendFreq && nodeIP != null && sendRotation) {
+			remoteLocation = new NetAddress(nodeIP, remotePort);
 			lastSend = millis();
 			OscMessage rotationMessage = new OscMessage("/rotate");
 			if (mirror != null) {
@@ -145,24 +148,28 @@ class Node {
 
 	//initiate homing sequence
 	void goHome() {
+		remoteLocation = new NetAddress(nodeIP, remotePort);
 		OscMessage homeMessage = new OscMessage("/goHome");
 		oscP5.send(homeMessage, remoteLocation);
 	}
 
 	//reset node's home position
 	void resetHome() {
+		remoteLocation = new NetAddress(nodeIP, remotePort);
 		OscMessage homeResetMessage = new OscMessage("/resetHome");
 		oscP5.send(homeResetMessage, remoteLocation);
 	}
 
 	//send message to nodes to retrieve step
 	void getStep() {
+		remoteLocation = new NetAddress(nodeIP, remotePort);
 		OscMessage stepMessage = new OscMessage("/getStep");
 		oscP5.send(stepMessage, remoteLocation);
 	}
 
 	//confirm if node receives ping and turn on its LED
 	void pingNode(String ip) {
+		remoteLocation = new NetAddress(nodeIP, remotePort);
 		OscMessage pingMessage = new OscMessage("/pingNode");
 		pingMessage.add(ip);
 		oscP5.send(pingMessage, remoteLocation);
@@ -200,17 +207,17 @@ class Node {
 	void submitID() {
 		int id = int(inputField.getText());
 
-		//f the submitted ID is different from before
+		//if the submitted ID is different from before
 		if (nodeID != id) {
 			//set node ID to input
 			nodeID = id;
-			
+
 			//ping node with something that is not its IP so it knows it is not assigned anymore (turn LED off)
-			pingNode("wrong IP");
+			if (nodeIP != null) pingNode("wrong IP");
 			
 			//reset node IP to possibly be assigned again with next ping
 			nodeIP = null;
-
+		
 		//if it has not been set yet at all, just assign the submitted ID
 		} else if (nodeID == -1) {
 			nodeID = id;

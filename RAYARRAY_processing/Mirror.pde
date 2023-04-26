@@ -19,19 +19,18 @@ class Mirror {
 
 	//set start and end point according to rotation
 	void setPointsAlongRadius(float r) {
-		
 		//r = -r/2; 	//TODO: why was this ever here? let's leave it for now so I remember this might have fixed something at some point
-
+		
 		//to correct for the physical node's orientation
 		r -= PI * 3/4;
 		
 		//apply rotation to beginning and end point of mirror here instead of using rotate() so that the cast() method knows all the absolute points
 		start.set(mirrorRadius * sin(r), mirrorRadius * cos(r));
 		end.set(-mirrorRadius * sin(r), -mirrorRadius * cos(r));
-
+		
 		//apply rotation to normal (DPP)
 		normal.set(sin(r - PI/2), cos(r - PI/2)); // rotated by 90° or PI/2
-
+		
 		//add position here instead of using translate() so that the cast() function knows all the absolute points
 		start.add(position);
 		end.add(position);
@@ -40,7 +39,6 @@ class Mirror {
 	//update the mirrors values
 	void rotate() {
 		if (rotateMirrors) {
-
 			//rotate according to rotation_mode (set by DropdownList)
 			switch(mirrorRotationMode) {
 				//same noise rotation
@@ -49,33 +47,33 @@ class Mirror {
 					rT += .002 * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees += map(noise(rT), 0, 1, -2, 2);
-					break;
+				break;
 				//individual noise rotation
 				case 1:
 					//increment "time" individually and apply rotationSpeed
 					rT += random(.0001, .005) * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees += map(noise(rT), 0, 1, -2, 2);
-					break;
+				break;
 				//same direction constant rotation
 				case 2:
 					//increment time and apply rotationSpeed
 					rT += .5 * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees = rT;
-					break;
+				break;
 				//individual direction constant rotation
 				case 3:
 					//increment time and apply rotationSpeed
 					rT +=  .5 * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees = rT;
-					break;
+				break;
 			}
 
 			//apply direction
 			rotationDegrees *= rotationDirection;
-			
+
 			//translate to stepper motor steps
 			rotationSteps = int((rotationDegrees * (stepsPerDegree))) * -1;	//direction is flipped from Arduino
 		}

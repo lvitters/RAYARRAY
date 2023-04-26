@@ -24,8 +24,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 10;
-int gridY = 5;
+int gridX = 2;
+int gridY = 2;
 
 float scaleCentimetersToPixels = 3.0;	//adjust for screen size
 float windowX, windowY;
@@ -164,7 +164,6 @@ void oscEvent(OscMessage theOscMessage) {
 				//print only if IP hasn't been set yet
 				if (n.nodeIP == null) println("node with ID: " + n.nodeID + " has IP: " + ip + " and firmware v" + fw_version);
 				n.nodeIP = ip;
-				n.remoteLocation = new NetAddress(n.nodeIP, remotePort);
 				n.pingNode(n.nodeIP);
 			}
 		}
@@ -200,38 +199,31 @@ void controlEvent(ControlEvent theEvent) {
 		if (theEvent.getController().toString() == "saveConfig") {
 			saveConfig();
 		}
-
 		//if it comes from the "loadConfig" controller then saveConfig()
 		if (theEvent.getController().toString() == "loadConfig") {
 			loadConfig();
 		}
-
 		//if it comes from the "goHome" controller then goHome()
 		if (theEvent.getController().toString() == "goHome") {
 			goHome();
 		}
-
 		//if it comes from the "resetHomes" controller then resetHomes()
 		if (theEvent.getController().toString() == "resetHomes") {
 			resetHomes();
 		}
-
 		//if it comes from the "getStep" controller then getSteps()
 		if (theEvent.getController().toString() == "getSteps") {
 			getSteps();
 		}
-
 		//if it comes from the "rotationModeMirrors" controller then switchrotationModeMirrors accordingly
 		if (theEvent.getController().toString() == "switchMirrorRotationMode") {
 			switchMirrorRotationMode(int(theEvent.getController().getValue()));
 		}
-
 	}
 }
 
 //set directions between rotationModeMirrorss when mode was changed
 void switchMirrorRotationMode(int mode) {
-
 	//apply rotation mode
 	mirrorRotationMode = mode;
 	println("mirrorRotationMode: " + mirrorRotationMode);
@@ -251,7 +243,7 @@ void switchMirrorRotationMode(int mode) {
 		}
 	}
 	//individual noise rotation needs individual starting points for time
-	if(mirrorRotationMode == 1) {
+	else if(mirrorRotationMode == 1) {
 		for (Node n : nodes) {
 			if (n.mirror != null) {
 				n.mirror.rT = random(100);
@@ -260,9 +252,8 @@ void switchMirrorRotationMode(int mode) {
 			}
 		}
 	}
-
 	//same direction constant rotation
-	if (mirrorRotationMode == 2) {
+	else if (mirrorRotationMode == 2) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
 			if (n.mirror != null) {
@@ -272,9 +263,9 @@ void switchMirrorRotationMode(int mode) {
 				n.mirror.rotationSteps = 0;
 			}
 		}
-
+	}
 	//individual direction constant rotation
-	} else if (mirrorRotationMode == 3) {
+	else if (mirrorRotationMode == 3) {
 		for (Node n : nodes) {
 			if (n.mirror != null) {
 				n.mirror.rotationDirection = getRandomDirection();
@@ -338,14 +329,20 @@ void loadConfig() {
 void goHome() {
 	println("goHome");
 	rotateMirrors = false;
+	rotateLasers = false;
 	sendRotation = false;
 	cf.cp5GUI.getController("rotate mirrors").setValue(0);
+	cf.cp5GUI.getController("rotate lasers").setValue(0);
 	cf.cp5GUI.getController("send rotation").setValue(0);
 	for (Node n : nodes) {
-		if (n.mirror != null) n.goHome();
-		n.mirror.rT = 0;
-		n.mirror.rotationDegrees = 0;
-		n.mirror.rotationSteps = 0;
+		if (n.mirror != null || n.laser != null) n.goHome();
+		if (n.mirror != null) {
+			n.mirror.rT = 0;
+			n.mirror.rotationDegrees = 0;
+			n.mirror.rotationSteps = 0;
+		} else if (n.laser != null) {
+			n.laser.goHome();
+		}
 	}
 }
 
@@ -401,8 +398,8 @@ void keyPressed() {
 	//input node's IDs
 	if (keyCode == 'I') {
 		for (Node n : nodes) {
-			//set inputField to active only when there is a mirror, the mouse is over it and it isn't active yet
-			if (n.mouseOver() && n.mirror != null && n.inputField.isVisible() == false) {
+			//set inputField to active only when there is a mirror or laser, the mouse is over it and it isn't active yet
+			if (n.mouseOver() && (n.mirror != null || n.laser!= null) && n.inputField.isVisible() == false) {
 				n.setInputfieldActive(true);
 			} else {
 				n.setInputfieldActive(false);

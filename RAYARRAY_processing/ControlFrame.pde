@@ -24,7 +24,6 @@ class ControlFrame extends PApplet {
   	public void setup() {
 		//location on screen (?)
 		surface.setLocation(10, 10);
-
 		//init cp5
 		cp5GUI = new ControlP5(this);
 
@@ -89,7 +88,7 @@ class ControlFrame extends PApplet {
 			.setPosition(guiOffset/4 + 220, guiOffset * 2/3)
 			.setSize(100, 20)
 			;
-			
+
 		//toggle if mirror should rotate
 		cp5GUI.addToggle("rotate mirrors")
 			.plugTo(parent, "rotateMirrors")
@@ -111,8 +110,8 @@ class ControlFrame extends PApplet {
 			.setValue(1)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			//.setDecimalPrecision(1) 
-			;
-			
+			;	
+
 		//toggle if mirror should rotate
 		cp5GUI.addToggle("rotate lasers")
 			.plugTo(parent, "rotateLasers")
@@ -130,12 +129,12 @@ class ControlFrame extends PApplet {
 			.setColor(guiColor)
 			.setPosition(guiOffset/4 + 110, guiOffset * 4/3)
 			.setSize(200, 20)
-			.setRange(.5, 3)
+			.setRange(.5, 5)
 			.setValue(1)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			//.setDecimalPrecision(1) 
 			;
-			
+
 		//toggle if mirror should rotate
 		cp5GUI.addToggle("send rotation")
 			.plugTo(parent, "sendRotation")

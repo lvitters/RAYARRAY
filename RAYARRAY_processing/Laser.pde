@@ -13,8 +13,8 @@ class Laser {
 
 	Laser(PVector p, int column, int row) {
 		position = p;
-		determineFacingDirection(column, row);
 		firstRay = new Ray();
+		determineFacingDirection(column, row);
 		firstRay.setOrigin(position);
 		firstRay.setDirection(direction);
 	}
@@ -29,8 +29,6 @@ class Laser {
 	void setDirection(PVector d) {
 		direction = d;
 		firstRay.setDirection(direction);
-
-		setRotationSteps(direction);
 	}
 
 	//draw all the rays emitting from that diode recursively
@@ -52,8 +50,13 @@ class Laser {
 		if (rotateLasers) {
 			//increment "time" and apply rotationSpeed
 			rT += .002 * laserRotationSpeed;
+
 			//map to rotationDegrees
 			switch (facingDirection) {
+				//somewhere inside grid
+				case 0:
+					rotationDegrees = map(sin(rT), -1, 1, -360, 360);
+				break;
 				//top left
 				case 1:
 					rotationDegrees = map(sin(rT), -1, 1, 0, 90);
@@ -88,7 +91,6 @@ class Laser {
 				break;
 			}
 		}
-
 		//translate to radians for display
 		rotationRadians = radians(rotationDegrees);
 
@@ -100,55 +102,105 @@ class Laser {
 	}
 
 	//get rotationSteps from laser's direction to send to node
-	void setRotationSteps(PVector d) {
+	void setRotationSteps() {
 		//get radians from direction vector
-		float rotationRadiansForSteps = atan2(d.x, d.y);
-		
+		float rotationRadiansForSteps = atan2(direction.x, direction.y);
+
 		//adjust for physical node's orientation
 		rotationRadiansForSteps -= PI * 3/4;
-		
+
 		//change to degrees
 		rotationDegrees = degrees(rotationRadians);
 
 		//write to steps
-		rotationSteps = int((rotationDegrees) * stepsPerDegree) * -1;		//direction is flipped from Arduino
+		rotationSteps = int((rotationDegrees) * stepsPerDegree);
+	}
+
+	//bring laser to original direction
+	void goHome() {
+		//reset time
+		rT = 0;
+
+		//reset direction
+		switch (facingDirection) {
+			//somewhere in middle
+			case 0:
+				direction = new PVector(1, 0);
+			break;
+			//top left
+			case 1:				
+				direction = new PVector(1, 1);
+			break;
+			//top right
+			case 2:		
+				direction = new PVector(-.7, .7);
+			break;
+			//bottom right
+			case 3:			
+				direction = new PVector(-.7, -.7);
+			break;
+			//bottom left
+			case 4:
+				direction = new PVector(1, -1);
+			break;
+			//left side
+			case 5:				
+				direction = new PVector(1, 0);
+			break;
+			//right side
+			case 6:				
+				direction = new PVector(-1, 0);
+			break;
+			//top
+			case 7:				
+				direction = new PVector(0, 1);
+			break;
+			//bottom
+			case 8:				
+				direction = new PVector(0, -1);
+			break;
+		}
+
+		//move laser there
+		setDirection(direction);
 	}
 
 	//determine which direction the laser is facing, depending on where it is in grid, to limit its movement (it has a cable)
 	void determineFacingDirection(int column, int row) {
 		//first somewhere not on the edge of the grid (unused)
-		if (row != 0 && row != gridY-1 && column != 0 && column != gridX-1) {
+		if ((row != 0 && row != gridY-1 && column != 0 && column != gridX-1) || gridX == 1 && gridY == 1) {
 			facingDirection = 0;
-			direction = new PVector(random(-1, 1), random(-1,1));
 		}
 		//then the corners
 		else if (column == 0 & row == 0) {					//top left
-			facingDirection = 1;				
-			direction = new PVector(1, 1);
-		} else if (column == gridX-1 && row == 0) {			//top right	
-			facingDirection = 2; 				
-			direction = new PVector(-.7, .7);
-		} else if (column == gridX-1 && row == gridY-1) {	//bottom right
-			facingDirection = 3;				
-			direction = new PVector(-.7, -.7);
-		} else if (column == 0 && row == gridY-1) {			//bottom left
+			facingDirection = 1;
+		} 
+		else if (column == gridX-1 && row == 0) {			//top right	
+			facingDirection = 2;
+		} 
+		else if (column == gridX-1 && row == gridY-1) {	//bottom right
+			facingDirection = 3;
+		} 
+		else if (column == 0 && row == gridY-1) {			//bottom left
 			facingDirection = 4;				
-			direction = new PVector(1, -1);
 		}
 		//now the edges
 		else if (column == 0 ) {					//left side
-			facingDirection = 5;				
-			direction = new PVector(1, 0);
-		} else if (column == gridX-1) {				//right side
-			facingDirection = 6;				
-			direction = new PVector(-1, 0);
-		} else if (row == 0 && column != 0) {		//top
-			facingDirection = 7;				
-			direction = new PVector(0, 1);
-		} else if (row == gridY-1) {				//bottom
-			facingDirection = 8;				
-			direction = new PVector(0, -1);
+			facingDirection = 5;
+		} 
+		else if (column == gridX-1) {				//right side
+			facingDirection = 6;
+		} 
+		else if (row == 0 && column != 0) {		//top
+			facingDirection = 7;
+		} 
+		else if (row == gridY-1) {				//bottom
+			facingDirection = 8;
 		}
+
 		//println(facingDirection);
+
+		//apply that direction
+		goHome();
 	}
 }
