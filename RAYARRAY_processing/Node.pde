@@ -44,9 +44,9 @@ class Node {
 						new PVector(mouseX - mirror.position.x, mouseY - mirror.position.y).normalize(), 
 						new PVector(0, -1));
 				}
-				mirror.rotationDegrees = -degrees(r + (PI * .75));
+				mirror.rotationDegrees = -degrees(r - (PI * .75));
 			}
-			//apply (or rotate automatically)
+			//apply and/or rotate automatically
 			mirror.rotate();
 			mirror.draw();
 		}
@@ -55,10 +55,10 @@ class Node {
 			//rotate by hand
 			if (mouseOver() && rotateLaser && !rotateLasers) {
 				laser.setDirection(new PVector(mouseX - laser.position.x, mouseY - laser.position.y).normalize());
-			//rotate automatically
-			} else if (rotateLasers) {
-				laser.rotate();
+				laser.rotationDegrees = -degrees(atan2(laser.direction.x, laser.direction.y) - (PI/2));
 			}
+			//apply and/or rotate automatically
+			laser.rotate();
 			laser.updateRays();
 		}
 		//close input field when mouse is not over field

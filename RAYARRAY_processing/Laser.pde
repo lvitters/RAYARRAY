@@ -89,14 +89,14 @@ class Laser {
 					rotationDegrees = map(sin(rT), -1, 1, 180, 360);
 				break;
 			}
-		}
-		
-		//write to laser's rotationSteps, correct for laser's physical orientation
-		rotationSteps = ((rotationDegrees+45) * stepsPerDegree);	//direction for some reason is not flipped from Arduino
 
-		//translate to radians for display
-		rotationRadians = radians(rotationDegrees);	
-		setDirection(PVector.fromAngle(rotationRadians).normalize());
+			//translate to radians for display
+			rotationRadians = radians(rotationDegrees);	
+			setDirection(PVector.fromAngle(rotationRadians).normalize());
+		}
+
+		//write to laser's rotationSteps, correct for laser's physical orientation
+		rotationSteps = ((rotationDegrees+45) * stepsPerDegree) + stepZero;	//direction for some reason is not flipped from motor
 	}
 
 	//bring laser to original direction
