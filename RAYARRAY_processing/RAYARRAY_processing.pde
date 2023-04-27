@@ -288,10 +288,13 @@ void switchMirrorRotationMode(int mode) {
 	//sine speed with different multipliers per row
 	else if (mirrorRotationMode == 5) {
 		int randomDirection = getRandomDirection();
+		int randInt = int(random(2));
+		int rowEven = 0;
 		for (Node n : nodes) {
 			if (n.mirror != null) {
 				n.mirror.goHome();
-				int rowEven = (n.row + 1) * 2;
+				if (randInt == 0) rowEven = (n.row + 1) * 2;
+				else rowEven = gridX - n.row + 1;
 				n.mirror.sineMultiplier = rowEven;
 				n.mirror.rotationDirection = randomDirection; 
 			}
