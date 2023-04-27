@@ -273,14 +273,25 @@ void switchMirrorRotationMode(int mode) {
 			}
 		}
 	}
-	//sine with different multipliers
+	//sine speed with different multipliers
 	else if (mirrorRotationMode == 4) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
 			if (n.mirror != null) {
 				n.mirror.goHome();
-				int randEven = int(random(1, 5) * 2);
-				println(randomDirection);
+				int randEven = int(random(2, 5)) * 2;
+				n.mirror.sineMultiplier = randEven;
+				n.mirror.rotationDirection = randomDirection; 
+			}
+		}
+	}
+	//sine distance with different multipliers
+	else if (mirrorRotationMode == 5) {
+		int randomDirection = getRandomDirection();
+		for (Node n : nodes) {
+			if (n.mirror != null) {
+				n.mirror.goHome();
+				int randEven = int(random(2, 5)) * 2;
 				n.mirror.sineMultiplier = randEven;
 				n.mirror.rotationDirection = randomDirection; 
 			}

@@ -41,7 +41,7 @@ class ControlFrame extends PApplet {
 			.setColor(guiColor)
 			.setPosition(guiOffset/4, guiOffset * 1/3)
 			.setSize(100, 20)
-			.setValue(true)
+			.setValue(false)
 			;
 
 		//save config
@@ -166,11 +166,14 @@ class ControlFrame extends PApplet {
 			.setBarHeight(20)
 			.setItemHeight(20)
 			.setWidth(250)
+			.setHeight(400)
+			.setOpen(false) 
 			.addItem("same noise", 0)
 			.addItem("individual noise", 1)
 			.addItem("same direction constant", 2)
 			.addItem("individual direction constant", 3)
-			.addItem("multiplied sine", 4);
+			.addItem("multiplied sine speed", 4)
+			.addItem("multiplied sine distance", 5)
 			;
 	}
 
