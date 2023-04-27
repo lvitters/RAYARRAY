@@ -31,13 +31,31 @@ class Node {
 	//update and draw mirror or laser
 	void update() {
 		if (mirror != null) {
+			//rotate by hand
+			if (mouseOver() && rotateMirror && !rotateMirrors) {
+				float r = 0;
+				//sorry about this, it's a couple days before the deadline so this is what it's gonna be
+				if (mouseX > mirror.position.x) {
+					r = PVector.angleBetween(
+						new PVector(mouseX - mirror.position.x, mouseY - mirror.position.y).normalize(),
+						new PVector(0, 1));
+				} else if (mouseX <= mirror.position.x) {
+					r = PVector.angleBetween(
+						new PVector(mouseX - mirror.position.x, mouseY - mirror.position.y).normalize(), 
+						new PVector(0, -1));
+				}
+				mirror.rotationDegrees = -degrees(r + (PI * .75));
+			}
+			//apply (or rotate automatically)
 			mirror.rotate();
 			mirror.draw();
 		}
 		if (laser != null) {
 			laser.drawOrigin();
+			//rotate by hand
 			if (mouseOver() && rotateLaser && !rotateLasers) {
 				laser.setDirection(new PVector(mouseX - laser.position.x, mouseY - laser.position.y).normalize());
+			//rotate automatically
 			} else if (rotateLasers) {
 				laser.rotate();
 			}

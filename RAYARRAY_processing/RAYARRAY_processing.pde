@@ -41,6 +41,7 @@ boolean rotateLaser = false;
 boolean rotateLasers = false;
 float laserRotationSpeed = 1;
 
+boolean rotateMirror = false;
 boolean rotateMirrors;
 float mirrorRotationSpeed = 1;
 int mirrorRotationMode = 0;
@@ -426,14 +427,16 @@ void mousePressed() {
 				}
 			}
 		}
-		//rotate laser only if RIGHT mouse button is pressed
+		//rotate single mirror or laser only if RIGHT mouse button is pressed
 		if (mouseButton == RIGHT) {
+			rotateMirror = true;
 			rotateLaser = true;
 		}
 }
 
 //reset when mouse buttons are released
 void mouseReleased() {
+	rotateMirror = false;
 	rotateLaser = false;
 }
 
