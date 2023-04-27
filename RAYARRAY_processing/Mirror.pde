@@ -75,12 +75,19 @@ class Mirror {
 					//map to rotationDegrees
 					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
 				break;
-				//sine distance with different multipliers, same direction
+				//sine peed with different multipliers per row, same direction
 				case 5:
-					//increment time and apply multiplier
-					rT += .0001 * rotationDirection ;
+					//increment time
+					rT += .00001;
 					//map to rotationDegrees
-					rotationDegrees += map(sin(rT), -1, 1, -sineMultiplier, sineMultiplier) * mirrorRotationSpeed;
+					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
+				break;
+				//sine peed with different multipliers per column, same direction
+				case 6:
+					//increment time
+					rT += .00001;
+					//map to rotationDegrees
+					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
 				break;
 			}
 		}

@@ -173,7 +173,8 @@ class ControlFrame extends PApplet {
 			.addItem("same direction constant", 2)
 			.addItem("individual direction constant", 3)
 			.addItem("multiplied sine speed", 4)
-			.addItem("multiplied sine distance", 5)
+			.addItem("row multiplied sine speed", 5)
+			.addItem("column multiplied sine speed", 6)
 			;
 	}
 
