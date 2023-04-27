@@ -61,7 +61,7 @@ AccelStepper stepper(AccelStepper::HALF4WIRE, IN1, IN3, IN2, IN4);
 //to compute a float with the %(remainder)operator. Unfortunately for some reason it still doesn't seem to be 100% precise. Maybe
 //there are even differences between the motors from a single order? 
 
-const int stepsPerRevolution = 2048 * 2;          //our driver does half steps, so one rev is 2 times the amount
+const int stepsPerRevolution = 4096;
 long rotationSteps = 0;                           //current rotation in steps
 int direction;                                    //direction of rotation
 long jogValue = 10000 * stepsPerRevolution;       //super high number as target for 'infinite' jog

@@ -24,8 +24,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 8;
-int gridY = 4;
+int gridX = 10;
+int gridY = 5;
 
 float scaleCentimetersToPixels = 3.0;	//adjust for screen size
 float windowX, windowY;
@@ -45,7 +45,7 @@ boolean rotateMirrors;
 float mirrorRotationSpeed = 1;
 int mirrorRotationMode = 0;
 
-int stepsPerRevolution = 2048 * 2;
+int stepsPerRevolution = 4096;
 int stepZero = (stepsPerRevolution * 10000) / 2;
 float stepsPerDegree = stepsPerRevolution / 360;
 
@@ -270,6 +270,19 @@ void switchMirrorRotationMode(int mode) {
 			if (n.mirror != null) {
 				n.mirror.goHome();
 				n.mirror.rotationDirection = getRandomDirection();
+			}
+		}
+	}
+	//sine with different multipliers
+	else if (mirrorRotationMode == 4) {
+		int randomDirection = getRandomDirection();
+		for (Node n : nodes) {
+			if (n.mirror != null) {
+				n.mirror.goHome();
+				int randEven = int(random(1, 5) * 2);
+				println(randomDirection);
+				n.mirror.sineMultiplier = randEven;
+				n.mirror.rotationDirection = randomDirection; 
 			}
 		}
 	}

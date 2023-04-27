@@ -11,6 +11,7 @@ class Mirror {
 	float rotationDegrees;
 	float rotationSteps = 0;
 	float rotationDirection = 1;
+	float sineMultiplier;
 
 	Mirror(PVector p) {
 		position = p;
@@ -56,16 +57,23 @@ class Mirror {
 				//same direction constant rotation
 				case 2:
 					//increment time and apply rotationSpeed
-					rT += .5 * mirrorRotationSpeed * rotationDirection;
+					rT += .5 * mirrorRotationSpeed;
 					//map to rotationDegrees
-					rotationDegrees = rT;
+					rotationDegrees = rT * rotationDirection;
 				break;
 				//individual direction constant rotation
 				case 3:
 					//increment time and apply rotationSpeed
-					rT += .5 * mirrorRotationSpeed * rotationDirection;
+					rT += .5 * mirrorRotationSpeed;
 					//map to rotationDegrees
-					rotationDegrees = rT;
+					rotationDegrees = rT * rotationDirection;
+				break;
+				//sine with different multipliers, same direction
+				case 4:
+					//increment time
+					rT += .001;
+					//map to rotationDegrees
+					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/2) * sineMultiplier  * rotationDirection;
 				break;
 			}
 		}

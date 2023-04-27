@@ -170,6 +170,7 @@ class ControlFrame extends PApplet {
 			.addItem("individual noise", 1)
 			.addItem("same direction constant", 2)
 			.addItem("individual direction constant", 3)
+			.addItem("multiplied sine", 4);
 			;
 	}
 
