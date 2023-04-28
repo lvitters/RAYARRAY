@@ -11,12 +11,11 @@ void onPacketOSC(AsyncUDPPacket packet) {
     if (!msgIn.hasError()) {
       
       //commands
-      msgIn.route("/goHome", OSCgoHome);
+      msgIn.route("/goHome", OSCinitGoingHome);
       msgIn.route("/resetHome", OSCresetHome);
       msgIn.route("/rotate", OSCrotate);
       msgIn.route("/getStep", OSCsendStepToProcessing);
       msgIn.route("/pingNode", OSCincomingPing);
-      //msgIn.route("/jog", OSCtoggleJogging);
 
       //firmware stuff
       msgIn.route("/updateFirmware", OSCupdateFirmware);

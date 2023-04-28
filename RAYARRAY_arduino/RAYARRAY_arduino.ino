@@ -71,14 +71,13 @@ boolean jogging = false;                          //are we jogging right now?
 #define HALL_SENSOR_PIN A0
 
 //homing
-boolean homing = true;                  //are we homing right now?
+boolean homing = true;                  //are we homing (finding home) right now?
 unsigned int homingDuration = 25000;    //in milliseconds
 float previousVoltage = 0;              //voltage in the previous measuring cycle
 float lowestVoltage = 600;              //higher than it will ever be
 float smoothAlpha = 0.5;                //how much does the previous value affect the smoothed one
 long homeStep;                          //step with the lowest voltage
-long lastStep;                          //what was the last step?
-long currentStep;                       //where is the motor currently
+boolean goingHome = false;              //are we going home right now?
 
 long loopCount = 0;
 
@@ -127,6 +126,9 @@ void loop() {
 
   //for homingDuration milliseconds after startup, find the home step
   setHomeStep();
+
+  //if goingHome is true, then goHome
+  if (goingHome) goHome();
 
   //do whatever the stepper was told to
   stepper.run();
@@ -199,18 +201,28 @@ void setHomeStep() {
   }
 }
 
-//go to the position recorded as home
-void OSCgoHome(OSCMessage &msg, int addrOffset) {
+void OSCinitGoingHome(OSCMessage &msg, int addrOffset) {
+  goingHome = true;
   Serial.println("going home");
+}
 
+//go to the position recorded as home
+void goHome() {
   //get current position
   long currentPosition = stepper.currentPosition();
 
   //always go the "nearest" home
   long nextHome = currentPosition - (currentPosition % stepsPerRevolution);
 
-  //move there
-  stepper.moveTo((long)nextHome);
+  //reset home to current position after every time it goes home
+  if (currentPosition == nextHome) {
+    goingHome = false;
+    stepper.setCurrentPosition(jogValue/2);
+    Serial.println("home reset");
+  } else {
+    //move there
+    stepper.moveTo((long)nextHome);
+  }
 }
 
 //reset the current position to home position (jogValue/2), only when Processing says so
