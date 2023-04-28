@@ -105,8 +105,8 @@ class ControlFrame extends PApplet {
 			.setFont(guiFont)
 			.setColor(guiColor)
 			.setPosition(guiOffset/4 + 110, guiOffset * 3/3)
-			.setSize(200, 20)
-			.setRange(.5, 5)
+			.setSize(210, 20)
+			.setRange(.1, 3)
 			.setValue(1)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			//.setDecimalPrecision(1) 
@@ -128,8 +128,8 @@ class ControlFrame extends PApplet {
 			.setFont(guiFont)
 			.setColor(guiColor)
 			.setPosition(guiOffset/4 + 110, guiOffset * 4/3)
-			.setSize(200, 20)
-			.setRange(.5, 5)
+			.setSize(210, 20)
+			.setRange(.1, 3)
 			.setValue(1)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			//.setDecimalPrecision(1) 
@@ -151,23 +151,80 @@ class ControlFrame extends PApplet {
 			.setFont(guiFont)
 			.setColor(guiColor)
 			.setPosition(guiOffset/4 + 110, guiOffset * 5/3)
-			.setSize(200, 20)
+			.setSize(210, 20)
 			.setRange(1, 100)
 			.setValue(10)
+			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
+			;
+
+		//toggle auto mode
+		cp5GUI.addToggle("auto mode")
+			.plugTo(parent, "isAutoMode")
+			.setFont(guiFont)
+			.setColor(guiColor)
+			.setPosition(guiOffset/4, guiOffset * 6/3)
+			.setSize(100, 20)
+			.setValue(false)
+			;
+		
+		//how long between auto mode switches
+		cp5GUI.addSlider("auto interval")
+			.plugTo(parent, "autoInterval")
+			.setFont(guiFont)
+			.setColor(guiColor)
+			.setPosition(guiOffset/4 + 110, guiOffset * 6/3)
+			.setSize(210, 20)
+			.setRange(.1, 10)
+			.setValue(.5)
+			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
+			;
+
+		//toggle auto mode
+		cp5GUI.addToggle("arm halt")
+			.plugTo(parent, "armHalt")
+			.setFont(guiFont)
+			.setColor(guiColor)
+			.setPosition(guiOffset/4, guiOffset * 7/3)
+			.setSize(100, 20)
+			.setValue(false)
+			;
+		
+		//toggle if program should stop occasionally
+		cp5GUI.addSlider("halt interval")
+			.plugTo(parent, "haltInterval")
+			.setFont(guiFont)
+			.setColor(guiColor)
+			.setPosition(guiOffset/4 + 110, guiOffset * 7/3)
+			.setSize(100, 20)
+			.setRange(.1, 10)
+			.setValue(.5)
+			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
+			;
+		
+		//toggle if program should stop occasionally
+		cp5GUI.addSlider("halt duration")
+			.plugTo(parent, "haltDuration")
+			.setFont(guiFont)
+			.setColor(guiColor)
+			.setPosition(guiOffset/4 + 220, guiOffset * 7/3)
+			.setSize(100, 20)
+			.setRange(2, 10)
+			.setValue(4)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			;
 
 		//rotation modes
 		modesList = cp5GUI.addDropdownList("mirror rotation mode")
 			.plugTo(parent, "switchMirrorRotationMode")
-			.setPosition(guiOffset/4, guiOffset * 6/3)
+			.setPosition(guiOffset/4, guiOffset * 8/3)
 			.setFont(guiFont)
 			.setColor(guiColor)
 			.setBarHeight(20)
 			.setItemHeight(20)
 			.setWidth(250)
 			.setHeight(400)
-			.setOpen(false) 
+			.setOpen(false)
+			.setValue(2)
 			.addItem("same noise", 0)
 			.addItem("individual noise", 1)
 			.addItem("same direction constant", 2)

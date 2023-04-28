@@ -10,24 +10,20 @@ String firmwareBinaryURL = "http://192.168.1.162:8080/release/firmware.bin";
 import controlP5.*;
 ControlP5 cp5InputFields;
 ControlFrame cf;
-Toggle jogToggle;		//global so it can be toggled off by other buttons
 PFont guiFont, idFont;
 CColor guiColor;
 int guiOffset = 150;
 DropdownList modesList;
 boolean showIDs;
-boolean sendRotation;
-int sendFreq = 100;		//in milliseconds
 
 //nodes
 ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 3;
-int gridY = 2;
-
-float scaleCentimetersToPixels = 3.0;	//adjust for screen size
+int gridX = 4;
+int gridY = 3;
+float scaleCentimetersToPixels = 2.2;	//adjust for screen size
 float windowX, windowY;
 float absoluteConnectionLength = 50.0;	//in cm
 float absoluteMirrorWidth = 15.0;		//in cm
@@ -36,19 +32,30 @@ float offset = absoluteConnectionLength * scaleCentimetersToPixels;	//offset bet
 //laser reflection
 int recursionGuard = 0;
 
+//auto mode(s)
+boolean isAutoMode = false;
+float lastSwitch = 0;
+float autoInterval = 0;
+boolean waitingForAllHome = false;
+float haltInterval = 0;
+float haltDuration = 0;
+float lastHalt = 0;
+
 //rotation
 boolean rotateLaser = false;
 boolean rotateLasers = false;
 float laserRotationSpeed = 1;
-
 boolean rotateMirror = false;
 boolean rotateMirrors;
 float mirrorRotationSpeed = 1;
 int mirrorRotationMode = 0;
-
 int stepsPerRevolution = 4096;
 int stepZero = (stepsPerRevolution * 10000) / 2;
 float stepsPerDegree = stepsPerRevolution / 360;
+
+//sending OSC
+boolean sendRotation;
+int sendFreq = 100;		//in milliseconds
 
 void settings() {
 	//scale window size according to grid measurements
@@ -84,6 +91,9 @@ void draw() {
 	background(0);
 
 	updateNodes();
+
+	autoMode();
+	halt();
 }
 
 //depending on the configuration, construct a grid of nodes in the given pattern
@@ -127,23 +137,40 @@ void updateNodes() {
 
 //incoming OSC messages from nodes
 void oscEvent(OscMessage theOscMessage) {
+	//if it says it is home
+	if (theOscMessage.addrPattern().equals("/home") == true) {
+		//record info from node
+		int id = theOscMessage.get(0).intValue();
+
+		//write to nodes' isHome
+		for (Node n : nodes) {
+			if (n.nodeID == id || n.mirror == null) {
+				n.isHome = true;
+				println("node is home");
+			}
+		}
+
+		//see if all nodes are home and switchMode only if autoMode is on
+		if (checkIfAllHome() && isAutoMode) switchModeIfAllHome();
+	}
+
 	//if it is a step
-	if (theOscMessage.addrPattern().equals("/step") == true) {
+	else if (theOscMessage.addrPattern().equals("/step") == true) {
 		//record info from node
 		int id = theOscMessage.get(0).intValue();
 		int step = theOscMessage.get(1).intValue();	//direction is inverted from physical nodes
 
-		//println("ID: " + id + " step: " + (step - (2048*10000)));
+		println("ID: " + id + " step: " + (step - (2048*10000)));
 		
-		for (Node n : nodes) {
-			if (n.nodeID == id) {
-				println(n.mirror.rotationSteps);
-				println(n.mirror.rotationDegrees * stepsPerDegree);
-				println(degrees(n.mirror.rotationRadians + (PI * .75)) * stepsPerDegree);
-				println(step - (2048 * 10000));
-				n.mirror.rotationDegrees = ((step % stepsPerRevolution) / stepsPerDegree);	//direction is flipped from Arduino
-			}
-		}
+		// for (Node n : nodes) {
+		// 	if (n.nodeID == id) {
+		// 		println(n.mirror.rotationSteps);
+		// 		println(n.mirror.rotationDegrees * stepsPerDegree);
+		// 		println(degrees(n.mirror.rotationRadians + (PI * .75)) * stepsPerDegree);
+		// 		println(step - (2048 * 10000));
+		// 		n.mirror.rotationDegrees = ((step % stepsPerRevolution) / stepsPerDegree);	//direction is flipped from Arduino
+		// 	}
+		// }
 	}
 
 	//if it is a ping
@@ -225,6 +252,62 @@ void controlEvent(ControlEvent theEvent) {
 		if (theEvent.getController().toString() == "switchMirrorRotationMode") {
 			switchMirrorRotationMode(int(theEvent.getController().getValue()));
 		}
+	}
+}
+
+//switch between rotation modes automatically every time interval
+void autoMode() {
+	if (isAutoMode) {
+		if ((((millis() - lastSwitch) / 1000) > (autoInterval * 60)) && !waitingForAllHome) {
+			goHome();
+			waitingForAllHome = true;
+		}
+	}
+}
+
+//switch to the next mode, only use after checkIfAllHome is true
+void switchModeIfAllHome() {
+	//reset counter
+	lastSwitch = millis();
+	waitingForAllHome = false;
+
+	//tell nodes they aren't home anymore
+	for (Node n : nodes) n.isHome = false;
+
+	//apply new random mode to nodes and GUI
+	int newRandomMode = (int(random(7)));
+	println(newRandomMode);
+	switchMirrorRotationMode(newRandomMode);
+	//cf.cp5GUI.getController("switchMirrorRotationMode").setValue(newRandomMode);
+	
+	//turn stuff back on after turning it off while homing
+	sendRotation = true;
+	println(sendRotation);
+	cf.cp5GUI.getController("send rotation").setValue(1);
+	rotateMirrors = true;
+	println(rotateMirrors);
+	cf.cp5GUI.getController("rotate mirrors").setValue(1);
+	//rotateLasers = true;
+	//cf.cp5GUI.getController("rotate lasers").setValue(0);
+}
+
+//check if all nodes are home
+boolean checkIfAllHome() {
+	for (Node n : nodes) {
+		if (!n.isHome && n.mirror == null) {
+			println(n.isHome);
+			return false;
+		}
+	}
+	println("true");
+	return true;
+}
+
+//occasionally freeze the program to make the nodes stop
+void halt() {
+	if (((millis() - lastHalt) / 1000) > (haltInterval * 60)) {
+		lastHalt = millis();
+		delay(int(haltDuration * 1000));
 	}
 }
 
@@ -327,7 +410,7 @@ void goHome() {
 	rotateLasers = false;
 	sendRotation = false;
 	cf.cp5GUI.getController("rotate mirrors").setValue(0);
-	cf.cp5GUI.getController("rotate lasers").setValue(0);
+	//cf.cp5GUI.getController("rotate lasers").setValue(0);
 	cf.cp5GUI.getController("send rotation").setValue(0);
 	for (Node n : nodes) {
 		if (n.mirror != null || n.laser != null) n.goHome();

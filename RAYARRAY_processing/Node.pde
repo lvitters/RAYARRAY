@@ -15,6 +15,7 @@ class Node {
 	String nodeIP = null;
 	NetAddress remoteLocation;
 	long lastSend = 0;
+	boolean isHome = false;
 
 	Node(PVector p, int x, int y, int i) {
 		position = p;
