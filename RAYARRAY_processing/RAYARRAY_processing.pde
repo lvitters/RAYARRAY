@@ -24,8 +24,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 10;
-int gridY = 5;
+int gridX = 3;
+int gridY = 2;
 
 float scaleCentimetersToPixels = 3.0;	//adjust for screen size
 float windowX, windowY;
@@ -320,54 +320,6 @@ void switchMirrorRotationMode(int mode) {
 	}
 }
 
-//save current config to JSON file
-void saveConfig() {
-	println("saveConfig");
-
-	JSONArray config = new JSONArray();
-
-	for (Node n : nodes) {
-		//get location in grid and ID
-		JSONObject configNode = new JSONObject();
-		configNode.setInt("x", n.column);
-		configNode.setInt("y", n.row);
-		configNode.setInt("ID", n.nodeID);
-
-		//set to config JSONArray
-		config.setJSONObject(n.index, configNode);
-	}
-
-	//save to file with grid dimensions in name
-	saveJSONArray(config, "configs/" + gridX + "x" + gridY + ".json");
-}
-
-//load config from file with current grid dimensions and write to grid; if there is a config file
-void loadConfig() {
-	println("loadConfig");
-
-	JSONArray config = new JSONArray();
-
-	//load from file with same grid dimensions as the sketch currently has
-	config = loadJSONArray("configs/" + gridX + "x" + gridY + ".json");
-
-	//only read from file if it exists
-	if (config != null) {
-		for (int i = 0; i < config.size(); i++) {
-			
-			//get JSON object
-			JSONObject configNode = config.getJSONObject(i);
-
-			//get location in config and ID
-			int x = configNode.getInt("x");
-			int y = configNode.getInt("y");
-			int ID = configNode.getInt("ID");
-
-			//write ID to corresponding node
-			nodes.get(i).nodeID = ID;
-		}
-	}
-}
-
 //turn off rotation and sending, set GUI elements accordingly, init homing sequence for all nodes, move virtual mirror back to 0
 void goHome() {
 	println("goHome");
@@ -483,6 +435,59 @@ void keyPressed() {
 			oscP5.send(updateMessage, remoteLocation);
 
 			println("sent firmware update to: " + ip);
+		}
+	}
+}
+
+//save current config to JSON file
+void saveConfig() {
+	println("saveConfig");
+
+	JSONArray config = new JSONArray();
+
+	for (Node n : nodes) {
+		//get location in grid and ID, save if mirror or laser
+		JSONObject configNode = new JSONObject();
+		configNode.setInt("x", n.column);
+		configNode.setInt("y", n.row);
+		configNode.setInt("ID", n.nodeID);
+		if (n.mirror != null && n.laser == null) configNode.setString("mode", "mirror");
+		else if (n.mirror == null && n.laser != null) configNode.setString("mode", "laser");
+
+		//set to config JSONArray
+		config.setJSONObject(n.index, configNode);
+	}
+
+	//save to file with grid dimensions in name
+	saveJSONArray(config, "configs/" + gridX + "x" + gridY + ".json");
+}
+
+//load config from file with current grid dimensions and write to grid; if there is a config file
+void loadConfig() {
+	println("loadConfig");
+
+	JSONArray config = new JSONArray();
+
+	//load from file with same grid dimensions as the sketch currently has
+	config = loadJSONArray("configs/" + gridX + "x" + gridY + ".json");
+
+	//only read from file if it exists
+	if (config != null) {
+		for (int i = 0; i < config.size(); i++) {
+			
+			//get JSON object
+			JSONObject configNode = config.getJSONObject(i);
+
+			//get location in config and ID, check if mirror or laser
+			int x = configNode.getInt("x");
+			int y = configNode.getInt("y");
+			int ID = configNode.getInt("ID");
+			if (configNode.getString("mode").equals("laser")) {
+				nodes.get(i).switchMode(1);
+			}
+
+			//write ID to corresponding node
+			nodes.get(i).nodeID = ID;
 		}
 	}
 }

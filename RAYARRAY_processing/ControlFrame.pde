@@ -41,7 +41,7 @@ class ControlFrame extends PApplet {
 			.setColor(guiColor)
 			.setPosition(guiOffset/4, guiOffset * 1/3)
 			.setSize(100, 20)
-			.setValue(false)
+			.setValue(true)
 			;
 
 		//save config

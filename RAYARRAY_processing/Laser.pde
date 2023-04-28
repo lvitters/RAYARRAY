@@ -54,39 +54,39 @@ class Laser {
 			switch (facingDirection) {
 				//somewhere inside grid
 				case 0:
-					rotationDegrees = map(sin(rT), -1, 1, -360, 360);
+					rotationDegrees = map(sin(rT), -1, 1, -370, 370);
 				break;
 				//top left
 				case 1:
-					rotationDegrees = map(sin(rT), -1, 1, 0, 90);
+					rotationDegrees = map(sin(rT), -1, 1, -10, 100);
 				break;
 				//top right
 				case 2:
-					rotationDegrees = map(sin(rT), -1, 1, 90, 180);
+					rotationDegrees = map(sin(rT), -1, 1, 80, 190);
 				break;
 				//bottom right
 				case 3:
-					rotationDegrees = map(sin(rT), -1, 1, 180, 270);
+					rotationDegrees = map(sin(rT), -1, 1, 170, 280);
 				break;
 				//bottom left
 				case 4:
-					rotationDegrees = map(sin(rT), -1, 1, 270, 360);
+					rotationDegrees = map(sin(rT), -1, 1, 260, 370);
 				break;
 				//left side
 				case 5:
-					rotationDegrees = map(sin(rT), -1, 1, -90, 90);
+					rotationDegrees = map(sin(rT), -1, 1, -80, 100);
 				break;
 				//right side
 				case 6:
-					rotationDegrees = map(sin(rT), -1, 1, 270, 90);
+					rotationDegrees = map(sin(rT), -1, 1, 280, 100);
 				break;
 				//top
 				case 7:
-					rotationDegrees = map(sin(rT), -1, 1, 180, 0);
+					rotationDegrees = map(sin(rT), -1, 1, 190, -10);
 				break;
 				//bottom
 				case 8:
-					rotationDegrees = map(sin(rT), -1, 1, 180, 360);
+					rotationDegrees = map(sin(rT), -1, 1, 170, 370);
 				break;
 			}
 
