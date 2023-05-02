@@ -54,12 +54,11 @@ class Node {
 		if (laser != null) {
 			laser.drawOrigin();
 			//rotate by hand
-			if (mouseOver() && rotateLaser && !rotateLasers) {
+			if (mouseOver() && rotateLaser) {
 				laser.setDirection(new PVector(mouseX - laser.position.x, mouseY - laser.position.y).normalize());
-				laser.rotationDegrees = -degrees(atan2(laser.direction.x, laser.direction.y) + (PI/2));
 			}
-			//apply and/or rotate automatically
-			laser.rotate();
+			//apply rotation to steps and rays
+			laser.writeToSteps();
 			laser.updateRays();
 		}
 		//close input field when mouse is not over field

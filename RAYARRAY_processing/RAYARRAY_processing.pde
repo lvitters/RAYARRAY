@@ -45,9 +45,6 @@ float lastHalt = 0;
 
 //rotation
 boolean rotateLaser = false;
-boolean rotateLasers;
-float laserRotationSpeed = 1;
-int laserRotationMode = 0;
 boolean rotateMirror = false;
 boolean rotateMirrors;
 float mirrorRotationSpeed = 1;
@@ -218,7 +215,7 @@ void setupGUI() {
 	cp5InputFields = new ControlP5(this);
 
 	//init controlFrame
-	cf = new ControlFrame(this, 400, 600, "GUI");
+	cf = new ControlFrame(this, 400, 500, "GUI");
 	surface.setLocation(420, 10);
 }
 
@@ -255,10 +252,6 @@ void controlEvent(ControlEvent theEvent) {
 		if (theEvent.getController().toString() == "switchMirrorRotationMode") {
 			switchMirrorRotationMode(int(theEvent.getController().getValue()));
 		}
-		//if it comes from the "switchLaserRotationMode" controller then switchLaserRotationMode accordingly
-		if (theEvent.getController().toString() == "switchLasersRotationMode") {
-			switchLaserRotationMode(int(theEvent.getController().getValue()));
-		}
 	}
 }
 
@@ -283,10 +276,6 @@ void switchModeIfAllHome() {
 	int newRandomMode = (int(random(7)));
 	switchMirrorRotationMode(newRandomMode);
 	//cf.cp5GUI.getController("switchMirrorRotationMode").setValue(newRandomMode);
-
-	//apply new random mode to nodes and GUI for lasers
-	newRandomMode = (int(random(4)));
-	switchLaserRotationMode(newRandomMode);
 	
 	//turn stuff back on after turning it off while homing
 	sendRotation = true;
@@ -295,10 +284,6 @@ void switchModeIfAllHome() {
 	rotateMirrors = true;
 	println(rotateMirrors);
 	cf.cp5GUI.getController("rotate mirrors").setValue(1);
-	if (isAutoLaser) {	
-		rotateLasers = true;
-		cf.cp5GUI.getController("rotate lasers").setValue(1);
-	}
 }
 
 //check if all nodes are home
@@ -411,59 +396,18 @@ void switchMirrorRotationMode(int mode) {
 	}
 }
 
-//apply from switchLaserRotationMode controller and reset Laser variables
-void switchLaserRotationMode(int mode) {
-	//apply rotation mode
-	laserRotationMode = mode;
-	println("laserRotationMode: " + laserRotationMode);
-
-	//turn off rotation
-	rotateLasers = false;
-
-	//sine mode with same time increment
-	if(laserRotationMode == 0) {
-		for (Node n : nodes) {
-			if (n.laser != null) {
-				n.laser.setHome();
-				n.laser.rT = 0;
-			}
-		}
-	}	
-	//sine mode with different time increments
-	if(laserRotationMode == 1) {
-		for (Node n : nodes) {
-			if (n.laser != null) {
-				n.laser.setHome();
-				n.laser.rT = random(100);
-			}
-		}
-	}	
-	//noise mode with different time increments
-	if(laserRotationMode == 2) {
-		for (Node n : nodes) {
-			if (n.laser != null) {
-				n.laser.setHome();
-				n.laser.rT = random(100);
-			}
-		}
-	}
-
-}
-
 //turn off rotations and sending, set GUI elements accordingly, reset and home all nodes, except lasers when isAutoLaser is off
 void goHome() {
 	println("goHome");
 	sendRotation = false;
 	rotateMirrors = false;
-	rotateLasers = false;
 	cf.cp5GUI.getController("send rotation").setValue(0);
 	cf.cp5GUI.getController("rotate mirrors").setValue(0);
-	cf.cp5GUI.getController("rotate lasers").setValue(0);
 	for (Node n : nodes) {
 		if (n.mirror != null) {
 			n.mirror.setHome();
 			n.goHome();
-		} else if (n.laser != null && isAutoLaser) {
+		} else if (n.laser != null && !isAutoMode) {
 			n.laser.setHome();
 			n.goHome();
 		}
