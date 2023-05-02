@@ -172,8 +172,8 @@ class ControlFrame extends PApplet {
 			.plugTo(parent, "autoInterval")
 			.setFont(guiFont)
 			.setColor(guiColor)
-			.setPosition(guiOffset/4 + 110, guiOffset * 6/3)
-			.setSize(210, 20)
+			.setPosition(guiOffset/4 + 220, guiOffset * 6/3)
+			.setSize(100, 20)
 			.setRange(.1, 10)
 			.setValue(.5)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
@@ -181,7 +181,7 @@ class ControlFrame extends PApplet {
 
 		//toggle auto mode
 		cp5GUI.addToggle("arm halt")
-			.plugTo(parent, "armHalt")
+			.plugTo(parent, "isHalting")
 			.setFont(guiFont)
 			.setColor(guiColor)
 			.setPosition(guiOffset/4, guiOffset * 7/3)
@@ -213,7 +213,7 @@ class ControlFrame extends PApplet {
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			;
 
-		//rotation modes
+		//mirror rotation modes
 		modesList = cp5GUI.addDropdownList("mirror rotation mode")
 			.plugTo(parent, "switchMirrorRotationMode")
 			.setPosition(guiOffset/4, guiOffset * 8/3)
@@ -232,6 +232,23 @@ class ControlFrame extends PApplet {
 			.addItem("multiplied sine speed", 4)
 			.addItem("row multiplied sine speed", 5)
 			.addItem("column multiplied sine speed", 6)
+			;
+
+		//laser rotation modes
+		modesList = cp5GUI.addDropdownList("laser rotation mode")
+			.plugTo(parent, "switchLaserRotationMode")
+			.setPosition(guiOffset/4, guiOffset * 9/3)
+			.setFont(guiFont)
+			.setColor(guiColor)
+			.setBarHeight(20)
+			.setItemHeight(20)
+			.setWidth(250)
+			.setHeight(400)
+			.setOpen(false)
+			.setValue(0)
+			.addItem("same sine", 0)
+			.addItem("individual sine", 1)
+			.addItem("individual noise", 2)
 			;
 	}
 

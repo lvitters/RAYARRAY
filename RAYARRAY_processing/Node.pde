@@ -56,7 +56,7 @@ class Node {
 			//rotate by hand
 			if (mouseOver() && rotateLaser && !rotateLasers) {
 				laser.setDirection(new PVector(mouseX - laser.position.x, mouseY - laser.position.y).normalize());
-				laser.rotationDegrees = -degrees(atan2(laser.direction.x, laser.direction.y) - (PI/2));
+				laser.rotationDegrees = -degrees(atan2(laser.direction.x, laser.direction.y) + (PI/2));
 			}
 			//apply and/or rotate automatically
 			laser.rotate();

@@ -1,5 +1,5 @@
 class Laser {
-	PVector position, direction;
+	PVector position, direction, startDirection;
 	boolean active;
 	Ray firstRay;
 
@@ -9,6 +9,7 @@ class Laser {
 	float rotationDegrees;
 	float rotationSteps;
 	int facingDirection;
+	int leftBound, rightBound;
 
 	Laser(PVector p, int column, int row) {
 		position = p;
@@ -47,48 +48,29 @@ class Laser {
 	//update the mirrors values
 	void rotate() {
 		if (rotateLasers) {
-			//increment "time" and apply rotationSpeed
-			rT += .002 * laserRotationSpeed;
-
-			//map to rotationDegrees
-			switch (facingDirection) {
-				//somewhere inside grid
-				case 0:
-					rotationDegrees = map(sin(rT), -1, 1, -370, 370);
-				break;
-				//top left
-				case 1:
-					rotationDegrees = map(sin(rT), -1, 1, -10, 100);
-				break;
-				//top right
-				case 2:
-					rotationDegrees = map(sin(rT), -1, 1, 80, 190);
-				break;
-				//bottom right
-				case 3:
-					rotationDegrees = map(sin(rT), -1, 1, 170, 280);
-				break;
-				//bottom left
-				case 4:
-					rotationDegrees = map(sin(rT), -1, 1, 260, 370);
-				break;
-				//left side
-				case 5:
-					rotationDegrees = map(sin(rT), -1, 1, -80, 100);
-				break;
-				//right side
-				case 6:
-					rotationDegrees = map(sin(rT), -1, 1, 280, 100);
-				break;
-				//top
-				case 7:
-					rotationDegrees = map(sin(rT), -1, 1, 190, -10);
-				break;
-				//bottom
-				case 8:
-					rotationDegrees = map(sin(rT), -1, 1, 170, 370);
-				break;
-			}
+				switch (laserRotationMode)	{
+					//same sine rotation
+					case 0:
+						//increment "time" and apply rotationSpeed
+						rT += .002 * laserRotationSpeed;
+						//map to degrees
+						rotationDegrees = map(sin(rT), -1, 1, leftBound, rightBound);
+					break;
+					//individual sine rotation
+					case 1:
+						//increment "time" and apply rotationSpeed
+						rT += random(.0001, .005) * laserRotationSpeed;
+						//map to degrees
+						rotationDegrees = map(sin(rT), -1, 1, leftBound, rightBound);
+					break;
+					//individual noise rotation
+					case 2:
+						//increment "time" and apply rotationSpeed
+						rT += random(.0001, .005) * laserRotationSpeed;
+						//map to degrees
+						rotationDegrees = map(noise(rT), 0, 1, leftBound, rightBound);
+					break;
+				}
 
 			//translate to radians for display
 			rotationRadians = radians(rotationDegrees);	
@@ -96,56 +78,15 @@ class Laser {
 		}
 
 		//write to laser's rotationSteps, correct for laser's physical orientation
-		rotationSteps = ((rotationDegrees+45) * stepsPerDegree) + stepZero;	//direction for some reason is not flipped from motor
+		rotationSteps = ((rotationDegrees+135) * stepsPerDegree) + stepZero;	//direction for some reason is not flipped from motor
 	}
 
 	//bring laser to original direction
-	void goHome() {
+	void setHome() {
 		//reset time
 		rT = 0;
-
-		//reset direction
-		switch (facingDirection) {
-			//somewhere in middle
-			case 0:
-				direction = new PVector(1, 0);
-			break;
-			//top left
-			case 1:				
-				direction = new PVector(1, 1);
-			break;
-			//top right
-			case 2:		
-				direction = new PVector(-.7, .7);
-			break;
-			//bottom right
-			case 3:			
-				direction = new PVector(-.7, -.7);
-			break;
-			//bottom left
-			case 4:
-				direction = new PVector(1, -1);
-			break;
-			//left side
-			case 5:				
-				direction = new PVector(1, 0);
-			break;
-			//right side
-			case 6:				
-				direction = new PVector(-1, 0);
-			break;
-			//top
-			case 7:				
-				direction = new PVector(0, 1);
-			break;
-			//bottom
-			case 8:				
-				direction = new PVector(0, -1);
-			break;
-		}
-
 		//move laser there
-		setDirection(direction);
+		setDirection(new PVector(-.7, .7));
 	}
 
 	//determine which direction the laser is facing, depending on where it is in grid, to limit its movement (it has a cable)
@@ -153,35 +94,61 @@ class Laser {
 		//first somewhere not on the edge of the grid (unused)
 		if ((row != 0 && row != gridY-1 && column != 0 && column != gridX-1) || gridX == 1 && gridY == 1) {
 			facingDirection = 0;
+			leftBound = -360;
+			rightBound = 370;
 		}
 		//then the corners
-		else if (column == 0 & row == 0) {					//top left
+		//top left
+		else if (column == 0 & row == 0) {					
 			facingDirection = 1;
-		} 
-		else if (column == gridX-1 && row == 0) {			//top right	
+			leftBound = -10;
+			rightBound = 90;
+		}
+		//top right	
+		else if (column == gridX-1 && row == 0) {			
 			facingDirection = 2;
+			leftBound = 80;
+			rightBound = 180;
 		} 
-		else if (column == gridX-1 && row == gridY-1) {	//bottom right
+		//bottom right
+		else if (column == gridX-1 && row == gridY-1) {		
 			facingDirection = 3;
-		} 
-		else if (column == 0 && row == gridY-1) {			//bottom left
-			facingDirection = 4;				
+			leftBound = 170;
+			rightBound = 270;
+		}
+		//bottom left
+		else if (column == 0 && row == gridY-1) {			
+			facingDirection = 4;
+			leftBound = 260;
+			rightBound = 360;		
 		}
 		//now the edges
-		else if (column == 0 ) {					//left side
+		//left side
+		else if (column == 0 ) {							
 			facingDirection = 5;
-		} 
-		else if (column == gridX-1) {				//right side
+			leftBound = -100;
+			rightBound = 90;
+		}
+		//right side
+		else if (column == gridX-1) {						
 			facingDirection = 6;
-		} 
-		else if (row == 0 && column != 0) {		//top
+			leftBound = 260;
+			rightBound = 90;
+		}
+		//top
+		else if (row == 0 && column != 0) {					
 			facingDirection = 7;
-		} 
-		else if (row == gridY-1) {				//bottom
+			leftBound = 190;
+			rightBound = 0;
+		}
+		//bottom
+		else if (row == gridY-1) {							
 			facingDirection = 8;
+			leftBound = 190;
+			rightBound = 370;
 		}
 
 		//apply that direction
-		goHome();
+		setHome();
 	}
 }

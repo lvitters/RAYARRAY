@@ -34,17 +34,20 @@ int recursionGuard = 0;
 
 //auto mode(s)
 boolean isAutoMode = false;
+boolean isAutoLaser = false;
 float lastSwitch = 0;
 float autoInterval = 0;
 boolean waitingForAllHome = false;
+boolean isHalting = false;
 float haltInterval = 0;
 float haltDuration = 0;
 float lastHalt = 0;
 
 //rotation
 boolean rotateLaser = false;
-boolean rotateLasers = false;
+boolean rotateLasers;
 float laserRotationSpeed = 1;
+int laserRotationMode = 0;
 boolean rotateMirror = false;
 boolean rotateMirrors;
 float mirrorRotationSpeed = 1;
@@ -92,8 +95,8 @@ void draw() {
 
 	updateNodes();
 
-	autoMode();
-	halt();
+	if (isAutoMode) autoMode();
+	if (isHalting) halt();
 }
 
 //depending on the configuration, construct a grid of nodes in the given pattern
@@ -215,7 +218,7 @@ void setupGUI() {
 	cp5InputFields = new ControlP5(this);
 
 	//init controlFrame
-	cf = new ControlFrame(this, 400, 500, "GUI");
+	cf = new ControlFrame(this, 400, 600, "GUI");
 	surface.setLocation(420, 10);
 }
 
@@ -248,20 +251,22 @@ void controlEvent(ControlEvent theEvent) {
 		if (theEvent.getController().toString() == "getSteps") {
 			getSteps();
 		}
-		//if it comes from the "rotationModeMirrors" controller then switchrotationModeMirrors accordingly
+		//if it comes from the "switchMirrorRotationMode" controller then switchMirrorRotationMode accordingly
 		if (theEvent.getController().toString() == "switchMirrorRotationMode") {
 			switchMirrorRotationMode(int(theEvent.getController().getValue()));
+		}
+		//if it comes from the "switchLaserRotationMode" controller then switchLaserRotationMode accordingly
+		if (theEvent.getController().toString() == "switchLasersRotationMode") {
+			switchLaserRotationMode(int(theEvent.getController().getValue()));
 		}
 	}
 }
 
 //switch between rotation modes automatically every time interval
 void autoMode() {
-	if (isAutoMode) {
-		if ((((millis() - lastSwitch) / 1000) > (autoInterval * 60)) && !waitingForAllHome) {
-			goHome();
-			waitingForAllHome = true;
-		}
+	if ((((millis() - lastSwitch) / 1000) > (autoInterval * 60)) && !waitingForAllHome) {
+		goHome();
+		waitingForAllHome = true;
 	}
 }
 
@@ -274,11 +279,14 @@ void switchModeIfAllHome() {
 	//tell nodes they aren't home anymore
 	for (Node n : nodes) n.isHome = false;
 
-	//apply new random mode to nodes and GUI
+	//apply new random mode to nodes and GUI for mirrors
 	int newRandomMode = (int(random(7)));
-	println(newRandomMode);
 	switchMirrorRotationMode(newRandomMode);
 	//cf.cp5GUI.getController("switchMirrorRotationMode").setValue(newRandomMode);
+
+	//apply new random mode to nodes and GUI for lasers
+	newRandomMode = (int(random(4)));
+	switchLaserRotationMode(newRandomMode);
 	
 	//turn stuff back on after turning it off while homing
 	sendRotation = true;
@@ -287,19 +295,19 @@ void switchModeIfAllHome() {
 	rotateMirrors = true;
 	println(rotateMirrors);
 	cf.cp5GUI.getController("rotate mirrors").setValue(1);
-	//rotateLasers = true;
-	//cf.cp5GUI.getController("rotate lasers").setValue(0);
+	if (isAutoLaser) {	
+		rotateLasers = true;
+		cf.cp5GUI.getController("rotate lasers").setValue(1);
+	}
 }
 
 //check if all nodes are home
 boolean checkIfAllHome() {
 	for (Node n : nodes) {
 		if (!n.isHome && n.mirror == null) {
-			println(n.isHome);
 			return false;
 		}
 	}
-	println("true");
 	return true;
 }
 
@@ -311,7 +319,7 @@ void halt() {
 	}
 }
 
-//set directions between rotationModeMirrorss when mode was changed
+//apply from switchMirrorRotationMode controller and reset mirror variables
 void switchMirrorRotationMode(int mode) {
 	//apply rotation mode
 	mirrorRotationMode = mode;
@@ -324,7 +332,7 @@ void switchMirrorRotationMode(int mode) {
 	if(mirrorRotationMode == 0) {
 		for (Node n : nodes) {
 			if (n.mirror != null) {
-				n.mirror.goHome();
+				n.mirror.setHome();
 				n.mirror.rotationDirection = 1;
 			}
 		}
@@ -333,7 +341,7 @@ void switchMirrorRotationMode(int mode) {
 	else if(mirrorRotationMode == 1) {
 		for (Node n : nodes) {
 			if (n.mirror != null) {
-				n.mirror.goHome();
+				n.mirror.setHome();
 				n.mirror.rT = random(100);
 			}
 		}
@@ -343,7 +351,7 @@ void switchMirrorRotationMode(int mode) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
 			if (n.mirror != null) {
-				n.mirror.goHome();
+				n.mirror.setHome();
 				n.mirror.rotationDirection = randomDirection;
 			}
 		}
@@ -352,7 +360,7 @@ void switchMirrorRotationMode(int mode) {
 	else if (mirrorRotationMode == 3) {
 		for (Node n : nodes) {
 			if (n.mirror != null) {
-				n.mirror.goHome();
+				n.mirror.setHome();
 				n.mirror.rotationDirection = getRandomDirection();
 			}
 		}
@@ -362,7 +370,7 @@ void switchMirrorRotationMode(int mode) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
 			if (n.mirror != null) {
-				n.mirror.goHome();
+				n.mirror.setHome();
 				int randEven = int(random(2, 5)) * 2;
 				n.mirror.sineMultiplier = randEven;
 				n.mirror.rotationDirection = randomDirection; 
@@ -376,7 +384,7 @@ void switchMirrorRotationMode(int mode) {
 		int rowEven = 0;
 		for (Node n : nodes) {
 			if (n.mirror != null) {
-				n.mirror.goHome();
+				n.mirror.setHome();
 				if (randInt == 0) rowEven = (n.row + 1) * 2;
 				else rowEven = gridX - n.row + 1;
 				n.mirror.sineMultiplier = rowEven;
@@ -390,7 +398,7 @@ void switchMirrorRotationMode(int mode) {
 
 		for (Node n : nodes) {
 			if (n.mirror != null) {
-				n.mirror.goHome();
+				n.mirror.setHome();
 				int columnEven = 0;
 				if (n.column < gridX/2) {
 					columnEven = (n.column+1) * 2;
@@ -403,24 +411,61 @@ void switchMirrorRotationMode(int mode) {
 	}
 }
 
-//turn off rotation and sending, set GUI elements accordingly, init homing sequence for all nodes, move virtual mirror back to 0
+//apply from switchLaserRotationMode controller and reset Laser variables
+void switchLaserRotationMode(int mode) {
+	//apply rotation mode
+	laserRotationMode = mode;
+	println("laserRotationMode: " + laserRotationMode);
+
+	//turn off rotation
+	rotateLasers = false;
+
+	//sine mode with same time increment
+	if(laserRotationMode == 0) {
+		for (Node n : nodes) {
+			if (n.laser != null) {
+				n.laser.setHome();
+				n.laser.rT = 0;
+			}
+		}
+	}	
+	//sine mode with different time increments
+	if(laserRotationMode == 1) {
+		for (Node n : nodes) {
+			if (n.laser != null) {
+				n.laser.setHome();
+				n.laser.rT = random(100);
+			}
+		}
+	}	
+	//noise mode with different time increments
+	if(laserRotationMode == 2) {
+		for (Node n : nodes) {
+			if (n.laser != null) {
+				n.laser.setHome();
+				n.laser.rT = random(100);
+			}
+		}
+	}
+
+}
+
+//turn off rotations and sending, set GUI elements accordingly, reset and home all nodes, except lasers when isAutoLaser is off
 void goHome() {
 	println("goHome");
+	sendRotation = false;
 	rotateMirrors = false;
 	rotateLasers = false;
-	sendRotation = false;
-	cf.cp5GUI.getController("rotate mirrors").setValue(0);
-	//cf.cp5GUI.getController("rotate lasers").setValue(0);
 	cf.cp5GUI.getController("send rotation").setValue(0);
+	cf.cp5GUI.getController("rotate mirrors").setValue(0);
+	cf.cp5GUI.getController("rotate lasers").setValue(0);
 	for (Node n : nodes) {
-		if (n.mirror != null || n.laser != null) n.goHome();
 		if (n.mirror != null) {
-			n.mirror.rT = 0;
-			n.mirror.rotationRadians = (-PI * 3/4);
-			n.mirror.rotationDegrees = 0;
-			n.mirror.rotationSteps = 0;
-		} else if (n.laser != null) {
-			n.laser.goHome();
+			n.mirror.setHome();
+			n.goHome();
+		} else if (n.laser != null && isAutoLaser) {
+			n.laser.setHome();
+			n.goHome();
 		}
 	}
 }

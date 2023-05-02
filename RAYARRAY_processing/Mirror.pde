@@ -117,8 +117,8 @@ class Mirror {
         //     );
 	}
 
-	//go to default mirror position
-	void goHome() {
+	//reset mirror to original rotation
+	void setHome() {
 		rT = 0;
 		rotationRadians = (-PI * 3/4);
 		rotationDegrees = 0;
