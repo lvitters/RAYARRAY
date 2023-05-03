@@ -311,7 +311,8 @@ void rotateLasers() {
 	for (Node n : nodes) {
 		if (n.laser != null) {
 			int randomIndex = int(random(n.laser.directions.size()));
-			n.laser.rotationSteps = n.laser.directions.get(randomIndex) + stepZero;
+			//write random position to rotationSteps, correct for laser's physical orientation
+			n.laser.rotationSteps = n.laser.directions.get(randomIndex) - 45 + stepZero;
 		}
 	}
 }
