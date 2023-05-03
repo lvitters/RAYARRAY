@@ -58,7 +58,7 @@ class Node {
 				laser.setDirection(new PVector(mouseX - laser.position.x, mouseY - laser.position.y).normalize());
 			}
 			//apply rotation to steps and rays
-			laser.writeToSteps();
+			if (!isAutoLaser) laser.writeToSteps();
 			laser.updateRays();
 		}
 		//close input field when mouse is not over field

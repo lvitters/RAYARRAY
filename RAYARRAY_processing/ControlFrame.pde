@@ -143,14 +143,24 @@ class ControlFrame extends PApplet {
 			.setSize(100, 20)
 			.setValue(false)
 			;
+
+		//toggle auto mode
+		cp5GUI.addToggle("auto laser")
+			.plugTo(parent, "isAutoLaser")
+			.setFont(guiFont)
+			.setColor(guiColor)
+			.setPosition(guiOffset/4 + 110, guiOffset * 5/3)
+			.setSize(100, 20)
+			.setValue(false)
+			;
 		
 		//how long between auto mode switches
 		cp5GUI.addSlider("auto interval")
 			.plugTo(parent, "autoInterval")
 			.setFont(guiFont)
 			.setColor(guiColor)
-			.setPosition(guiOffset/4 + 110, guiOffset * 5/3)
-			.setSize(220, 20)
+			.setPosition(guiOffset/4 + 220, guiOffset * 5/3)
+			.setSize(100, 20)
 			.setRange(.1, 10)
 			.setValue(.5)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)

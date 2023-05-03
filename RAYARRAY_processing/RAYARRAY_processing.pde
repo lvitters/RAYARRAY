@@ -21,9 +21,9 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 4;
+int gridX = 3;
 int gridY = 3;
-float scaleCentimetersToPixels = 2.2;	//adjust for screen size
+float scaleCentimetersToPixels = 3.0;	//adjust for screen size
 float windowX, windowY;
 float absoluteConnectionLength = 50.0;	//in cm
 float absoluteMirrorWidth = 15.0;		//in cm
@@ -152,6 +152,7 @@ void oscEvent(OscMessage theOscMessage) {
 
 		//see if all nodes are home and switchMode only if autoMode is on
 		if (checkIfAllHome() && isAutoMode) switchModeIfAllHome();
+		else if (!sendRotation && isAutoMode) switchModeIfAllHome();
 	}
 
 	//if it is a step
@@ -215,7 +216,7 @@ void setupGUI() {
 	cp5InputFields = new ControlP5(this);
 
 	//init controlFrame
-	cf = new ControlFrame(this, 400, 500, "GUI");
+	cf = new ControlFrame(this, 400, 550, "GUI");
 	surface.setLocation(420, 10);
 }
 
@@ -272,6 +273,9 @@ void switchModeIfAllHome() {
 	//tell nodes they aren't home anymore
 	for (Node n : nodes) n.isHome = false;
 
+	//set lasers to new direction
+	if (isAutoLaser) rotateLasers();
+
 	//apply new random mode to nodes and GUI for mirrors
 	int newRandomMode = (int(random(7)));
 	switchMirrorRotationMode(newRandomMode);
@@ -279,17 +283,15 @@ void switchModeIfAllHome() {
 	
 	//turn stuff back on after turning it off while homing
 	sendRotation = true;
-	println(sendRotation);
 	cf.cp5GUI.getController("send rotation").setValue(1);
 	rotateMirrors = true;
-	println(rotateMirrors);
 	cf.cp5GUI.getController("rotate mirrors").setValue(1);
 }
 
 //check if all nodes are home
 boolean checkIfAllHome() {
 	for (Node n : nodes) {
-		if (!n.isHome && n.mirror == null) {
+		if (!n.isHome) {
 			return false;
 		}
 	}
@@ -301,6 +303,16 @@ void halt() {
 	if (((millis() - lastHalt) / 1000) > (haltInterval * 60)) {
 		lastHalt = millis();
 		delay(int(haltDuration * 1000));
+	}
+}
+
+//set lasers to a random direction out of their possible directions
+void rotateLasers() {
+	for (Node n : nodes) {
+		if (n.laser != null) {
+			int randomIndex = int(random(n.laser.directions.size()));
+			n.laser.rotationSteps = n.laser.directions.get(randomIndex) + stepZero;
+		}
 	}
 }
 
