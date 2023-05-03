@@ -56,6 +56,7 @@ class Node {
 			//rotate by hand
 			if (mouseOver() && rotateLaser) {
 				laser.setDirection(new PVector(mouseX - laser.position.x, mouseY - laser.position.y).normalize());
+				println(laser.direction);
 			}
 			//apply rotation to steps and rays
 			if (!isAutoLaser) laser.writeToSteps();

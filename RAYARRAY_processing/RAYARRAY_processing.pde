@@ -291,7 +291,7 @@ void switchModeIfAllHome() {
 //check if all nodes are home
 boolean checkIfAllHome() {
 	for (Node n : nodes) {
-		if (!n.isHome) {
+		if (!n.isHome && !sendRotation) {
 			return false;
 		}
 	}
@@ -310,9 +310,12 @@ void halt() {
 void rotateLasers() {
 	for (Node n : nodes) {
 		if (n.laser != null) {
-			int randomIndex = int(random(n.laser.directions.size()));
-			//write random position to rotationSteps, correct for laser's physical orientation
-			n.laser.rotationSteps = n.laser.directions.get(randomIndex) - 45 + stepZero;
+			//get random direction
+			int randomIndex = int(random(n.laser.directions.size())) + 1;
+			//write random position to direction
+			n.laser.setDirection(n.laser.directions.get(randomIndex));
+			//write to steps for motor
+			n.laser.writeToSteps();
 		}
 	}
 }
