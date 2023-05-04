@@ -241,8 +241,8 @@ void controlEvent(ControlEvent theEvent) {
 			goHome();
 		}
 		//if it comes from the "resetHomes" controller then resetHomes()
-		if (theEvent.getController().toString() == "resetHomes") {
-			resetHomes();
+		if (theEvent.getController().toString() == "restartNodes") {
+			restartNodes();
 		}
 		//if it comes from the "getStep" controller then getSteps()
 		if (theEvent.getController().toString() == "getSteps") {
@@ -260,6 +260,12 @@ void autoMode() {
 	if ((((millis() - lastSwitch) / 1000) > (autoInterval * 60))) {
 		goHome();
 		waitingForAllHome = true;
+		
+		//after 10 seconds, switch mode regardless
+		if (((millis() - lastSwitch / 10000) - (autoInterval * 60)) > (15 * 60)) {	//after 10 seconds of waiting
+			println("switch mode regardless");
+			switchModeIfAllHome();
+		}
 	}
 }
 
@@ -432,10 +438,10 @@ void goHome() {
 }
 
 //reset all mirrors' home positions to their current positions, only after goHome() to catch some errors?
-void resetHomes() {
-	println("resetHomes");
+void restartNodes() {
+	println("restartNodes");
 	for (Node n : nodes) {
-		n.resetHome();
+		n.restartNode();
 	}
 }
 

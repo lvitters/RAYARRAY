@@ -72,8 +72,8 @@ class ControlFrame extends PApplet {
 			;		
 			
 		//tell node to reset its home position to the current one
-		cp5GUI.addButton("reset homes")
-			.plugTo(parent, "resetHomes")
+		cp5GUI.addButton("restart nodes")
+			.plugTo(parent, "restartNodes")
 			.setPosition(guiOffset/4 + 110, guiOffset * 2/3)
 			.setSize(100, 20)
 			.setFont(guiFont)

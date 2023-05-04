@@ -170,10 +170,10 @@ class Node {
 	}
 
 	//reset node's home position
-	void resetHome() {
+	void restartNode() {
 		remoteLocation = new NetAddress(nodeIP, remotePort);
-		OscMessage homeResetMessage = new OscMessage("/resetHome");
-		oscP5.send(homeResetMessage, remoteLocation);
+		OscMessage restartMessage = new OscMessage("/restart");
+		oscP5.send(restartMessage, remoteLocation);
 	}
 
 	//send message to nodes to retrieve step

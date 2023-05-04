@@ -13,6 +13,7 @@ void onPacketOSC(AsyncUDPPacket packet) {
       //commands
       msgIn.route("/goHome", OSCinitGoingHome);
       msgIn.route("/resetHome", OSCresetHome);
+      msgIn.route("/restart", OSCrestart);
       msgIn.route("/rotate", OSCrotate);
       msgIn.route("/getStep", OSCsendStepToProcessing);
       msgIn.route("/pingNode", OSCincomingPing);

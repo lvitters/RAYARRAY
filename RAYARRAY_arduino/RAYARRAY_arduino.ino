@@ -19,7 +19,7 @@ int NODE_ID = -1; // the final NODE_ID is not set here, it will be stored and re
 // before you have to set (write to the eeprom) the node ID via the setNodeID arduino sketch.
 // upload this sketch afterwads.
 
-float FW_VERSION = 0.23; //important for the firmware ota flashing process / increment for next upload
+float FW_VERSION = 0.24; //important for the firmware ota flashing process / increment for next upload
 
 //server location of your new firmware (export firmware with arduino IDE , change version.txt as well)
 //change server IP if needed
@@ -234,6 +234,11 @@ void tellProcessingHome() {
   oscMsgHome.send(udpMsgHome);
   oscMsgHome.empty();
   udpOut.broadcastTo(udpMsgHome, networkOutPort);
+}
+
+//restart the entire ESP, only when Processing says so
+void OSCrestart(OSCMessage &msg, int addrOffset) {
+  ESP.restart();
 }
 
 //reset the current position to home position (jogValue/2), only when Processing says so
