@@ -262,7 +262,7 @@ void autoMode() {
 		waitingForAllHome = true;
 		
 		//after 10 seconds, switch mode regardless
-		if (((millis() - lastSwitch / 10000) - (autoInterval * 60)) > (15 * 60)) {	//after 10 seconds of waiting
+		if ((((millis() - lastSwitch) / 1000) - (autoInterval * 60) > 10)) {
 			println("switch mode regardless");
 			switchModeIfAllHome();
 		}
