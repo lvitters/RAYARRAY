@@ -258,7 +258,7 @@ void controlEvent(ControlEvent theEvent) {
 //switch between rotation modes automatically every time interval
 void autoMode() {
 	if ((((millis() - lastSwitch) / 1000) > (autoInterval * 60))) {
-		goHome();
+		if (!waitingForAllHome) goHome();
 		waitingForAllHome = true;
 		
 		//after 10 seconds, switch mode regardless

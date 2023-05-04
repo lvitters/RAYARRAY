@@ -8,7 +8,7 @@
 
 
 // set node id here
-int set_nodeid = 50; // <------------------ change here to set
+int set_nodeid = 23; // <------------------ change here to set
 
 
 
