@@ -21,9 +21,9 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 3;
-int gridY = 3;
-float scaleCentimetersToPixels = 3.0;	//adjust for screen size
+int gridX = 12;
+int gridY = 4;
+float scaleCentimetersToPixels = 2.0;	//adjust for screen size
 float windowX, windowY;
 float absoluteConnectionLength = 50.0;	//in cm
 float absoluteMirrorWidth = 15.0;		//in cm
@@ -151,8 +151,7 @@ void oscEvent(OscMessage theOscMessage) {
 		}
 
 		//see if all nodes are home and switchMode only if autoMode is on
-		if (checkIfAllHome() && isAutoMode) switchModeIfAllHome();
-		else if (!sendRotation && isAutoMode) switchModeIfAllHome();
+		if (checkIfAllHome()) switchModeIfAllHome();
 	}
 
 	//if it is a step
@@ -291,10 +290,12 @@ void switchModeIfAllHome() {
 //check if all nodes are home
 boolean checkIfAllHome() {
 	for (Node n : nodes) {
-		if (!n.isHome && !sendRotation) {
+		if (!n.isHome) {
+			println("not all home");
 			return false;
 		}
 	}
+	println("all home");
 	return true;
 }
 
@@ -302,7 +303,7 @@ boolean checkIfAllHome() {
 void halt() {
 	if (((millis() - lastHalt) / 1000) > (haltInterval * 60)) {
 		lastHalt = millis();
-		delay(int(haltDuration * 1000));
+		if (!waitingForAllHome) delay(int(haltDuration * 1000));
 	}
 }
 
@@ -541,6 +542,7 @@ void saveConfig() {
 		configNode.setInt("ID", n.nodeID);
 		if (n.mirror != null && n.laser == null) configNode.setString("mode", "mirror");
 		else if (n.mirror == null && n.laser != null) configNode.setString("mode", "laser");
+		else if (n.mirror == null && n.laser == null) configNode.setString("mode", "null");
 
 		//set to config JSONArray
 		config.setJSONObject(n.index, configNode);
@@ -572,6 +574,8 @@ void loadConfig() {
 			int ID = configNode.getInt("ID");
 			if (configNode.getString("mode").equals("laser")) {
 				nodes.get(i).switchMode(1);
+			} else if (configNode.getString("mode").equals("null")) {
+				nodes.get(i).switchMode(2);
 			}
 
 			//write ID to corresponding node
