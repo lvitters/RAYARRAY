@@ -9,19 +9,32 @@ On startup, RAYARRAY_processing will look for ESP8266 microcontrollers broadcast
 Hovering over the nodes and pressing the 'I' key will let you input an ID, which should correspond to the ID of the node at the same position inside the physical RAYARRAY grid. <br>
 If the IDs from the nodes' broadcasts and the IDs that have been assigned in RAYARRAY_processing are them same, the ID numbers in the Processing sketch will go from red to green. <br>
 
-'SHOW IDS' will switch between the node's ID numbers being displayed or not. <br>
-'SAVE CONFIG' will save the current config (dimensions of grid; are the nodes mirrors, lasers, or empty) into a JSON file with the same name as the grid dimensions. RAYARRAY_processing will also attempt to load this config from a JSON file with the same dimensions as the Processing sketch currently has on startup. The same applies to the 'LOAD CONFIG' button. <br>
-'GO HOME' will send an OSC message to all connected nodes that tells them to move to their home positions. <br>
-'RESTART NODES' will send an OSC message to all connected nodes that restarts the ESP8266 entirely. <br>
-'GET STEPS' will send an OSC message to all connected nodes that asks for the motor's current step, the answer will be displayed in the console. <br>
-'ROTATE MIRRORS' will start the rotation of the mirrors according to the current rotation mode, which can be changed in the 'MIRROR ROTATION MODE' dropdown. <br>
-'MIRROR SPEED' controls the rotation speed. <br>
-'SEND ROTATION' will send the node's orientation to the corresponding ESP8266 as stepper motor steps via OSC messages in the same network. <br>
-'SEND FREQ' is the frequency with which the nodes are updated with motor positions in milliseconds. <br>
-'AUTO MODE' will change the 'MIRROR ROTATION MODE' after intervals that can be set by 'AUTO INTERVAL', which is in minutes. <br>
-'AUTO LASER' will aim the lasers to one of the mirrors around them at the same time as the 'MIRROR ROTATION MODE' changes in 'AUTO MODE'. <br>
-'ARM HALT' will arm the entire progam to halt for a duration set in 'HALT DURATION' so that the nodes will stop rotating. This will happen after intervals set in 'HALT INTERVAL'. <br>
-'MIRROR ROTATION MODE' changes the rotation mode of the mirrors. The modes will apply universal 'choreographed' or individual rotations to the mirrors. <br>
+**SHOW IDS** will switch between the node's ID numbers being displayed or not.
+<br><br>
+**SAVE CONFIG** will save the current config (dimensions of grid; are the nodes mirrors, lasers, or empty) into a JSON file with the same name as the grid dimensions. RAYARRAY_processing will also attempt to load this config from a JSON file with the same dimensions as the Processing sketch currently has on startup. The same applies to the 'LOAD CONFIG' button. 
+<br><br>
+**GO HOME** will send an OSC message to all connected nodes that tells them to move to their home positions. 
+<br><br>
+**RESTART NODES** will send an OSC message to all connected nodes that restarts the ESP8266 entirely. 
+<br><br>
+**GET STEPS** will send an OSC message to all connected nodes that asks for the motor's current step, the answer will be displayed in the console. 
+<br><br>
+**ROTATE MIRRORS** will start the rotation of the mirrors according to the current rotation mode, which can be changed in the **MIRROR ROTATION MODE** dropdown. 
+<br><br>
+**MIRROR SPEED** controls the rotation speed. 
+<br><br>
+**SEND ROTATION** will send the node's orientation to the corresponding ESP8266 as stepper motor steps via OSC messages in the same network. 
+<br><br>
+**SEND FREQ** is the frequency with which the nodes are updated with motor positions in milliseconds. 
+<br><br>
+**AUTO MODE** will change the **MIRROR ROTATION MODE** after intervals that can be set by **AUTO INTERVAL**, which is in minutes. 
+<br><br>
+**AUTO LASER** will aim the lasers to one of the mirrors around them at the same time as the **MIRROR ROTATION MODE** changes in 'AUTO MODE'. 
+<br><br>
+**ARM HALT** will arm the entire progam to halt for a duration set in **HALT DURATION** so that the nodes will stop rotating. This will happen after intervals set in **HALT INTERVAL**. 
+<br><br>
+**MIRROR ROTATION MODE** changes the rotation mode of the mirrors. The modes will apply universal 'choreographed' or individual rotations to the mirrors. 
+<br><br>
 
 The dimensions of the RAYARRAY_processing can be changed before startup with the 'gridX' and 'gridY' variables. RAYARRAY_processing will look for a JSON config file of the same dimensions at startup. <br>
 The pysical dimensions of and between the node's mirrors can be changed by the variables 'absoluteConnectionLength' (length from the center of one node to the next in cm) and 'absoluteMirrorWidth' (width of the attached mirrors in cm). <br>
