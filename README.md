@@ -7,7 +7,7 @@ On startup, RAYARRAY_processing will look for ESP8266 microcontrollers broadcast
 Hovering over the nodes and pressing the 'I' key will let you input an ID, which should correspond to the ID of the node at the same position inside the physical RAYARRAY grid.
 If the IDs from the nodes' broadcasts and the IDs that have been assigned in RAYARRAY_processing are them same, the ID numbers in the Processing sketch will go from red to green.
 
-'SHOW IDS' will switch between the node's ID numbers being displayed or not.
+'SHOW IDS' will switch between the node's ID numbers being displayed or not. <br>
 'SAVE CONFIG' will save the current config (dimensions of grid; are the nodes mirrors, lasers, or empty) into a JSON file with the same name as the grid dimensions. RAYARRAY_processing will also attempt to load this config from a JSON file with the same dimensions as the Processing sketch currently has on startup. The same applies to the 'LOAD CONFIG' button.
 'GO HOME' will send an OSC message to all connected nodes that tells them to move to their home positions.
 'RESTART NODES' will send an OSC message to all connected nodes that restarts the ESP8266 entirely.
