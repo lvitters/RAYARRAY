@@ -21,8 +21,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 12;
-int gridY = 4;
+int gridX = 10;
+int gridY = 5;
 float scaleCentimetersToPixels = 2.0;	//adjust for screen size
 float windowX, windowY;
 float absoluteConnectionLength = 50.0;	//in cm

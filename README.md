@@ -1,9 +1,59 @@
-# RAYARRAY
+# RAYARRAY  
 
-*RAYARRAY* is a kinetic light installation consisting of physical node's that contain microcontrollers and stepper motors. The stepper motors rotate mirrors which are attached, and reflect laser beams throughout its grid.
-<br><br>
+## a pattern beyond control
 
-# RAYARRAY_processing
+*RAYARRAY* is a kinetic light installation consisting of an array of rays that move accross a network of nodes.
+
+<br> 
+
+build: [Simon Lang](simonslang.de)
+<br>
+code: [Lucca Vitters](luccavitters.art)
+
+<br>
+
+## ARRAY
+
+![RAYARRAY-1](./img/SDIM4040.JPG)
+
+The array of nodes are connected in a fully customizable grid. The grid is connected by aluminium tubes that carry power to the nodes, which are connected to them via four AUX ports per node.
+
+<br>
+
+## NODE
+
+![RAYARRAY-2](./img/SDIM3802.JPG)
+
+![RAYARRAY-3](./img/PCB.PNG)
+
+Nodes are 3D printed, contain a custom PCB with a ESP-8266 microcontroller and carry either a rotatable mirror on a stepper motor or a laser diode. 
+
+<br>
+
+## RAY
+
+![RAYARRAY-4](./img/SDIM4085.JPG)
+
+The laser diodes' rays are reflected in controlled or uncontrolled patterns from both sides of the attached mirrors.
+
+<br>
+<br>
+<br>
+
+# SIMULATION
+
+![RAYARRAY-5](./img/screenshot2.png)
+
+![RAYARRAY-6](./img/screenshot1.png)
+
+![RAYARRAY-7](./img/screenshot3.png)
+
+A central Processing sketch that simulates the installation's components controls the mirrors' rotations. The simulation applies a range of generative choreographies, resulting in either uniform or entirely chaotic patterns. The rotation values for the individual stepper motors are then send over WIFI to the microcontrollers. The simulation can save and load custom grid dimensions and positions of the mirrors and laser diodes, so that different setups of the installation can be controlled.
+
+<br>
+<br>
+
+## RAYARRAY_processing
 
 Start *'RAYARRAY_processing.pde'* to start the *RAYARRAY* simulation Processing sketch. Pressing on the nodes with the left mouse button will cycle them from being a mirror, a laser or an empty node. Dragging with the right mouse button will rotate the lasers or mirrors. 
 <br><br>
@@ -48,14 +98,14 @@ The pysical dimensions of and between the node's mirrors can be changed by the v
 The variable 'scaleFromCentimetersToPixels' changes how large the simulation is displayed on the screen. <br>
 <br><br>
 
-# RAYARRAY_arduino
+## RAYARRAY_arduino
 
 *RAYARRAY_arduino* contains the files to be uploaded to the ESP8266 microcontrollers that control the *RAYARRAY* installation. They broadcast their IDs and IPs over an assigned network so that the *RAYARRAY* simulation can assign them to their physical positions inside the *RAYARRAY* grid. 
 <br><br>
 On startup, they perform a homing sequence using a hall sensor attached to the node, so that the mirrors (or lasers) will receive a home position. After that, they are ready to receive absolute stepper motor positions or other control commands via OSC messages. 
 <br><br>
 
-# firmware_server
+## firmware_server
 
 'firmware_server.js' is a node.js program that will enable the ESP8266 nodes to fetch a new firmware from a server, if the firmware version number exceeds the version number of their current firmware.
 <br><br>
@@ -64,7 +114,7 @@ On startup, they perform a homing sequence using a hall sensor attached to the n
 After that, 'startNode.command' will start the 'firmware_server.js' node program. Both commands use absolute paths, so they have to be changed if used on another machine.
 <br><br>
 
-# setNodeID_arduino
+## setNodeID_arduino
 
 'setNodeID_arduino.ino' is an Arduino program that will write an ID number to the ESP8266's EEPROM onboard storage. 
 <br><br>
