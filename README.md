@@ -6,9 +6,9 @@
 
 <br> 
 
-build: [Simon Lang](simonslang.de)
+build: [Simon Lang](https://simonslang.de)
 <br>
-code: [Lucca Vitters](luccavitters.art)
+code: [Lucca Vitters](https://luccavitters.art)
 
 <br>
 
@@ -113,7 +113,7 @@ On startup, they perform a homing sequence using a hall sensor attached to the n
 <br><br>
 After that, 'startNode.command' will start the 'firmware_server.js' node program. Both commands are written for macOS and use absolute paths, so they have to be changed if used on another machine.
 <br><br>
-Written by [Ralf Baecker](rlfbckr.io)
+Written by [Ralf Baecker](https://rlfbckr.io/)
 <br><br>
 
 ## setNodeID_arduino
@@ -122,4 +122,4 @@ Written by [Ralf Baecker](rlfbckr.io)
 <br><br>
 This will enable the *RAYARRAY_processing* to differentiate between the otherwise identical nodes.
 <br><br>
-Written by [Ralf Baecker](rlfbckr.io)
+Written by [Ralf Baecker](https://rlfbckr.io/)
