@@ -30,7 +30,7 @@ The array of nodes are connected in a fully customizable grid. The grid is conne
 
 ![RAYARRAY-3](./img/PCB.PNG)
 
-Nodes are 3D printed brackets that contain a custom PCB with a ESP-8266 microcontroller and a motor controller that carry either a rotatable mirror on a stepper motor or a laser diode. 
+Nodes are 3D printed brackets that contain a custom PCB with a ESP-8266 microcontroller and a motor controller and carry either a rotatable mirror on a stepper motor or a laser diode.
 
 <br>
 
@@ -113,12 +113,11 @@ On startup, they perform a homing sequence using a hall sensor attached to the n
 
 'firmware_server.js' is a node.js program that will enable the ESP8266 nodes to fetch a new firmware from a server, if the firmware version number exceeds the version number of their current firmware.
 <br><br>
-Written by [Ralf Baecker](https://rlfbckr.io/)
-<br><br>
 
 'moveFirmware.command' will move and rename the output of the Arduino IDE's "export compiled binary" function so that it can be used by 'firmware_server.js'. It will also open the file 'version.txt' so that the firmware version number can be updated. 
 <br><br>
 After that, 'startNode.command' will start the 'firmware_server.js' node program. Both commands are written for macOS and use absolute paths, so they have to be changed if used on another machine.
+<br><br>
 
 
 ## setNodeID_arduino
@@ -127,4 +126,3 @@ After that, 'startNode.command' will start the 'firmware_server.js' node program
 <br><br>
 This will enable the *RAYARRAY_processing* to differentiate between the otherwise identical nodes.
 <br><br>
-Written by [Ralf Baecker](https://rlfbckr.io/)
