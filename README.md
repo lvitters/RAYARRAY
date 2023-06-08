@@ -20,7 +20,7 @@ photos: [Hsun Hsiang Hsu](https://www.hsunhsianghsu.com/)
 
 ![RAYARRAY-1](./img/SDIM4040.JPG)
 
-The array of nodes are connected in a fully customizable grid. The grid is connected by aluminium tubes that carry power to the nodes, which are connected to them via four AUX ports per node.
+The array of nodes are connected in a fully customizable grid. The grid is connected by 35mm aluminium tubes that act as jumpers to carry 5V of power, which are connecting the nodes via a 1/4'' jack on each of the four sides.
 
 <br>
 
@@ -30,7 +30,7 @@ The array of nodes are connected in a fully customizable grid. The grid is conne
 
 ![RAYARRAY-3](./img/PCB.PNG)
 
-Nodes are 3D printed, contain a custom PCB with a ESP-8266 microcontroller and carry either a rotatable mirror on a stepper motor or a laser diode. 
+Nodes are 3D printed brackets that contain a custom PCB with a ESP-8266 microcontroller and a motor controller that carry either a rotatable mirror on a stepper motor or a laser diode. 
 
 <br>
 
