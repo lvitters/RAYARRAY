@@ -318,7 +318,7 @@ void rotateLasers() {
 	for (Node n : nodes) {
 		if (n.laser != null) {
 			//get random direction
-			int randomIndex = int(random(n.laser.directions.size())) + 1;
+			int randomIndex = int(random(n.laser.directions.size()));
 			//write random position to direction
 			n.laser.setDirection(n.laser.directions.get(randomIndex));
 			//write to steps for motor
