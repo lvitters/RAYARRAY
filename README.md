@@ -32,7 +32,7 @@ Each node is a self-contained system built from a stepper motor, a PCB with ESP8
 
 ## JUMPER
 
-The jumpers consist of a 10mm diameter and 35cm long aluminum tubes with a connection for a node at both ends. A ¼ inch jack connector is used as the connector, as this can rotate and also provides the necessary structural stability.
+The jumpers consist of a 10mm diameter and 35cm long aluminum tubes with a connection for a node at both ends. A ¼ inch jack connector is used as the connector, as this can rotate and also provides the necessary structural stability. The jumpers also serve as the power supply for the entire grid. The tip of the jack provides the required 5V voltage and the sleeve represents the neutral conductor. Inside the aluminum tube runs a wire for the 5V, and the tube itself is the neutral conductor. Thus, the physical array is a power grid.
 
 <br>
 
