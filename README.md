@@ -12,15 +12,11 @@ code: [Lucca Vitters](https://luccavitters.art)
 
 <br>
 
-photos: [Hsun Hsiang Hsu](https://www.hsunhsianghsu.com/)
-
-<br>
-
 ## ARRAY
 
 ![RAYARRAY-1](./img/SDIM4040.JPG)
 
-The array of nodes are connected in a fully customizable grid. The grid is connected by 35mm aluminium tubes that act as jumpers to carry 5V of power, which are connecting the nodes via a 1/4'' jack on each of the four sides.
+RAYARRAY consists of 50 nodes, 100 jumpers, and 10 laser diodes which, if assembled, form a physical array controlled by a Processing Sketch and an Arduino Sketch. The grid is completely modular and can be set up vertically hanging as well as horizontally lying in different configurations. 
 
 <br>
 
@@ -30,7 +26,13 @@ The array of nodes are connected in a fully customizable grid. The grid is conne
 
 ![RAYARRAY-3](./img/PCB.PNG)
 
-Nodes are 3D printed brackets that contain a custom PCB with a ESP-8266 microcontroller and a motor controller and carry either a rotatable mirror on a stepper motor or a laser diode.
+Each node is a self-contained system built from a stepper motor, a PCB with ESP8266, Hall sensor and motor controller and four connectors for jumpers. The case is a 3D-printed bracket that houses all the components. The motor is mounted vertically in the bracket, so that the motor shaft extends horizontally out of the housing. The mirror is placed in the center via a small mount. There is also a tiny magnet on the underside of the mirror, so that the zero position of the motor/mirror can be determined in combination with the Hall sensor installed in the case. The ESP8266 is used to control the node and can receive signals via WIFI.
+
+<br>
+
+## JUMPER
+
+The jumpers consist of a 10mm diameter and 35cm long aluminum tubes with a connection for a node at both ends. A ¼ inch jack connector is used as the connector, as this can rotate and also provides the necessary structural stability. The jumpers also serve as the power supply for the entire grid. The tip of the jack provides the required 5V voltage and the sleeve represents the neutral conductor. Inside the aluminum tube runs a wire for the 5V, and the tube itself is the neutral conductor. Thus, the physical array is a power grid.
 
 <br>
 
@@ -126,3 +128,7 @@ After that, 'startNode.command' will start the 'firmware_server.js' node program
 <br><br>
 This will enable the *RAYARRAY_processing* to differentiate between the otherwise identical nodes.
 <br><br>
+
+<br><br><br><br>
+
+photos: [Hsun Hsiang Hsu](https://www.hsunhsianghsu.com/)
