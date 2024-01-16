@@ -3,7 +3,7 @@
 */
 void initWIFI() {
   WiFi.mode(WIFI_STA);
-  wifiMulti.addAP("OpenWrt", "12345678");
+  wifiMulti.addAP("OpenWrt", "12345678");     //change to "RAYARRAY"
   int n = WiFi.scanNetworks();
   if (WiFi.scanNetworks() == 0) {
     Serial.println(" no networks found");
