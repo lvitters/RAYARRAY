@@ -21,8 +21,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 10;
-int gridY = 5;
+int gridX = 4;
+int gridY = 4;
 float scaleCentimetersToPixels = 2.0;	//adjust for screen size
 float windowX, windowY;
 float absoluteConnectionLength = 50.0;	//in cm
@@ -34,7 +34,6 @@ int recursionGuard = 0;
 
 //auto mode(s)
 boolean isAutoMode = false;
-boolean isAutoLaser = false;
 float lastSwitch = 0;
 float autoInterval = 0;
 boolean waitingForAllHome = false;
@@ -44,7 +43,6 @@ float haltDuration = 0;
 float lastHalt = 0;
 
 //rotation
-boolean rotateLaser = false;
 boolean rotateMirror = false;
 boolean rotateMirrors;
 float mirrorRotationSpeed = 1;
@@ -278,9 +276,6 @@ void switchModeIfAllHome() {
 	//tell nodes they aren't home anymore
 	for (Node n : nodes) n.isHome = false;
 
-	//set lasers to new direction
-	if (isAutoLaser) rotateLasers();
-
 	//apply new random mode to nodes and GUI for mirrors
 	int newRandomMode = (int(random(7)));
 	switchMirrorRotationMode(newRandomMode);
@@ -310,20 +305,6 @@ void halt() {
 	if (((millis() - lastHalt) / 1000) > (haltInterval * 60)) {
 		lastHalt = millis();
 		if (!waitingForAllHome) delay(int(haltDuration * 1000));
-	}
-}
-
-//set lasers to a random direction out of their possible directions
-void rotateLasers() {
-	for (Node n : nodes) {
-		if (n.laser != null) {
-			//get random direction
-			int randomIndex = int(random(n.laser.directions.size()));
-			//write random position to direction
-			n.laser.setDirection(n.laser.directions.get(randomIndex));
-			//write to steps for motor
-			n.laser.writeToSteps();
-		}
 	}
 }
 
@@ -419,7 +400,7 @@ void switchMirrorRotationMode(int mode) {
 	}
 }
 
-//turn off rotations and sending, set GUI elements accordingly, reset and home all nodes, except lasers when isAutoLaser is off
+//turn off rotations and sending, set GUI elements accordingly, reset and home all nodes
 void goHome() {
 	println("goHome");
 	sendRotation = false;
@@ -429,9 +410,6 @@ void goHome() {
 	for (Node n : nodes) {
 		if (n.mirror != null) {
 			n.mirror.setHome();
-			n.goHome();
-		} else if (n.laser != null && !isAutoMode) {
-			n.laser.setHome();
 			n.goHome();
 		}
 	}
@@ -461,7 +439,7 @@ int getRandomDirection() {
   	return (int)n;
 }
 
-//control lasers
+//control by hand
 void mousePressed() {		
 		//switch mode for the node that was clicked on with LEFT mouse button
 		if (mouseButton == LEFT) {
@@ -474,17 +452,15 @@ void mousePressed() {
 				}
 			}
 		}
-		//rotate single mirror or laser only if RIGHT mouse button is pressed
+		//rotate single mirror only if RIGHT mouse button is pressed
 		if (mouseButton == RIGHT) {
 			rotateMirror = true;
-			rotateLaser = true;
 		}
 }
 
 //reset when mouse buttons are released
 void mouseReleased() {
 	rotateMirror = false;
-	rotateLaser = false;
 }
 
 void keyPressed() {

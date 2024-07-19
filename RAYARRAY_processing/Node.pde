@@ -31,7 +31,7 @@ class Node {
 
 	//update and draw mirror or laser
 	void update() {
-		if (mirror != null) {
+		if (mirror != null || laser != null) {
 			//rotate by hand
 			if (mouseOver() && rotateMirror && !rotateMirrors) {
 				float r = 0;
@@ -50,17 +50,10 @@ class Node {
 			//apply and/or rotate automatically
 			mirror.rotate();
 			mirror.draw();
-		}
-		if (laser != null) {
-			laser.drawOrigin();
-			//rotate by hand
-			if (mouseOver() && rotateLaser) {
-				laser.setDirection(new PVector(mouseX - laser.position.x, mouseY - laser.position.y).normalize());
-				println(laser.direction);
+			if (laser != null) {
+				laser.drawOrigin();
+				laser.updateRays();
 			}
-			//apply rotation to steps and rays
-			if (!isAutoLaser) laser.writeToSteps();
-			laser.updateRays();
 		}
 		//close input field when mouse is not over field
 		if (!mouseOver()) {
@@ -120,7 +113,7 @@ class Node {
 		// }
 	}
 
-	//check if node has mirror or laser or nothing
+	//check if node has mirror or a mirror and a laser or nothing
 	void switchMode(int mode) {
 		//an excuse to use switch/case for no reason other than: look mom no if statements 
 		switch(mode) {
@@ -129,12 +122,10 @@ class Node {
 				laser = null;
 				if (mirror == null) mirror = new Mirror(position);
 			break;
-			//node has a laser
+			//node has a mirror AND a laser
 			case 1: 
-				mirror = null;
-				if (laser == null) {
-					laser = new Laser(position, column, row);
-				}
+				if (mirror == null) mirror = new Mirror(position);
+				if (laser == null) laser = new Laser(position);
 			break;
 			//node is empty
 			case 2:
@@ -152,10 +143,8 @@ class Node {
 			remoteLocation = new NetAddress(nodeIP, remotePort);
 			lastSend = millis();
 			OscMessage rotationMessage = new OscMessage("/rotate");
-			if (mirror != null) {
+			if (mirror != null || laser != null) {
 				rotationMessage.add(mirror.rotationSteps);
-			} else if (laser != null) {
-				rotationMessage.add(laser.rotationSteps);
 			}
 			oscP5.send(rotationMessage, remoteLocation);
 			//println("sent " + mirror.rotationSteps + " to: " + nodeID + " @" + nodeIP);
