@@ -21,8 +21,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 4;
-int gridY = 4;
+int gridX = 2;
+int gridY = 2;
 float scaleCentimetersToPixels = 2.0;	//adjust for screen size
 float windowX, windowY;
 float absoluteConnectionLength = 50.0;	//in cm
@@ -523,7 +523,7 @@ void saveConfig() {
 		configNode.setInt("y", n.row);
 		configNode.setInt("ID", n.nodeID);
 		if (n.mirror != null && n.laser == null) configNode.setString("mode", "mirror");
-		else if (n.mirror == null && n.laser != null) configNode.setString("mode", "laser");
+		else if (n.laser != null) configNode.setString("mode", "laser");
 		else if (n.mirror == null && n.laser == null) configNode.setString("mode", "null");
 
 		//set to config JSONArray

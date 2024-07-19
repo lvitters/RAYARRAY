@@ -107,7 +107,7 @@ class ControlFrame extends PApplet {
 			.setPosition(guiOffset/4 + 110, guiOffset * 3/3)
 			.setSize(210, 20)
 			.setRange(.1, 3)
-			.setValue(1)
+			.setValue(.5)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			//.setDecimalPrecision(1) 
 			;

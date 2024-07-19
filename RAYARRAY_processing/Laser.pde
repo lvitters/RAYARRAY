@@ -12,7 +12,7 @@ class Laser {
 
 	Laser(PVector p) {
 		position = p;
-		rayOrigin = new PVector(p.x + 18, p.y - 18);	//laser is offset to the right and the top;
+		rayOrigin = new PVector(p.x + 16, p.y - 16);	//laser is offset to the right and the top; TODO: find out absolute number in real world units
 
 		//direction laser is pointing (bottom left)
 		direction = new PVector(-.75, .75);
