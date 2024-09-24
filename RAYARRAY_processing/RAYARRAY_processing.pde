@@ -21,8 +21,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 2;
-int gridY = 2;
+int gridX = 4;
+int gridY = 4;
 float scaleCentimetersToPixels = 2.0;	//adjust for screen size
 float windowX, windowY;
 float absoluteConnectionLength = 50.0;	//in cm
@@ -277,8 +277,7 @@ void switchModeIfAllHome() {
 	for (Node n : nodes) n.isHome = false;
 
 	//apply new random mode to nodes and GUI for mirrors
-	int newRandomMode = (int(random(7)));
-	switchMirrorRotationMode(newRandomMode);
+	switchMirrorRotationMode(newRandomModeWeighted((int(random(7)))));
 	//cf.cp5GUI.getController("switchMirrorRotationMode").setValue(newRandomMode);
 	
 	//turn stuff back on after turning it off while homing
@@ -286,6 +285,25 @@ void switchModeIfAllHome() {
 	cf.cp5GUI.getController("send rotation").setValue(1);
 	rotateMirrors = true;
 	cf.cp5GUI.getController("rotate mirrors").setValue(1);
+}
+
+//switch to random mode but weigh modes differently
+int newRandomModeWeighted(int newRandomMode){
+	if (newRandomMode < 2) {
+		return 0; //same noise
+	} else if (newRandomMode < 5) {
+		return 1; //individual noise
+	} else if (newRandomMode < 7) {
+		return 2; //same direction constant
+	} else if (newRandomMode < 10) {
+		return 3; //individual direction constant
+	} else if (newRandomMode < 11) {
+		return 4; //multiplied sine speed
+	} else if (newRandomMode < 13) {
+		return 5; //row multiplied sine speed
+	} else {
+		return 6; //column multiplied sine speed
+	}
 }
 
 //check if all nodes are home

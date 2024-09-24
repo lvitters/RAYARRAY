@@ -106,8 +106,8 @@ class ControlFrame extends PApplet {
 			.setColor(guiColor)
 			.setPosition(guiOffset/4 + 110, guiOffset * 3/3)
 			.setSize(210, 20)
-			.setRange(.1, 3)
-			.setValue(.5)
+			.setRange(.01, 0.5)
+			.setValue(.08)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			//.setDecimalPrecision(1) 
 			;
@@ -152,7 +152,7 @@ class ControlFrame extends PApplet {
 			.setPosition(guiOffset/4 + 110, guiOffset * 5/3)
 			.setSize(100, 20)
 			.setRange(.1, 10)
-			.setValue(.5)
+			.setValue(1)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			;
 
@@ -174,7 +174,7 @@ class ControlFrame extends PApplet {
 			.setPosition(guiOffset/4 + 110, guiOffset * 6/3)
 			.setSize(100, 20)
 			.setRange(.1, 10)
-			.setValue(.5)
+			.setValue(4)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			;
 		
@@ -186,7 +186,7 @@ class ControlFrame extends PApplet {
 			.setPosition(guiOffset/4 + 220, guiOffset * 6/3)
 			.setSize(100, 20)
 			.setRange(2, 10)
-			.setValue(4)
+			.setValue(5)
 			.getCaptionLabel().align(ControlP5.LEFT, ControlP5.BOTTOM_OUTSIDE)
 			;
 
