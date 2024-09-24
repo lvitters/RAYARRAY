@@ -277,7 +277,7 @@ void switchModeIfAllHome() {
 	for (Node n : nodes) n.isHome = false;
 
 	//apply new random mode to nodes and GUI for mirrors
-	switchMirrorRotationMode(newRandomModeWeighted((int(random(14)))));
+	switchMirrorRotationMode(newRandomModeWeighted((int(random(13)))));
 	//cf.cp5GUI.getController("switchMirrorRotationMode").setValue(newRandomMode);
 	
 	//turn stuff back on after turning it off while homing
@@ -299,7 +299,7 @@ int newRandomModeWeighted(int newRandomMode){
 		return 3; //individual direction constant
 	} else if (newRandomMode < 11) {
 		return 4; //multiplied sine speed
-	} else if (newRandomMode < 13) {
+	} else if (newRandomMode < 12) {
 		return 5; //row multiplied sine speed
 	} else {
 		return 6; //column multiplied sine speed
