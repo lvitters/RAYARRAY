@@ -213,7 +213,7 @@ void setupGUI() {
 	cp5InputFields = new ControlP5(this);
 
 	//init controlFrame
-	cf = new ControlFrame(this, 400, 550, "GUI");
+	cf = new ControlFrame(this, 400, 600, "GUI");
 	surface.setLocation(420, 10);
 }
 
@@ -277,7 +277,8 @@ void switchModeIfAllHome() {
 	for (Node n : nodes) n.isHome = false;
 
 	//apply new random mode to nodes and GUI for mirrors
-	int newRandomMode = newRandomModeWeighted((int(random(15))));
+	//int newRandomMode = newRandomModeWeighted((int(random(10))));
+	int newRandomMode = (int(random(10)));
 	cf.cp5GUI.getController("mirror rotation mode").setValue(newRandomMode);
 	
 	//turn stuff back on after turning it off while homing
