@@ -83,6 +83,9 @@ void setup() {
 
 	//try to load config also at startup, if there is one
 	loadConfig();
+
+	//choose random mode on startup
+	setRandomMode();
 }
 
 void draw() {
@@ -267,6 +270,37 @@ void autoMode() {
 	}
 }
 
+//choose and apply a random mode
+void setRandomMode() {
+	int newRandomMode = (int(random(10)));
+	cf.cp5GUI.getController("mirror rotation mode").setValue(newRandomMode);
+}
+
+//switch to random mode but weigh modes differently (currently unused)
+int newRandomModeWeighted(int newRandomMode){
+	if (newRandomMode < 1) {
+		return 0; //same noise, same direction
+	} else if (newRandomMode < 2) {
+		return 1; //same noise, individual direction
+	} else if (newRandomMode < 3) {
+		return 2; //individual noise
+	} else if (newRandomMode < 4) {
+		return 3; //same direction constant
+	} else if (newRandomMode < 5) {
+		return 4; //same direction constant, with offset
+	}  else if (newRandomMode < 6) {
+		return 5; //individual direction constant
+	}  else if (newRandomMode < 7) {
+		return 6; //individual direction constant, with offset
+	} else if (newRandomMode < 8) {
+		return 7; //random multiplied sine speed
+	} else if (newRandomMode < 9) {
+		return 8; //row multiplied sine speed
+	} else {
+		return 9; //column multiplied sine speed
+	}
+}
+
 //switch to the next mode, only use after checkIfAllHome is true
 void switchModeIfAllHome() {
 	//reset counter
@@ -286,25 +320,6 @@ void switchModeIfAllHome() {
 	cf.cp5GUI.getController("send rotation").setValue(1);
 	rotateMirrors = true;
 	cf.cp5GUI.getController("rotate mirrors").setValue(1);
-}
-
-//switch to random mode but weigh modes differently
-int newRandomModeWeighted(int newRandomMode){
-	if (newRandomMode < 1) {
-		return 0; //same noise
-	} else if (newRandomMode < 5) {
-		return 1; //individual noise
-	} else if (newRandomMode < 6) {
-		return 2; //same direction constant
-	} else if (newRandomMode < 10) {
-		return 3; //individual direction constant
-	} else if (newRandomMode < 12) {
-		return 4; //multiplied sine speed
-	} else if (newRandomMode < 13) {
-		return 5; //row multiplied sine speed
-	} else {
-		return 6; //column multiplied sine speed
-	}
 }
 
 //check if all nodes are home
@@ -383,7 +398,7 @@ void switchMirrorRotationMode(int mode) {
 			}
 		}
 	}
-	//sine speed with different multipliers individually
+	//sine speed with individual random multipliers 
 	else if (mirrorRotationMode == 7) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
