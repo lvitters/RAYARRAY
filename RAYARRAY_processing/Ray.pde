@@ -58,7 +58,7 @@ class Ray {
 		}
 		//DPP
         if (recursionGuard >= recursionGuardMax ) {
-            println("recursion guard hit");
+            //println("recursion guard hit");
         }
 		if (closestHit != null && hitMirror != null && recursionGuard <= recursionGuardMax) {
 			recursionGuard++;

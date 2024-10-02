@@ -201,7 +201,7 @@ class ControlFrame extends PApplet {
 			.setWidth(250)
 			.setHeight(400)
 			.setOpen(false)
-			.setValue(2)
+			.setValue(3)
 			.addItem("same noise", 0)
 			.addItem("individual noise", 1)
 			.addItem("same direction constant", 2)

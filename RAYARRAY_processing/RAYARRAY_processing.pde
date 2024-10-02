@@ -21,8 +21,8 @@ ArrayList<Node> nodes = new ArrayList<Node>();
 ArrayList<String> ipAdresses = new ArrayList<String>();
 
 //grid
-int gridX = 4;
-int gridY = 4;
+int gridX = 10;
+int gridY = 6;
 float scaleCentimetersToPixels = 2.0;	//adjust for screen size
 float windowX, windowY;
 float absoluteConnectionLength = 50.0;	//in cm
@@ -277,8 +277,8 @@ void switchModeIfAllHome() {
 	for (Node n : nodes) n.isHome = false;
 
 	//apply new random mode to nodes and GUI for mirrors
-	switchMirrorRotationMode(newRandomModeWeighted((int(random(13)))));
-	//cf.cp5GUI.getController("switchMirrorRotationMode").setValue(newRandomMode);
+	int newRandomMode = newRandomModeWeighted((int(random(15))));
+	cf.cp5GUI.getController("mirror rotation mode").setValue(newRandomMode);
 	
 	//turn stuff back on after turning it off while homing
 	sendRotation = true;
@@ -289,17 +289,17 @@ void switchModeIfAllHome() {
 
 //switch to random mode but weigh modes differently
 int newRandomModeWeighted(int newRandomMode){
-	if (newRandomMode < 2) {
+	if (newRandomMode < 1) {
 		return 0; //same noise
 	} else if (newRandomMode < 5) {
 		return 1; //individual noise
-	} else if (newRandomMode < 7) {
+	} else if (newRandomMode < 6) {
 		return 2; //same direction constant
 	} else if (newRandomMode < 10) {
 		return 3; //individual direction constant
-	} else if (newRandomMode < 11) {
-		return 4; //multiplied sine speed
 	} else if (newRandomMode < 12) {
+		return 4; //multiplied sine speed
+	} else if (newRandomMode < 13) {
 		return 5; //row multiplied sine speed
 	} else {
 		return 6; //column multiplied sine speed
@@ -336,6 +336,7 @@ void switchMirrorRotationMode(int mode) {
 	rotateMirrors = false;
 
 	//noise modes, keep/reset to "regular" direction since noise moves both directions anyways
+	//same noise rotation (no individual noise starting point), same direction
 	if(mirrorRotationMode == 0) {
 		for (Node n : nodes) {
 			if (n.mirror != null) {
@@ -344,7 +345,7 @@ void switchMirrorRotationMode(int mode) {
 			}
 		}
 	}
-	//individual noise rotation needs individual starting points for time
+	//individual noise rotation (needs individual starting points for time)
 	else if(mirrorRotationMode == 1) {
 		for (Node n : nodes) {
 			if (n.mirror != null) {
@@ -378,7 +379,7 @@ void switchMirrorRotationMode(int mode) {
 		for (Node n : nodes) {
 			if (n.mirror != null) {
 				n.mirror.setHome();
-				int randEven = int(random(2, 5)) * 2;
+				int randEven = int(random(2, 10)) * 2;
 				n.mirror.sineMultiplier = randEven;
 				n.mirror.rotationDirection = randomDirection; 
 			}
@@ -399,7 +400,7 @@ void switchMirrorRotationMode(int mode) {
 			}
 		}
 	}
-	//sine speed with different multipliers per column, highest towards the middle
+	//sine speed with different multipliers per column, slower towards the middle
 	else if (mirrorRotationMode == 6) {
 		int randomDirection = getRandomDirection();
 
@@ -408,9 +409,9 @@ void switchMirrorRotationMode(int mode) {
 				n.mirror.setHome();
 				int columnEven = 0;
 				if (n.column < gridX/2) {
-					columnEven = (n.column+1) * 2;
-				} else if (n.column >= gridX/2) {
 					columnEven = (gridX) -  (((n.column+1) - (gridX/2)) - 1) * 2;	//thanks Alberto
+				} else if (n.column >= gridX/2) {
+					columnEven = (n.column+1) * 2;
 				}
 				n.mirror.sineMultiplier = columnEven;
 			}
