@@ -208,9 +208,10 @@ class ControlFrame extends PApplet {
 			.addItem("same direction constant", 3)
 			.addItem("same direction constant, with offset", 4)
 			.addItem("individual direction constant", 5)
-			.addItem("multiplied sine speed", 6)
-			.addItem("row multiplied sine speed", 7)
-			.addItem("column multiplied sine speed", 8)
+			.addItem("individual direction constant, with offset", 6)
+			.addItem("multiplied sine speed", 7)
+			.addItem("row multiplied sine speed", 8)
+			.addItem("column multiplied sine speed", 9)
 			;
 	}
 

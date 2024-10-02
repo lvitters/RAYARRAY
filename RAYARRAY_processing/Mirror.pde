@@ -77,29 +77,37 @@ class Mirror {
 					rotationDegrees = rT * rotationDirection;
 					rotationDegrees += rotationOffset;
 				break;
-				//individual direction random rotation
+				//individual direction constant rotation
 				case 5:
 					//increment time and apply rotationSpeed
 					rT += random(.3, .6) * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees = rT * rotationDirection;
 				break;
-				//sine speed with different multipliers, same direction
+				//individual direction constant rotation, with offset
 				case 6:
-					//increment time
-					rT += .00001;
+					//increment time and apply rotationSpeed
+					rT += random(.3, .6) * mirrorRotationSpeed;
 					//map to rotationDegrees
-					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
+					rotationDegrees = rT * rotationDirection;
+					rotationDegrees += rotationOffset;
 				break;
-				//sine peed with different multipliers per row, same direction
+				//sine speed with different multipliers, same direction
 				case 7:
 					//increment time
 					rT += .00001;
 					//map to rotationDegrees
 					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
 				break;
-				//sine peed with different multipliers per column, same direction
+				//sine peed with different multipliers per row, same direction
 				case 8:
+					//increment time
+					rT += .00001;
+					//map to rotationDegrees
+					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
+				break;
+				//sine peed with different multipliers per column, same direction
+				case 9:
 					//increment time
 					rT += .00001;
 					//map to rotationDegrees

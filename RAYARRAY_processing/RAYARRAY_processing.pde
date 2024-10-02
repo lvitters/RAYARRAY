@@ -363,8 +363,8 @@ void switchMirrorRotationMode(int mode) {
 			}
 		}
 	}
-	//same direction constant rotation
-	else if (mirrorRotationMode == 3) {
+	//same direction constant rotation, with or without offset
+	else if (mirrorRotationMode == 3 || mirrorRotationMode == 4) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
 			if (n.mirror != null) {
@@ -373,18 +373,8 @@ void switchMirrorRotationMode(int mode) {
 			}
 		}
 	}
-	//same direction constant rotation, with offset
-	else if (mirrorRotationMode == 4) {
-		int randomDirection = getRandomDirection();
-		for (Node n : nodes) {
-			if (n.mirror != null) {
-				n.mirror.setHome();
-				n.mirror.rotationDirection = randomDirection;
-			}
-		}
-	}
-	//individual direction constant rotation
-	else if (mirrorRotationMode == 5) {
+	//individual direction constant rotation, with or without offset
+	else if (mirrorRotationMode == 5 || mirrorRotationMode == 6) {
 		for (Node n : nodes) {
 			if (n.mirror != null) {
 				n.mirror.setHome();
@@ -393,7 +383,7 @@ void switchMirrorRotationMode(int mode) {
 		}
 	}
 	//sine speed with different multipliers individually
-	else if (mirrorRotationMode == 6) {
+	else if (mirrorRotationMode == 7) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
 			if (n.mirror != null) {
@@ -405,7 +395,7 @@ void switchMirrorRotationMode(int mode) {
 		}
 	}
 	//sine speed with different multipliers per row
-	else if (mirrorRotationMode == 7) {
+	else if (mirrorRotationMode == 8) {
 		int randomDirection = getRandomDirection();
 		int randInt = int(random(2));
 		int rowEven = 0;
@@ -420,7 +410,7 @@ void switchMirrorRotationMode(int mode) {
 		}
 	}
 	//sine speed with different multipliers per column, slower towards the middle
-	else if (mirrorRotationMode == 8) {
+	else if (mirrorRotationMode == 9) {
 		int randomDirection = getRandomDirection();
 
 		for (Node n : nodes) {
