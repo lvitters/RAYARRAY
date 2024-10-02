@@ -202,13 +202,14 @@ class ControlFrame extends PApplet {
 			.setHeight(400)
 			.setOpen(false)
 			.setValue(3)
-			.addItem("same noise", 0)
-			.addItem("individual noise", 1)
-			.addItem("same direction constant", 2)
-			.addItem("individual direction constant", 3)
-			.addItem("multiplied sine speed", 4)
-			.addItem("row multiplied sine speed", 5)
-			.addItem("column multiplied sine speed", 6)
+			.addItem("same noise, same direction", 0)
+			.addItem("same noise, individual direction", 1)
+			.addItem("individual noise", 2)
+			.addItem("same direction constant", 3)
+			.addItem("individual direction constant", 4)
+			.addItem("multiplied sine speed", 5)
+			.addItem("row multiplied sine speed", 6)
+			.addItem("column multiplied sine speed", 7)
 			;
 	}
 

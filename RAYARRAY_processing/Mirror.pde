@@ -40,50 +40,57 @@ class Mirror {
 		if (rotateMirrors) {
 			//rotate according to rotation_mode (set by DropdownList)
 			switch(mirrorRotationMode) {
-				//same noise rotation
+				//same noise rotation, same direction
 				case 0:
 					//increment "time" and apply rotationSpeed
 					rT += .2 * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees += map(noise(rT), 0, 1, -.2, .2);
 				break;
-				//individual noise rotation
+				//same noise rotation, individual direction
 				case 1:
+					//increment "time" and apply rotationSpeed
+					rT += .2 * mirrorRotationSpeed;
+					//map to rotationDegrees
+					rotationDegrees += map(noise(rT), 0, 1, -.2, .2) * rotationDirection;
+				break;
+				//individual noise rotation
+				case 2:
 					//increment "time" individually and apply rotationSpeed
 					rT += random(.1, .5) * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees += map(noise(rT), 0, 1, -.2, .2);
 				break;
 				//same direction constant rotation
-				case 2:
+				case 3:
 					//increment time and apply rotationSpeed
 					rT += .5 * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees = rT * rotationDirection;
 				break;
 				//individual direction random rotation
-				case 3:
+				case 4:
 					//increment time and apply rotationSpeed
 					rT += random(.3, .6) * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees = rT * rotationDirection;
 				break;
 				//sine speed with different multipliers, same direction
-				case 4:
-					//increment time
-					rT += .00001;
-					//map to rotationDegrees
-					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
-				break;
-				//sine peed with different multipliers per row, same direction
 				case 5:
 					//increment time
 					rT += .00001;
 					//map to rotationDegrees
 					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
 				break;
-				//sine peed with different multipliers per column, same direction
+				//sine peed with different multipliers per row, same direction
 				case 6:
+					//increment time
+					rT += .00001;
+					//map to rotationDegrees
+					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
+				break;
+				//sine peed with different multipliers per column, same direction
+				case 7:
 					//increment time
 					rT += .00001;
 					//map to rotationDegrees
