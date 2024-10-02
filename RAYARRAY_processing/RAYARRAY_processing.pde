@@ -293,12 +293,12 @@ int newRandomModeWeighted(int newRandomMode){
 	}  else if (newRandomMode < 7) {
 		return 6; //individual direction constant, with offset
 	} else if (newRandomMode < 8) {
-		return 7; //random multiplied sine speed
+		return 7; //random multiplied sine speed, same direction
 	} else if (newRandomMode < 9) {
-		return 8; //row multiplied sine speed
-	} else {
+		return 8; //random multiplied sine speed, individual direction
+	} else if (newRandomMode < 10){
 		return 9; //column multiplied sine speed
-	}
+	} else return 6;
 }
 
 //switch to the next mode, only use after checkIfAllHome is true
@@ -398,30 +398,26 @@ void switchMirrorRotationMode(int mode) {
 			}
 		}
 	}
-	//sine speed with individual random multipliers 
+	//sine speed with individual random multipliers, same direction
 	else if (mirrorRotationMode == 7) {
 		int randomDirection = getRandomDirection();
 		for (Node n : nodes) {
 			if (n.mirror != null) {
 				n.mirror.setHome();
-				int randEven = int(random(2, 10)) * 2;
+				int randEven = int(random(2, 20));
 				n.mirror.sineMultiplier = randEven;
 				n.mirror.rotationDirection = randomDirection; 
 			}
 		}
 	}
-	//sine speed with different multipliers per row
+	//sine speed with individual random multipliers, individual direction
 	else if (mirrorRotationMode == 8) {
-		int randomDirection = getRandomDirection();
-		int randInt = int(random(2));
-		int rowEven = 0;
 		for (Node n : nodes) {
 			if (n.mirror != null) {
 				n.mirror.setHome();
-				if (randInt == 0) rowEven = (n.row + 1) * 2;
-				else rowEven = gridX - n.row + 1;
-				n.mirror.sineMultiplier = rowEven;
-				n.mirror.rotationDirection = randomDirection; 
+				int randEven = int(random(2, 20));
+				n.mirror.sineMultiplier = randEven;
+				n.mirror.rotationDirection = getRandomDirection(); 
 			}
 		}
 	}
@@ -442,6 +438,21 @@ void switchMirrorRotationMode(int mode) {
 			}
 		}
 	}
+	// //sine speed with different multipliers per row
+	// else if (mirrorRotationMode == 9) {
+	// 	int randomDirection = getRandomDirection();
+	// 	int randInt = int(random(2));
+	// 	int rowEven = 0;
+	// 	for (Node n : nodes) {
+	// 		if (n.mirror != null) {
+	// 			n.mirror.setHome();
+	// 			if (randInt == 0) rowEven = (n.row + 1) * 2;
+	// 			else rowEven = gridX - n.row + 1;
+	// 			n.mirror.sineMultiplier = rowEven;
+	// 			n.mirror.rotationDirection = randomDirection; 
+	// 		}
+	// 	}
+	// }
 }
 
 //turn off rotations and sending, set GUI elements accordingly, reset and home all nodes

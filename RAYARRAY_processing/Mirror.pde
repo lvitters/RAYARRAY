@@ -44,14 +44,14 @@ class Mirror {
 				//same noise rotation, same direction
 				case 0:
 					//increment "time" and apply rotationSpeed
-					rT += .2 * mirrorRotationSpeed;
+					rT += .4 * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees += map(noise(rT), 0, 1, -.2, .2);
 				break;
 				//same noise rotation, individual direction
 				case 1:
 					//increment "time" and apply rotationSpeed
-					rT += .2 * mirrorRotationSpeed;
+					rT += .4 * mirrorRotationSpeed;
 					//map to rotationDegrees
 					rotationDegrees += map(noise(rT), 0, 1, -.2, .2) * rotationDirection;
 				break;
@@ -99,20 +99,26 @@ class Mirror {
 					//map to rotationDegrees
 					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
 				break;
-				//sine peed with different multipliers per row, same direction
 				case 8:
 					//increment time
-					rT += .00001;
+					rT += .00001 * rotationDirection;
 					//map to rotationDegrees
 					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
 				break;
-				//sine peed with different multipliers per column, same direction
+				//sine speed with different multipliers per column, same direction
 				case 9:
 					//increment time
 					rT += .00001;
 					//map to rotationDegrees
 					rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
 				break;
+				// //sine speed with different multipliers per row, same direction (unused)
+				// case 10:
+				// 	//increment time
+				// 	rT += .00001;
+				// 	//map to rotationDegrees
+				// 	rotationDegrees += map(sin(rT), -1, 1, 0, 1) * (mirrorRotationSpeed/4) * sineMultiplier  * rotationDirection;
+				// break;
 			}
 		}
 

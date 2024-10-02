@@ -198,7 +198,7 @@ class ControlFrame extends PApplet {
 			.setColor(guiColor)
 			.setBarHeight(20)
 			.setItemHeight(20)
-			.setWidth(250)
+			.setWidth(350)
 			.setHeight(400)
 			.setOpen(true)
 			.setValue(3)
@@ -209,9 +209,10 @@ class ControlFrame extends PApplet {
 			.addItem("same direction constant, with offset", 4)
 			.addItem("individual direction constant", 5)
 			.addItem("individual direction constant, with offset", 6)
-			.addItem("random multiplied sine speed", 7)
-			.addItem("row multiplied sine speed", 8)
+			.addItem("random multiplied sine speed, same direction", 7)
+			.addItem("random multiplied sine speed, individual direction", 8)
 			.addItem("column multiplied sine speed", 9)
+			//.addItem("row multiplied sine speed", 10)
 			;
 	}
 
