@@ -2,7 +2,7 @@
 
 ## a pattern beyond control
 
-*RAYARRAY* is a kinetic light installation consisting of an array of rays that move accross a network of nodes.
+*RAYARRAY* is an emergent light sculpture consisting of an array of rays that move accross a network of nodes.
 
 <br> 
 
@@ -10,13 +10,15 @@ in collaboration with [Simon Lang](https://simonslang.de)
 
 many thanks to [Dennis Paul](https://www.dennisppaul.de/) and [Ralf Bäcker](https://rlfbckr.io/) for the coding guidance
 
+photos: [Hsun Hsiang Hsu](https://www.hsunhsianghsu.com/)
+
 <br>
 
 ## ARRAY
 
 ![RAYARRAY-1](./img/SDIM4040.JPG)
 
-RAYARRAY consists of 50 nodes, 100 jumpers, and 10 laser diodes which, if assembled, form a physical array controlled by a Processing Sketch and an Arduino Sketch. The grid is completely modular and can be set up vertically hanging as well as horizontally lying in different configurations. 
+RAYARRAY consists of 50 nodes, 100 jumpers, and 10 laser diodes which, if assembled, form a physical array controlled by a Processing Sketch and an Arduino Sketch. The grid is completely modular and can be set up hanging vertically as well as laid out horizontally in custom configurations. 
 
 <br>
 
@@ -26,7 +28,7 @@ RAYARRAY consists of 50 nodes, 100 jumpers, and 10 laser diodes which, if assemb
 
 ![RAYARRAY-3](./img/PCB.PNG)
 
-Each node is a self-contained system built from a stepper motor, a PCB with ESP8266, Hall sensor and motor controller and four connectors for jumpers. The case is a 3D-printed bracket that houses all the components. The motor is mounted vertically in the bracket, so that the motor shaft extends horizontally out of the housing. The mirror is placed in the center via a small mount. There is also a tiny magnet on the underside of the mirror, so that the zero position of the motor/mirror can be determined in combination with the Hall sensor installed in the case. The ESP8266 is used to control the node and can receive signals via WIFI.
+Each node is a self-contained system built from a stepper motor, a PCB with ESP8266, Hall sensor and motor controller and four connectors for jumpers. The case is a 3D-printed bracket that houses all the components. The mirror is placed on the motor in the center via a small mount. A tiny magnet is placed on the bottom of the mirror, so that the zero position of the motor/mirror can be determined in combination with the Hall sensor installed in the case. The ESP8266 is used to control the node and can receive signals via WIFI.
 
 <br>
 
@@ -40,7 +42,7 @@ The jumpers consist of a 10mm diameter and 35cm long aluminum tubes with a conne
 
 ![RAYARRAY-4](./img/SDIM4085.JPG)
 
-The laser diodes' rays are reflected in controlled or uncontrolled patterns from both sides of the attached mirrors.
+The laser diodes' rays are reflected from both sides of the attached mirrors.
 
 <br>
 <br>
@@ -54,7 +56,7 @@ The laser diodes' rays are reflected in controlled or uncontrolled patterns from
 
 ![RAYARRAY-7](./img/screenshot3.png)
 
-A central Processing sketch that simulates the installation's components controls the mirrors' rotations. The simulation applies a range of generative choreographies, resulting in either uniform or entirely chaotic patterns. The rotation values for the individual stepper motors are then send over WIFI to the microcontrollers. The simulation can save and load custom grid dimensions and positions of the mirrors and laser diodes, so that different setups of the installation can be controlled.
+A central Processing sketch that simulates the installation's components controls the mirrors' rotations. The simulation applies a range of generative choreographies, resulting in an emergent light sculpture. The rotation values for the individual stepper motors are then send over WIFI to the microcontrollers. The simulation can save and load custom grid dimensions and positions of the mirrors and laser diodes, so that different setups of the installation can be controlled.
 
 <br>
 <br>
@@ -88,9 +90,7 @@ If the IDs from the nodes' broadcasts and the IDs that have been assigned in *RA
 <br><br>
 **SEND FREQ** is the frequency with which the nodes are updated with motor positions in milliseconds. 
 <br><br>
-**AUTO MODE** will change the **MIRROR ROTATION MODE** after intervals that can be set by **AUTO INTERVAL**, which is in minutes. 
-<br><br>
-**AUTO LASER** will aim the lasers to one of the mirrors around them at the same time as the **MIRROR ROTATION MODE** changes in 'AUTO MODE'. 
+**AUTO MODE** will change the **MIRROR ROTATION MODE** after intervals that can be set by **AUTO INTERVAL**, which is in minutes.
 <br><br>
 **ARM HALT** will arm the entire progam to halt for a duration set in **HALT DURATION** so that the nodes will stop rotating. This will happen after intervals set in **HALT INTERVAL**. 
 <br><br>
@@ -130,5 +130,3 @@ This will enable the *RAYARRAY_processing* to differentiate between the otherwis
 <br><br>
 
 <br><br><br><br>
-
-photos: [Hsun Hsiang Hsu](https://www.hsunhsianghsu.com/)
