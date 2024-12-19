@@ -6,9 +6,9 @@
 
 <br> 
 
-build: [Simon Lang](https://simonslang.de)
-<br>
-code: [Lucca Vitters](https://luccavitters.art)
+in collaboration with [Simon Lang](https://simonslang.de)
+
+many thanks to [Dennis Paul](https://www.dennisppaul.de/) and [Ralf Bäcker](https://rlfbckr.io/) for the coding guidance
 
 <br>
 
